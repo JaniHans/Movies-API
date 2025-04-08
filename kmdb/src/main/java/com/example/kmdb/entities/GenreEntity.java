@@ -11,6 +11,7 @@ public class GenreEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private String name;
 
 
     @ManyToMany(mappedBy = "genres") // inverse side of Movie-Genre
@@ -19,5 +20,21 @@ public class GenreEntity {
 
     public Integer getId() {
         return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public List<MovieEntity> getMovies() {
+        return movies;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setMovies(List<MovieEntity> movies) {
+        this.movies = movies;
     }
 }
