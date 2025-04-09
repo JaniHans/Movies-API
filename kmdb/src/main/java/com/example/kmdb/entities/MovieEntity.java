@@ -42,7 +42,44 @@ public class MovieEntity {
 
     private List<ActorEntity> actors = new ArrayList<>();
 
-    public Integer getId() {
-        return id;
+
+    public String getTitle() {
+        return title;
+    }
+
+    public int getReleaseYear() {
+        return releaseYear;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public List<ActorEntity> getActors() {
+        return actors;
+    }
+
+    public List<GenreEntity> getGenres() {
+        return genres;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setReleaseYear(int releaseYear) {
+        this.releaseYear = releaseYear;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public void setActors(List<ActorEntity> actors) {
+        this.actors = actors;
+    }
+
+    public void setGenres(List<GenreEntity> genres) {
+        this.genres = genres;
     }
 }

@@ -1,5 +1,10 @@
 package com.example.kmdb.services;
 
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/actors")
 public class ActorService {
 
     // Implement CRUD methods for each service:
