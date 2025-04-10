@@ -1,16 +1,23 @@
 package com.example.kmdb.controllers;
 
 import com.example.kmdb.dtos.MovieRequestDTO;
+import com.example.kmdb.entities.ActorEntity;
 import com.example.kmdb.entities.GenreEntity;
 import com.example.kmdb.entities.MovieEntity;
 import com.example.kmdb.services.ActorService;
 import com.example.kmdb.services.GenreService;
 import com.example.kmdb.services.MovieService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -32,7 +39,7 @@ public class MovieController {
      * POST /api/{entity}
      */
     @PostMapping
-    public MovieEntity createMovie(@RequestBody MovieRequestDTO requestDTO) {
+    public MovieEntity createMovie(@Valid @RequestBody MovieRequestDTO requestDTO) {
         return movieService.createMovie(
                 requestDTO.getTitle(),
                 requestDTO.getReleaseYear(), 
@@ -61,4 +68,53 @@ public class MovieController {
      * PATCH /api/{entity}/{id}: Partially update an existing entity
      * retrieve a specific entity by ID
      */
+    @PatchMapping("/{id}")
+    public void modifyMovie(@PathVariable Integer id, @RequestBody MovieRequestDTO requestDTO) {
+        movieService.modifyMovie(id,
+                requestDTO.getTitle(),
+                requestDTO.getReleaseYear(),
+                requestDTO.getDuration(),
+                requestDTO.getGenreIds(),
+                requestDTO.getActorIds());
+    }
+    /**
+     * DELETE /api/{entity}/{id}: Delete an entity
+     * modify path variable id
+     *  PathVariable - Binds from the URL path
+     */
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT) //  tells Spring to return 204 if the method completes successfully.
+    public void deleteMovie(@PathVariable Integer id) {
+        movieService.removeMovie(id);
+
+    }
+    // Filtering endpoints
+    /**
+     * GET /api/movies?genre={genreId}:
+     * Retrieve movies filtered by genre
+     * RequestParam - Binds from the URL query string
+     */
+    @GetMapping(params = "genre")
+    public List<MovieEntity> filterByGenre(@RequestParam Integer id) {
+        return movieService.filterByGenre(id);
+    }
+    /**
+     * GET /api/movies?year={releaseYear}: Retrieve movies filtered by release year
+     * Retrieve movies filtered by genre
+     * RequestParam - Binds from the URL query string
+     */
+    @GetMapping(params = "releaseYear")
+    public List<MovieEntity> filterByYear(@RequestParam int releaseYear) {
+        return movieService.filterByYear(releaseYear);
+    }
+
+    /**
+     * GET /api/movies?genre={genreId}: Retrieve movies filtered by genre
+     * returns all actors that belong to a specific movie
+     */
+    @GetMapping("/{id}/actors") // This is a nested resource.
+    public List<ActorEntity> getActorsInMovie(@PathVariable Integer id) {
+        return movieService.getActorsInMovie(id);
+    }
+
 }

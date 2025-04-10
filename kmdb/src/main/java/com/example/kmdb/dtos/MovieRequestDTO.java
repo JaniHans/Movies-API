@@ -2,13 +2,22 @@ package com.example.kmdb.dtos;
 
 import com.example.kmdb.entities.ActorEntity;
 import com.example.kmdb.entities.GenreEntity;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
 
 public class MovieRequestDTO {
 
+    @NotBlank(message = "Movie title is required")
     private String title;
+    @Min(value = 1900, message = "Year must be no earlier than 1900")
+    @Max(value = 2025, message = "Year must be no later than 2025")
     private int releaseYear;
+
+    @Min(value = 10, message = "Duration must be at least 10 minutes")
+    @Max(value = 600, message = "Duration must be no more than 600 minutes")
     private int duration;
     List<Integer> genreIds;
     List<Integer> actorIds;

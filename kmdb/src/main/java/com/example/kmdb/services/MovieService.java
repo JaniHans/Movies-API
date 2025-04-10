@@ -1,5 +1,6 @@
 package com.example.kmdb.services;
 
+import com.example.kmdb.entities.ActorEntity;
 import com.example.kmdb.entities.GenreEntity;
 import com.example.kmdb.entities.MovieEntity;
 import com.example.kmdb.repositories.ActorRepository;
@@ -23,9 +24,10 @@ public class MovieService {
     }
 
 
-    // Implement CRUD methods for each service:
+    // Movie CRUD endpoints
 
     /**
+     * POST - movies
      * new movies with their title, release year, duration, associated genre, and actors.
      * @return
      */
@@ -40,6 +42,7 @@ public class MovieService {
     }
 //You'll need methods to retrieve all movies,
     /**
+     * Get - movies
      * return all movies
      */
     public List<MovieEntity> getAllMovies() {
@@ -49,6 +52,7 @@ public class MovieService {
 
 // fetch a specific movie by ID,
     /**
+     * get movies id
      * retrieving a specific genre by ID
      * @param - genre id
      * @return - returns genre by id
@@ -58,41 +62,51 @@ public class MovieService {
     }
 
     /**
-     * filter by genre
+     * filter movies by genre or release year.
      * @return
      */
-    public MovieEntity filterByGenre() {
-
+    public List<MovieEntity> filterByGenre(Integer id) {
+        GenreEntity genre = genreRepository.findById(id).orElseThrow(() -> new RuntimeException("Genre not found by that id: " + id));
+       return movieRepository.findByGenres(genre);
     }
 
     /**
+     * GET /api/movies?year={releaseYear}: Retrieve movies filtered by release year
      * filter or release year.
      */
-    public MovieEntity filterByYear() {
-
+    public List<MovieEntity>  filterByYear(int releaseYear) {
+        return movieRepository.findByReleaseYear(releaseYear);
     }
 /**
  * Don't forget to implement a way to get all actors in a specific movie.
  */
- public <ActorEntity> getActorsInMovie(MovieEntity movie) {
+ public List<ActorEntity> getActorsInMovie(Integer id) {
+        MovieEntity movie =  movieRepository.findById(id).orElseThrow(() -> new RuntimeException("Movie not found by that id: " + id));
+        return movie.getActors();
 
  }
 
     /**
      * //Updating a movie's details (including its title, release year, duration, genre, and actors)
      */
-    public void modifyMovie(Integer genreId, String newName) {
-
+    public void modifyMovie(Integer movieId, String title, int releaseYear, int duration, List<Integer> genreIds, List<Integer> actorIds) {
+        MovieEntity movie = getMovieById(movieId);
+        movie.setTitle(title);
+        movie.setReleaseYear(releaseYear);
+        movie.setDuration(duration);
+        movie.setGenres(genreRepository.findAllById(genreIds));
+        movie.setActors(actorRepository.findAllById(actorIds));
+        movieRepository.save(movie);
     }
     /**
      * and removing a movie should also be supported.
      */
-    public boolean removeMovie(Integer genreId) {
-        if (genreRepository.findById(genreId).isPresent()) {
-            genreRepository.deleteById(genreId);
-            return true;
+    public void removeMovie(Integer movieId) {
+        if (!movieRepository.existsById(movieId)) {
+
+            throw new RuntimeException("Movie not found");
         }
-        return false;
+        movieRepository.deleteById(movieId);
     }
 
 }

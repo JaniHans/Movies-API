@@ -3,6 +3,7 @@ package com.example.kmdb.controllers;
 import com.example.kmdb.dtos.GenreRequestDTO;
 import com.example.kmdb.entities.GenreEntity;
 import com.example.kmdb.services.GenreService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +30,7 @@ public class GenreController {
      * POST /api/{entity}
      */
     @PostMapping
-    public GenreEntity createGenre(@RequestBody GenreRequestDTO request) {
+    public GenreEntity createGenre(@Valid @RequestBody GenreRequestDTO request) {
        return genreService.createGenre(request.getName());
     }
 

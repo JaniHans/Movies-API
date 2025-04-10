@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import org.antlr.v4.runtime.misc.NotNull;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -31,5 +32,29 @@ public class ActorEntity {
 
     public Integer getId() {
         return id;
+    }
+
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+    @NotNull
+    public String getName() {
+        return name;
+    }
+
+    public List<MovieEntity> getMovies() {
+        return movies;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public void setMovies(List<MovieEntity> movies) {
+        this.movies = movies;
     }
 }

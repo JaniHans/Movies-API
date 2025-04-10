@@ -1,8 +1,10 @@
 package com.example.kmdb.dtos;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class GenreRequestDTO {
 
-
+    @NotBlank(message = "Genre name is required")
     private String name;
 
 

@@ -62,12 +62,11 @@ public class GenreService {
      * check if it is present in genrerepository
      * delete and return true
      */
-    public boolean removeGenre(Integer genreId) {
-        if (genreRepository.findById(genreId).isPresent()) {
-            genreRepository.deleteById(genreId);
-            return true;
+    public void removeGenre(Integer genreId) {
+        if (!genreRepository.existsById(genreId)) {
+            throw new RuntimeException("Genre not found");
         }
-        return false;
+        genreRepository.deleteById(genreId);
     }
 
     /**
