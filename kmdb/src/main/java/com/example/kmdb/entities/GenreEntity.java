@@ -1,5 +1,6 @@
 package com.example.kmdb.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ public class GenreEntity {
 
     @ManyToMany(mappedBy = "genres") // inverse side of Movie-Genre
     // This is the inverse side of the Many-to-Many relationship (Movie owns the relation)
+    @JsonIgnore
     private List<MovieEntity> movies = new ArrayList<>();
 
     public Integer getId() {

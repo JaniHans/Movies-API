@@ -9,6 +9,7 @@ import com.example.kmdb.services.GenreService;
 import com.example.kmdb.services.MovieService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/movies")
+@RequestMapping("/api/movies")
 public class MovieController {
     private final GenreService genreService;
     private final ActorService actorService;
@@ -39,14 +40,14 @@ public class MovieController {
      * POST /api/{entity}
      */
     @PostMapping
-    public MovieEntity createMovie(@Valid @RequestBody MovieRequestDTO requestDTO) {
-        return movieService.createMovie(
+    public ResponseEntity<MovieEntity> createMovie(@Valid @RequestBody MovieRequestDTO requestDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(movieService.createMovie(
                 requestDTO.getTitle(),
-                requestDTO.getReleaseYear(), 
+                requestDTO.getReleaseYear(),
                 requestDTO.getDuration(),
                 requestDTO.getGenreIds(),
-                requestDTO.getActorIds()
-        );
+                requestDTO.getActorIds()));
+
     }
     /** retrieve all entities
      * GET /api/{entity}:

@@ -2,12 +2,12 @@ package com.example.kmdb.services;
 
 import com.example.kmdb.entities.GenreEntity;
 import com.example.kmdb.entities.MovieEntity;
+import com.example.kmdb.exceptions.ResourceNotFoundException;
 import com.example.kmdb.repositories.GenreRepository;
 import com.example.kmdb.repositories.MovieRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class GenreService {
@@ -20,6 +20,7 @@ public class GenreService {
         this.movieRepository = movieRepository;
     }
     /**
+     * POST /api/{genres}: Create a new entity
      * create genre and save it into the database
      * @param - genre name
      * @return - returns genre by id
@@ -31,12 +32,21 @@ public class GenreService {
     }
 
     /**
+     * GET /api/{genres}
+     * return all genres
+     */
+    public List<GenreEntity> getAllGenres() {
+        return genreRepository.findAll();
+    }
+
+    /**
+     * GET /api/{genres}/{id}
      * retrieving a specific genre by ID
      * @param - genre id
      * @return - returns genre by id
      */
     public GenreEntity getGenreById(Integer id) {
-        return genreRepository.findById(id).orElseThrow(() -> new RuntimeException("Genre not found by that id: " + id));
+        return genreRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Genre not found by that id: " + id));
     }
 
     /**
@@ -48,6 +58,7 @@ public class GenreService {
 
    }
     /**
+     * PATCH /api/{genres}/{id}
      * @param - genreId and genre new Name
      * modify genres name with the newname, save to genre repository
      */
@@ -55,7 +66,6 @@ public class GenreService {
         GenreEntity genre = getGenreById(genreId);
         genre.setName(newName);
         genreRepository.save(genre);
-
     }
     /**
      * @param - genre id
@@ -64,15 +74,10 @@ public class GenreService {
      */
     public void removeGenre(Integer genreId) {
         if (!genreRepository.existsById(genreId)) {
-            throw new RuntimeException("Genre not found");
+            throw new ResourceNotFoundException("Genre with id: " + genreId + " not found");
         }
         genreRepository.deleteById(genreId);
     }
 
-    /**
-     * return all genres
-     */
-    public List<GenreEntity> getAllGenres() {
-        return genreRepository.findAll();
-    }
+
 }

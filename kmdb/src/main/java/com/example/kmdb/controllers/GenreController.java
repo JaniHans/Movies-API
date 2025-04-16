@@ -5,6 +5,7 @@ import com.example.kmdb.entities.GenreEntity;
 import com.example.kmdb.services.GenreService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -18,9 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/genres")
+@RequestMapping("/api/genres")
 public class GenreController {
     private final GenreService genreService;
+
 
     public GenreController(GenreService genreService) {
         this.genreService = genreService;
@@ -30,8 +32,8 @@ public class GenreController {
      * POST /api/{entity}
      */
     @PostMapping
-    public GenreEntity createGenre(@Valid @RequestBody GenreRequestDTO request) {
-       return genreService.createGenre(request.getName());
+    public ResponseEntity<GenreEntity> createGenre(@Valid @RequestBody GenreRequestDTO request) {
+       return ResponseEntity.status(HttpStatus.CREATED).body(genreService.createGenre(request.getName()));
     }
 
     /** retrieve all entities
@@ -58,14 +60,15 @@ public class GenreController {
      */
     @PatchMapping("/{id}")
     public void modifyGenre(@PathVariable Integer id, @RequestBody GenreRequestDTO request) {
-       genreService.modifyGenresName(id, request.getName());
+        genreService.modifyGenresName(id, request.getName());
+
     }
     /**
      * DELETE /api/{entity}/{id}: Delete an entity
      * modify path variable id
      */
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT) //  tells Spring to return 204 if the method completes successfully.
+  @ResponseStatus(HttpStatus.NO_CONTENT) //  tells Spring to return 204 if the method completes successfully.
     public void deleteGenre(@PathVariable Integer id) {
         genreService.removeGenre(id);
 

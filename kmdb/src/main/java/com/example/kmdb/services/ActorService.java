@@ -27,7 +27,7 @@ public class ActorService {
     }
 
     /**
-     *create actor
+     *POST /api/actors: Create a new actor entity
      */
     public ActorEntity createActor(String name, LocalDate birthDate) {
         ActorEntity actor = new ActorEntity();
