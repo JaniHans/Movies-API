@@ -1,7 +1,6 @@
 package com.example.kmdb.controllers;
 
 import com.example.kmdb.dtos.ActorRequestDTO;
-import com.example.kmdb.dtos.GenreRequestDTO;
 import com.example.kmdb.entities.ActorEntity;
 import com.example.kmdb.entities.MovieEntity;
 import com.example.kmdb.services.ActorService;
@@ -37,7 +36,8 @@ public class ActorController {
      */
     @PostMapping
     public ResponseEntity<ActorEntity> createActor(@Valid @RequestBody ActorRequestDTO requestDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(actorService.createActor(requestDTO.getName(),requestDTO.getBirthDate()));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(actorService.createActor(requestDTO.getName(),requestDTO.getBirthDate()));
 }
     /** retrieve all entities
      * GET /api/{entity}:

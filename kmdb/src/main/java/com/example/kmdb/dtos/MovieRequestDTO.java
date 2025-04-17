@@ -1,14 +1,14 @@
 package com.example.kmdb.dtos;
 
-import com.example.kmdb.entities.ActorEntity;
-import com.example.kmdb.entities.GenreEntity;
+
+import com.example.kmdb.entities.MovieEntity;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
 
-public class MovieRequestDTO {
+public class MovieRequestDTO extends MovieEntity {
 
     @NotBlank(message = "Movie title is required")
     private String title;

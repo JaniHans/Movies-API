@@ -15,11 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class MovieEntity {
+public abstract class MovieEntity {
 
     @Id // Marks 'id' as the primary key
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    // Auto-generates the ID using the database's identity column (e.g., auto-increment in MySQL/H2)
     private Integer id;
 
     private String title;
@@ -86,5 +85,13 @@ public class MovieEntity {
 
     public void setGenres(List<GenreEntity> genres) {
         this.genres = genres;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 }

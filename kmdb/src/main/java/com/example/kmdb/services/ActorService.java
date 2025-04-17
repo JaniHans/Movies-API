@@ -1,14 +1,11 @@
 package com.example.kmdb.services;
 
 import com.example.kmdb.entities.ActorEntity;
-import com.example.kmdb.entities.GenreEntity;
 import com.example.kmdb.entities.MovieEntity;
+import com.example.kmdb.exceptions.ResourceNotFoundException;
 import com.example.kmdb.repositories.ActorRepository;
-import com.example.kmdb.repositories.GenreRepository;
 import com.example.kmdb.repositories.MovieRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,12 +15,12 @@ public class ActorService {
 
     private final ActorRepository actorRepository;
     private final MovieRepository movieRepository;
-    private final GenreRepository genreRepository;
 
-    public ActorService(ActorRepository actorRepository, MovieRepository movieRepository, GenreRepository genreRepository) {
+
+    public ActorService(ActorRepository actorRepository, MovieRepository movieRepository) {
         this.actorRepository = actorRepository;
         this.movieRepository = movieRepository;
-        this.genreRepository = genreRepository;
+
     }
 
     /**
@@ -48,7 +45,7 @@ public class ActorService {
      * get a specific actor by ID, and filter actors by name.
      */
     public ActorEntity getActorById(Integer id) {
-        return actorRepository.findById(id).orElseThrow(() -> new RuntimeException("Actor not found with that id " + id));
+        return actorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Actor not found by id: " + id));
     }
 
     /**  fetch all movies an actor has appeared in.
@@ -62,8 +59,8 @@ public class ActorService {
 
 //    Lastly, ensure you can modify an existing actor's details
     /**
-     * modify actors name with the newname, DOB and associated movies
-     * save to genre repository
+     * Modify actor's name, date of birth, and associated movies.
+     * Saves the changes to the actor repository.
      */
     public void modifyActor(Integer id, String newName, LocalDate birthDate, List<Integer> movieIds) {
      ActorEntity actor = getActorById(id);
@@ -80,7 +77,7 @@ public class ActorService {
      */
     public void removeActor(Integer actorId) {
         if (!actorRepository.existsById(actorId)) {
-            throw new RuntimeException("Actor not found");
+            throw new ResourceNotFoundException("Actor with id: " + actorId + " not found");
         }
         actorRepository.deleteById(actorId);
     }

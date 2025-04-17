@@ -40,7 +40,7 @@ public class MovieController {
      * POST /api/{entity}
      */
     @PostMapping
-    public ResponseEntity<MovieEntity> createMovie(@Valid @RequestBody MovieRequestDTO requestDTO) {
+    public ResponseEntity<MovieRequestDTO> createMovie(@Valid @RequestBody MovieRequestDTO requestDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(movieService.createMovie(
                 requestDTO.getTitle(),
                 requestDTO.getReleaseYear(),

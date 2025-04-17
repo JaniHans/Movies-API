@@ -1,5 +1,6 @@
 package com.example.kmdb.services;
 
+import com.example.kmdb.dtos.MovieRequestDTO;
 import com.example.kmdb.entities.ActorEntity;
 import com.example.kmdb.entities.GenreEntity;
 import com.example.kmdb.entities.MovieEntity;
@@ -31,13 +32,13 @@ public class MovieService {
      * new movies with their title, release year, duration, associated genre, and actors.
      * @return
      */
-    public MovieEntity createMovie(String title, int releaseYear, int duration, List<Integer>genreIds, List<Integer>actorIds) {
-        MovieEntity movie = new MovieEntity();
+    public MovieRequestDTO createMovie(String title, int releaseYear, int duration, List<Integer>genreIds, List<Integer>actorIds) {
+        MovieRequestDTO movie = new MovieRequestDTO();
         movie.setTitle(title);
         movie.setReleaseYear(releaseYear);
         movie.setDuration(duration);
-        movie.setGenres(genreRepository.findAllById(genreIds));
-        movie.setActors(actorRepository.findAllById(actorIds));
+        movie.setGenreIds(genreIds);
+        movie.setActorIds(actorIds);
         return movieRepository.save(movie);
     }
 //You'll need methods to retrieve all movies,
@@ -87,7 +88,7 @@ public class MovieService {
  }
 
     /**
-     * //Updating a movie's details (including its title, release year, duration, genre, and actors)
+     * /Updating a movie's details (including its title, release year, duration, genre, and actors)
      */
     public void modifyMovie(Integer movieId, String title, int releaseYear, int duration, List<Integer> genreIds, List<Integer> actorIds) {
         MovieEntity movie = getMovieById(movieId);
