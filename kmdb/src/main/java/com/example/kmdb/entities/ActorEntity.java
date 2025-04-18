@@ -11,7 +11,9 @@ import org.antlr.v4.runtime.misc.NotNull;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class ActorEntity {
@@ -19,20 +21,18 @@ public class ActorEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     private String name;
     private LocalDate birthDate; // ISO 8601 (1980-07-16)
 
     @ManyToMany(mappedBy = "actors")
 
-    private List<MovieEntity> movies = new ArrayList<>();
+    private Set<MovieEntity> movies = new HashSet<>();
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
 
-    public Integer getId() {
+
+    public Long getId() {
         return id;
     }
 
@@ -44,7 +44,7 @@ public class ActorEntity {
         return name;
     }
 
-    public List<MovieEntity> getMovies() {
+    public Set<MovieEntity> getMovies() {
         return movies;
     }
 
@@ -56,7 +56,7 @@ public class ActorEntity {
         this.birthDate = birthDate;
     }
 
-    public void setMovies(List<MovieEntity> movies) {
+    public void setMovies(Set<MovieEntity> movies) {
         this.movies = movies;
     }
 }

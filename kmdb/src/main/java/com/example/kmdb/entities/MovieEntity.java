@@ -7,19 +7,22 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
-public abstract class MovieEntity {
+public class MovieEntity {
 
     @Id // Marks 'id' as the primary key
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     private String title;
 
@@ -34,7 +37,7 @@ public abstract class MovieEntity {
             joinColumns = @JoinColumn(name = "movie_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
-    private List<GenreEntity> genres = new ArrayList<>();
+    private Set<GenreEntity> genres = new HashSet<>();
 
     // Movie ↔ Actor
     @ManyToMany
@@ -44,7 +47,7 @@ public abstract class MovieEntity {
             inverseJoinColumns = @JoinColumn(name = "actor_id")
     )
 
-    private List<ActorEntity> actors = new ArrayList<>();
+    private Set<ActorEntity> actors = new HashSet<>();
 
 
     public String getTitle() {
@@ -59,11 +62,11 @@ public abstract class MovieEntity {
         return duration;
     }
 
-    public List<ActorEntity> getActors() {
+    public Set<ActorEntity> getActors() {
         return actors;
     }
 
-    public List<GenreEntity> getGenres() {
+    public Set<GenreEntity> getGenres() {
         return genres;
     }
 
@@ -79,19 +82,19 @@ public abstract class MovieEntity {
         this.duration = duration;
     }
 
-    public void setActors(List<ActorEntity> actors) {
+    public void setActors(Set<ActorEntity> actors) {
         this.actors = actors;
     }
 
-    public void setGenres(List<GenreEntity> genres) {
+    public void setGenres(Set<GenreEntity> genres) {
         this.genres = genres;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 }

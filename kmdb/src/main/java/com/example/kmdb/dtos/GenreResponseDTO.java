@@ -4,11 +4,16 @@ import java.util.List;
 
 public class GenreResponseDTO {
 
-    private Integer id;
+    private Long id;
     private String name;
     private List<MovieResponseDTO> movies;
 
-    public Integer getId() {
+    public GenreResponseDTO(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public Long getId() {
         return id;
     }
 
@@ -20,7 +25,7 @@ public class GenreResponseDTO {
         return movies;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

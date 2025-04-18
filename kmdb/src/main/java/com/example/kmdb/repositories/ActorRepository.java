@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface ActorRepository extends JpaRepository<ActorEntity, Integer> {
-
+public interface ActorRepository extends JpaRepository<ActorEntity, Long> {
+    List<ActorEntity> findActorEntitiesByName(String name);
 }

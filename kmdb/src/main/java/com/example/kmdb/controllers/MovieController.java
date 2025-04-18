@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/movies")
@@ -41,12 +42,7 @@ public class MovieController {
      */
     @PostMapping
     public ResponseEntity<MovieRequestDTO> createMovie(@Valid @RequestBody MovieRequestDTO requestDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(movieService.createMovie(
-                requestDTO.getTitle(),
-                requestDTO.getReleaseYear(),
-                requestDTO.getDuration(),
-                requestDTO.getGenreIds(),
-                requestDTO.getActorIds()));
+
 
     }
     /** retrieve all entities
@@ -62,7 +58,7 @@ public class MovieController {
      * retrieve a specific entity by ID
      */
     @GetMapping("/{id}")
-    public MovieEntity getMovieId(@PathVariable Integer id) {
+    public MovieEntity getMovieId(@PathVariable Long id) {
         return movieService.getMovieById(id);
     }
     /**
@@ -70,7 +66,7 @@ public class MovieController {
      * retrieve a specific entity by ID
      */
     @PatchMapping("/{id}")
-    public void modifyMovie(@PathVariable Integer id, @RequestBody MovieRequestDTO requestDTO) {
+    public void modifyMovie(@PathVariable Long id, @RequestBody MovieRequestDTO requestDTO) {
         movieService.modifyMovie(id,
                 requestDTO.getTitle(),
                 requestDTO.getReleaseYear(),
@@ -85,7 +81,7 @@ public class MovieController {
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT) //  tells Spring to return 204 if the method completes successfully.
-    public void deleteMovie(@PathVariable Integer id) {
+    public void deleteMovie(@PathVariable Long id) {
         movieService.removeMovie(id);
 
     }
@@ -96,7 +92,7 @@ public class MovieController {
      * RequestParam - Binds from the URL query string
      */
     @GetMapping(params = "genre")
-    public List<MovieEntity> filterByGenre(@RequestParam Integer id) {
+    public List<MovieEntity> filterByGenre(@RequestParam Long id) {
         return movieService.filterByGenre(id);
     }
     /**
@@ -114,7 +110,7 @@ public class MovieController {
      * returns all actors that belong to a specific movie
      */
     @GetMapping("/{id}/actors") // This is a nested resource.
-    public List<ActorEntity> getActorsInMovie(@PathVariable Integer id) {
+    public Set<ActorEntity> getActorsInMovie(@PathVariable Long id) {
         return movieService.getActorsInMovie(id);
     }
 

@@ -1,6 +1,7 @@
 package com.example.kmdb.services;
 
 import com.example.kmdb.dtos.MovieRequestDTO;
+import com.example.kmdb.dtos.MovieResponseDTO;
 import com.example.kmdb.entities.ActorEntity;
 import com.example.kmdb.entities.GenreEntity;
 import com.example.kmdb.entities.MovieEntity;
@@ -10,6 +11,7 @@ import com.example.kmdb.repositories.MovieRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class MovieService {
@@ -27,19 +29,28 @@ public class MovieService {
 
     // Movie CRUD endpoints
 
+
+    private MovieResponseDTO movieToDto(MovieEntity entity) {
+        return new MovieResponseDTO(entity.getId(),
+                entity.getTitle(),
+                entity.getReleaseYear(),
+                entity.getDuration());
+    }
     /**
      * POST - movies
      * new movies with their title, release year, duration, associated genre, and actors.
      * @return
      */
-    public MovieRequestDTO createMovie(String title, int releaseYear, int duration, List<Integer>genreIds, List<Integer>actorIds) {
-        MovieRequestDTO movie = new MovieRequestDTO();
-        movie.setTitle(title);
-        movie.setReleaseYear(releaseYear);
-        movie.setDuration(duration);
-        movie.setGenreIds(genreIds);
-        movie.setActorIds(actorIds);
-        return movieRepository.save(movie);
+    public MovieResponseDTO createMovie(MovieRequestDTO dto) {
+        MovieEntity entity = new MovieEntity();
+        entity.setTitle(dto.getTitle());
+        entity.setReleaseYear(dto.getReleaseYear());
+        entity.setDuration(dto.getDuration());
+
+        movieRepository.save(entity);
+
+        return new MovieResponseDTO(entity.getId(), entity.getTitle(), entity.getReleaseYear(), entity.getDuration());
+
     }
 //You'll need methods to retrieve all movies,
     /**
@@ -58,7 +69,7 @@ public class MovieService {
      * @param - genre id
      * @return - returns genre by id
      */
-    public MovieEntity getMovieById(Integer id) {
+    public MovieEntity getMovieById(Long id) {
         return movieRepository.findById(id).orElseThrow(() -> new RuntimeException("Movie not found by that id: " + id));
     }
 
@@ -66,7 +77,7 @@ public class MovieService {
      * filter movies by genre or release year.
      * @return
      */
-    public List<MovieEntity> filterByGenre(Integer id) {
+    public List<MovieEntity> filterByGenre(Long id) {
         GenreEntity genre = genreRepository.findById(id).orElseThrow(() -> new RuntimeException("Genre not found by that id: " + id));
        return movieRepository.findByGenres(genre);
     }
@@ -78,31 +89,25 @@ public class MovieService {
     public List<MovieEntity>  filterByYear(int releaseYear) {
         return movieRepository.findByReleaseYear(releaseYear);
     }
-/**
- * Don't forget to implement a way to get all actors in a specific movie.
- */
- public List<ActorEntity> getActorsInMovie(Integer id) {
-        MovieEntity movie =  movieRepository.findById(id).orElseThrow(() -> new RuntimeException("Movie not found by that id: " + id));
-        return movie.getActors();
-
- }
-
     /**
      * /Updating a movie's details (including its title, release year, duration, genre, and actors)
      */
-    public void modifyMovie(Integer movieId, String title, int releaseYear, int duration, List<Integer> genreIds, List<Integer> actorIds) {
-        MovieEntity movie = getMovieById(movieId);
-        movie.setTitle(title);
-        movie.setReleaseYear(releaseYear);
-        movie.setDuration(duration);
-        movie.setGenres(genreRepository.findAllById(genreIds));
-        movie.setActors(actorRepository.findAllById(actorIds));
-        movieRepository.save(movie);
+    public void modifyMovie(MovieRequestDTO dto) {
+
+    }
+
+    /**
+     * Don't forget to implement a way to get all actors in a specific movie.
+     */
+    public Set<ActorEntity> getActorsInMovie(Long id) {
+        MovieEntity movie =  movieRepository.findById(id).orElseThrow(() -> new RuntimeException("Movie not found by that id: " + id));
+        return movie.getActors();
+
     }
     /**
      * and removing a movie should also be supported.
      */
-    public void removeMovie(Integer movieId) {
+    public void removeMovie(Long movieId) {
         if (!movieRepository.existsById(movieId)) {
 
             throw new RuntimeException("Movie not found");

@@ -1,22 +1,31 @@
 package com.example.kmdb.dtos;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MovieResponseDTO {
 
-    private Integer id;
+    private Long id;
     private String title;
     private int releaseYear;
     private int duration;
 
-    private List<GenreResponseDTO> genres;
-    private List<ActorResponseDTO> actors;
+    private Set<GenreResponseDTO> genres = new HashSet<>();
+    private Set<ActorResponseDTO> actors = new HashSet<>();
 
-    public Integer getId() {
+    public MovieResponseDTO(Long id, String title, int releaseYear, int duration) {
+        this.id = id;
+        this.title = title;
+        this.releaseYear = releaseYear;
+        this.duration = duration;
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
     public String getTitle() {
@@ -37,16 +46,16 @@ public class MovieResponseDTO {
     public void setDuration(int duration) {
         this.duration = duration;
     }
-    public List<GenreResponseDTO> getGenres() {
+    public Set<GenreResponseDTO> getGenres() {
         return genres;
     }
-    public void setGenres(List<GenreResponseDTO> genres) {
+    public void setGenres(Set<GenreResponseDTO> genres) {
         this.genres = genres;
     }
-    public List<ActorResponseDTO> getActors() {
+    public Set<ActorResponseDTO> getActors() {
         return actors;
     }
-    public void setActors(List<ActorResponseDTO> actors) {
+    public void setActors(Set<ActorResponseDTO> actors) {
         this.actors = actors;
     }
 

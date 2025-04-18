@@ -2,18 +2,19 @@ package com.example.kmdb.dtos;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 public class ActorResponseDTO {
 
-    private Integer id;
+    private Long id;
     private String name;
     private LocalDate birthDate;
-    private List<MovieResponseDTO> movies;
+    private Set<MovieResponseDTO> movies;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
     public String getName() {
@@ -28,10 +29,10 @@ public class ActorResponseDTO {
     public void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
     }
-    public List<MovieResponseDTO> getMovies() {
+    public Set<MovieResponseDTO> getMovies() {
         return movies;
     }
-    public void setMovies(List <MovieResponseDTO> movies) {
+    public void setMovies(Set<MovieResponseDTO> movies) {
         this.movies = movies;
     }
 }

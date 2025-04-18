@@ -1,6 +1,7 @@
 package com.example.kmdb.controllers;
 
 import com.example.kmdb.dtos.ActorRequestDTO;
+import com.example.kmdb.dtos.ActorResponseDTO;
 import com.example.kmdb.entities.ActorEntity;
 import com.example.kmdb.entities.MovieEntity;
 import com.example.kmdb.services.ActorService;
@@ -17,8 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -35,9 +38,18 @@ public class ActorController {
      * POST /api/{entity}
      */
     @PostMapping
-    public ResponseEntity<ActorEntity> createActor(@Valid @RequestBody ActorRequestDTO requestDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(actorService.createActor(requestDTO.getName(),requestDTO.getBirthDate()));
+    public ResponseEntity<ActorResponseDTO> createActor(@Valid @RequestBody ActorRequestDTO requestDTO) {
+        ActorResponseDTO dto = actorService.createActor(requestDTO);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest() // /api/genres
+                .path("/{id}")           // append /{id}
+                .buildAndExpand(dto.getId()) // replace {id} with the generated ID
+                .toUri();
+
+        return ResponseEntity
+                .created(location) // sets 201 and location header
+                .body(dto);
 }
     /** retrieve all entities
      * GET /api/{entity}:
@@ -53,7 +65,7 @@ public class ActorController {
      * @return - returns genre by id
      */
     @GetMapping("/{id}")
-    public ActorEntity getActorById(@PathVariable Integer id) {
+    public ActorEntity getActorById(@PathVariable Long id) {
         return actorService.getActorById(id);
     }
     /**
@@ -68,7 +80,7 @@ public class ActorController {
      * modify path variable id
      */
     @PatchMapping("/{id}")
-    public void modifyActor(@PathVariable Integer id, @RequestBody ActorRequestDTO request) {
+    public void modifyActor(@PathVariable Long id, @RequestBody ActorRequestDTO request) {
         actorService.modifyActor(id, request.getName(), request.getBirthDate(), request.getMovieIds());
     }
 

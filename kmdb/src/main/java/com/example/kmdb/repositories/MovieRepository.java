@@ -7,9 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface MovieRepository extends JpaRepository<MovieEntity, Integer> {
+public interface MovieRepository extends JpaRepository<MovieEntity, Long> {
 
-    List<MovieEntity> findByGenres(GenreEntity genre);
+    List<MovieEntity> findMovieEntitiesByGenreIds(Long id);
 
     List<MovieEntity> findByReleaseYear(int releaseYear);
 

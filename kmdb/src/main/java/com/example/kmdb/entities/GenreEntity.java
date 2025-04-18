@@ -3,7 +3,9 @@ package com.example.kmdb.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity // Marks this class as a JPA entity (i.e., a table in the database)
 public class GenreEntity {
@@ -11,16 +13,19 @@ public class GenreEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
     private String name;
 
 
     @ManyToMany(mappedBy = "genres") // inverse side of Movie-Genre
     // This is the inverse side of the Many-to-Many relationship (Movie owns the relation)
     @JsonIgnore
-    private List<MovieEntity> movies = new ArrayList<>();
+    private Set<MovieEntity> movies = new HashSet<>();
 
-    public Integer getId() {
+
+
+
+    public Long getId() {
         return id;
     }
 
@@ -28,7 +33,7 @@ public class GenreEntity {
         return name;
     }
 
-    public List<MovieEntity> getMovies() {
+    public Set<MovieEntity> getMovies() {
         return movies;
     }
 
@@ -36,7 +41,7 @@ public class GenreEntity {
         this.name = name;
     }
 
-    public void setMovies(List<MovieEntity> movies) {
+    public void setMovies(Set<MovieEntity> movies) {
         this.movies = movies;
     }
 }

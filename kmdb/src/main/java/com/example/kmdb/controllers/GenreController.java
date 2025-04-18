@@ -62,7 +62,7 @@ public class GenreController {
      * retrieve a specific entity by ID
      */
     @GetMapping("/{id}")
-    public GenreResponseDTO getGenreId(@PathVariable Integer id) {
+    public GenreResponseDTO getGenreId(@PathVariable Long id) {
        return genreService.getGenreById(id);
     }
 
@@ -72,7 +72,7 @@ public class GenreController {
      */
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void modifyGenre(@PathVariable Integer id, @Valid @RequestBody GenreRequestDTO request) {
+    public void modifyGenre(@PathVariable Long id, @Valid @RequestBody GenreRequestDTO request) {
         genreService.modifyGenresName(id, request.getName());
 
     }
@@ -82,7 +82,7 @@ public class GenreController {
      */
     @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT) //  tells Spring to return 204 if the method completes successfully.
-    public void deleteGenre(@PathVariable Integer id) {
+    public void deleteGenre(@PathVariable Long id) {
         genreService.removeGenre(id);
 
     }

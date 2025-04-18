@@ -1,5 +1,7 @@
 package com.example.kmdb.services;
 
+import com.example.kmdb.dtos.ActorRequestDTO;
+import com.example.kmdb.dtos.ActorResponseDTO;
 import com.example.kmdb.entities.ActorEntity;
 import com.example.kmdb.entities.MovieEntity;
 import com.example.kmdb.exceptions.ResourceNotFoundException;
@@ -9,12 +11,15 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ActorService {
 
     private final ActorRepository actorRepository;
     private final MovieRepository movieRepository;
+
+    private static final String ACTOR_NOT_FOUND = "Actor not found by id: ";
 
 
     public ActorService(ActorRepository actorRepository, MovieRepository movieRepository) {
@@ -26,11 +31,18 @@ public class ActorService {
     /**
      *POST /api/actors: Create a new actor entity
      */
-    public ActorEntity createActor(String name, LocalDate birthDate) {
+    public ActorResponseDTO createActor(ActorRequestDTO dto) {
         ActorEntity actor = new ActorEntity();
-        actor.setName(name);
-        actor.setBirthDate(birthDate);
-        return actorRepository.save(actor);
+        actor.setName(dto.getName());
+        actor.setBirthDate(dto.getBirthDate());
+        actorRepository.save(actor);
+
+        ActorResponseDTO dtoActor = new ActorResponseDTO();
+        dtoActor.setName(dto.getName());
+        dtoActor.setBirthDate(dto.getBirthDate());
+        dtoActor.setId(dtoActor.getId());
+        return dtoActor;
+
     }
 
 
@@ -44,14 +56,14 @@ public class ActorService {
     /**
      * get a specific actor by ID, and filter actors by name.
      */
-    public ActorEntity getActorById(Integer id) {
-        return actorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Actor not found by id: " + id));
+    public ActorEntity getActorById(Long id) {
+        return actorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + id));
     }
 
     /**  fetch all movies an actor has appeared in.
      * GET /api/movies?actor={Actor.id}
      */
-    public List<MovieEntity> getMoviesWhereActorAppeared(Integer actorId) {
+    public List<MovieEntity> getMoviesWhereActorAppeared(Long actorId) {
         ActorEntity actor = getActorById(actorId);
         return movieRepository.findByActors(actor);
     }
@@ -62,20 +74,19 @@ public class ActorService {
      * Modify actor's name, date of birth, and associated movies.
      * Saves the changes to the actor repository.
      */
-    public void modifyActor(Integer id, String newName, LocalDate birthDate, List<Integer> movieIds) {
-     ActorEntity actor = getActorById(id);
+    public void modifyActor(Long id, String newName, LocalDate birthDate, Set<Long> movieIds) {
+     ActorEntity actor = actorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + id));
+
      actor.setName(newName);
      actor.setBirthDate(birthDate);
-     actor.setMovies(movieRepository.findAllById(movieIds));
 
-     actorRepository.save(actor);
 
     }
 
     /**
      * and remove an actor from the database.
      */
-    public void removeActor(Integer actorId) {
+    public void removeActor(Long actorId) {
         if (!actorRepository.existsById(actorId)) {
             throw new ResourceNotFoundException("Actor with id: " + actorId + " not found");
         }

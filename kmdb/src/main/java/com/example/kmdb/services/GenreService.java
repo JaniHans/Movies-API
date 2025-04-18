@@ -2,18 +2,19 @@ package com.example.kmdb.services;
 
 import com.example.kmdb.dtos.GenreRequestDTO;
 import com.example.kmdb.dtos.GenreResponseDTO;
+import com.example.kmdb.dtos.MovieResponseDTO;
 import com.example.kmdb.entities.GenreEntity;
 import com.example.kmdb.entities.MovieEntity;
 import com.example.kmdb.exceptions.ResourceNotFoundException;
 import com.example.kmdb.repositories.GenreRepository;
 import com.example.kmdb.repositories.MovieRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class GenreService {
@@ -21,9 +22,21 @@ public class GenreService {
     private final GenreRepository genreRepository;
     private final MovieRepository movieRepository;
 
+    private static final String GENRE_NOT_FOUND = "Genre not found by id: ";
+
     public GenreService(GenreRepository genreRepository, MovieRepository movieRepository) {
         this.genreRepository = genreRepository;
         this.movieRepository = movieRepository;
+    }
+
+    private GenreResponseDTO toDto(GenreEntity entity) {
+        return new GenreResponseDTO(entity.getId(), entity.getName());
+    }
+    private MovieResponseDTO movieToDto(MovieEntity entity) {
+        return new MovieResponseDTO(entity.getId(),
+                entity.getTitle(),
+                entity.getReleaseYear(),
+                entity.getDuration());
     }
     /**
      * POST /api/{genres}: Create a new entity
@@ -32,13 +45,13 @@ public class GenreService {
      * @return - returns genre by id
      */
     public GenreResponseDTO createGenre(GenreRequestDTO dto) {
-        GenreEntity genre = new GenreEntity();
-        genre.setName(dto.getName());
-        genreRepository.save(genre);
-        GenreResponseDTO dtoGenre = new GenreResponseDTO();
-        dtoGenre.setName(genre.getName());
-        dtoGenre.setId(genre.getId());
-        return dtoGenre;
+
+        GenreEntity entity = new GenreEntity();
+        entity.setName(dto.getName());
+
+
+        genreRepository.save(entity);
+        return new GenreResponseDTO(entity.getId(), entity.getName());
 
     }
 
@@ -47,18 +60,10 @@ public class GenreService {
      * return all genres
      */
     public List<GenreResponseDTO> getAllGenres() {
-        List<GenreEntity> entities = genreRepository.findAll();
-
-        List<GenreResponseDTO> genres = new ArrayList<>();
-
-        for (GenreEntity entity : entities) {
-            GenreResponseDTO genre = new GenreResponseDTO();
-            genre.setName(entity.getName());
-            genre.setId(entity.getId());
-            genres.add(genre);
-        }
-
-        return genres;
+        return genreRepository.findAll()
+                .stream()
+                .map(this::toDto)
+                .toList();
 
     }
 
@@ -68,21 +73,22 @@ public class GenreService {
      * @param - genre id
      * @return - returns genre by id
      */
-    public GenreResponseDTO getGenreById(Integer id) {
-        GenreEntity entity = genreRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Genre not found by id: " + id));
-        GenreResponseDTO genre = new GenreResponseDTO();
-        genre.setName(entity.getName());
-        genre.setId(entity.getId());
-
-        return genre;
+    public GenreResponseDTO getGenreById(Long id) {
+        return toDto(genreRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + id)));
     }
 
     /**
      * @param - genreId
      * @return filter a list of movies with the genre
      */
-   public List<MovieEntity> getMoviesByGenre(GenreEntity genre) {
-       return movieRepository.findByGenres(genre); // otsene andmebaasi päring
+   public Set<MovieResponseDTO> getMoviesByGenreId(Long genreId) {
+       GenreEntity genre = genreRepository.findById(genreId).orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + genreId));
+
+       return movieRepository.findMovieEntitiesByGenreIds(genreId)
+               .stream()
+               .map(this::movieToDto)
+               .collect(Collectors.toSet());
 
    }
     /**
@@ -90,9 +96,9 @@ public class GenreService {
      * @param - genreId and genre new Name
      * modify genres name with the newname, save to genre repository
      */
-    public void modifyGenresName(Integer genreId, String newName) {
+    public void modifyGenresName(Long genreId, String newName) {
 
-        GenreEntity entity = genreRepository.findById(genreId).orElseThrow(() -> new ResourceNotFoundException("Genre not found by id: " + genreId));
+        GenreEntity entity = genreRepository.findById(genreId).orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + genreId));
         entity.setName(newName);
         genreRepository.save(entity);
     }
@@ -101,9 +107,9 @@ public class GenreService {
      * check if it is present in genrerepository
      * delete and return true
      */
-    public void removeGenre(Integer genreId) {
+    public void removeGenre(Long genreId) {
         if (!genreRepository.existsById(genreId)) {
-            throw new ResourceNotFoundException("Genre with id: " + genreId + " not found");
+            throw new ResourceNotFoundException(GENRE_NOT_FOUND + genreId);
         }
         genreRepository.deleteById(genreId);
     }

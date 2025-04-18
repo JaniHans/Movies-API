@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
 
-public class MovieRequestDTO extends MovieEntity {
+public class MovieRequestDTO {
 
     @NotBlank(message = "Movie title is required")
     private String title;
