@@ -37,11 +37,14 @@ public class ActorService {
         actor.setBirthDate(dto.getBirthDate());
         actorRepository.save(actor);
 
-        ActorResponseDTO dtoActor = new ActorResponseDTO();
-        dtoActor.setName(dto.getName());
-        dtoActor.setBirthDate(dto.getBirthDate());
-        dtoActor.setId(dtoActor.getId());
-        return dtoActor;
+//        ActorResponseDTO dtoActor = new ActorResponseDTO();
+//        dtoActor.setName(dto.getName());
+//        dtoActor.setBirthDate(dto.getBirthDate());
+//        dtoActor.setId(dtoActor.getId());
+        return new ActorResponseDTO(dto.getId(), dto.getBirthDate(), dto.getBirthDate());
+
+
+
 
     }
 

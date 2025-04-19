@@ -11,6 +11,7 @@ import com.example.kmdb.repositories.GenreRepository;
 import com.example.kmdb.repositories.MovieRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -23,6 +24,7 @@ public class MovieService {
     private final ActorRepository actorRepository;
 
     private static final String GENRE_NOT_FOUND = "Genre not found by id: ";
+    private static final String MOVIE_NOT_FOUND = "Movie not found by id: ";
 
     public MovieService(GenreRepository genreRepository, MovieRepository movieRepository, ActorRepository actorRepository) {
         this.genreRepository = genreRepository;
@@ -30,6 +32,15 @@ public class MovieService {
         this.actorRepository = actorRepository;
     }
 
+    private void assignGenresAndActors(MovieEntity entity, MovieRequestDTO dto) {
+        List<GenreEntity> genreList = genreRepository.findAllById(dto.getGenreIds());
+        Set<GenreEntity> genreEntities = new HashSet<>(genreList);
+        entity.setGenres(genreEntities);
+
+        List<ActorEntity> actorList = actorRepository.findAllById(dto.getActorIds());
+        Set<ActorEntity> actorEntities = new HashSet<>(actorList);
+        entity.setActors(actorEntities);
+    }
 
     // Movie CRUD endpoints
 
@@ -51,7 +62,13 @@ public class MovieService {
         entity.setReleaseYear(dto.getReleaseYear());
         entity.setDuration(dto.getDuration());
 
+        // helper method to retrieve actors and genres
+        assignGenresAndActors(entity, dto);
+        // entities
+
         movieRepository.save(entity);
+
+
 
         return new MovieResponseDTO(entity.getId(), entity.getTitle(), entity.getReleaseYear(), entity.getDuration());
 
@@ -61,8 +78,10 @@ public class MovieService {
      * Get - movies
      * return all movies
      */
-    public List<MovieEntity> getAllMovies() {
-        return movieRepository.findAll();
+    public Set<MovieResponseDTO> getAllMovies() {
+        return movieRepository.findAll().stream()
+                .map(this::movieToDto)
+                .collect(Collectors.toSet());
     }
 
 
@@ -100,14 +119,25 @@ public class MovieService {
      * GET /api/movies?year={releaseYear}: Retrieve movies filtered by release year
      * filter or release year.
      */
-    public List<MovieEntity>  filterByYear(int releaseYear) {
-        return movieRepository.findByReleaseYear(releaseYear);
+    public Set<MovieResponseDTO> filterByYear(int releaseYear) {
+        return movieRepository.findByReleaseYear(releaseYear)
+                .stream()
+                .map(this::movieToDto)
+                .collect(Collectors.toSet());
     }
     /**
      * /Updating a movie's details (including its title, release year, duration, genre, and actors)
      */
     public void modifyMovie(MovieRequestDTO dto) {
-        MovieEntity movie = movieRepository.findById(dto.getId())
+        MovieEntity movie = movieRepository.
+                findById(dto.getId())
+                .orElseThrow(() -> new ResourceNotFoundException(MOVIE_NOT_FOUND + dto.getId()));
+
+        movie.setTitle(dto.getTitle());
+        movie.setReleaseYear(dto.getReleaseYear());
+        movie.setDuration(dto.getDuration());
+        // helper method to retrieve actors and genres
+        assignGenresAndActors(movie, dto);
     }
 
     /**

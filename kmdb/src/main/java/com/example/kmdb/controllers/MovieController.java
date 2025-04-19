@@ -21,7 +21,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Set;
 
@@ -42,8 +44,17 @@ public class MovieController {
      * POST /api/{entity}
      */
     @PostMapping
-    public ResponseEntity<MovieRequestDTO> createMovie(@Valid @RequestBody MovieRequestDTO requestDTO) {
+    public ResponseEntity<MovieResponseDTO> createMovie(@Valid @RequestBody MovieRequestDTO requestDTO) {
+    MovieResponseDTO dto = movieService.createMovie(requestDTO);
 
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest() // /api/genres
+                .path("/{id}")           // append /{id}
+                .buildAndExpand(dto.getId()) // replace {id} with the generated ID
+                .toUri();
+
+    return ResponseEntity.created(location)
+            .body(dto);
 
     }
     /** retrieve all entities
@@ -51,7 +62,7 @@ public class MovieController {
      * returns JSON - [{"id":1,"name":"Action"}, {"id":2,"name":"Comedy"}])
      */
     @GetMapping
-    public List<MovieEntity> getMovies() {
+    public Set<MovieResponseDTO> getMovies() {
         return movieService.getAllMovies();
     }
     /**
@@ -68,12 +79,8 @@ public class MovieController {
      */
     @PatchMapping("/{id}")
     public void modifyMovie(@PathVariable Long id, @RequestBody MovieRequestDTO requestDTO) {
-//        movieService.modifyMovie(id,
-//                requestDTO.getTitle(),
-//                requestDTO.getReleaseYear(),
-//                requestDTO.getDuration(),
-//                requestDTO.getGenreIds(),
-//                requestDTO.getActorIds());
+        requestDTO.setId(id);
+        movieService.modifyMovie(requestDTO);
     }
     /**
      * DELETE /api/{entity}/{id}: Delete an entity
@@ -89,7 +96,6 @@ public class MovieController {
     // Filtering endpoints
     /**
      * GET /api/movies?genre={genreId}:
-     *
      * Retrieve movies filtered by genre
      * RequestParam - Binds from the URL query string
      */
@@ -104,7 +110,7 @@ public class MovieController {
      * RequestParam - Binds from the URL query string
      */
     @GetMapping(params = "releaseYear")
-    public List<MovieEntity> filterByYear(@RequestParam int releaseYear) {
+    public Set<MovieResponseDTO> filterByYear(@RequestParam int releaseYear) {
         return movieService.filterByYear(releaseYear);
     }
 

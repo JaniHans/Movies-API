@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
+import java.util.Set;
 
 public class MovieRequestDTO {
 
@@ -20,8 +21,8 @@ public class MovieRequestDTO {
     @Min(value = 10, message = "Duration must be at least 10 minutes")
     @Max(value = 600, message = "Duration must be no more than 600 minutes")
     private int duration;
-    List<Integer> genreIds;
-    List<Integer> actorIds;
+    Set<Long> genreIds;
+    Set<Long> actorIds;
 
 
     public String getTitle() {
@@ -36,11 +37,11 @@ public class MovieRequestDTO {
         return duration;
     }
 
-    public List<Integer> getGenreIds() {
+    public Set<Long> getGenreIds() {
         return genreIds;
     }
 
-    public List<Integer> getActorIds() {
+    public Set<Long> getActorIds() {
         return actorIds;
     }
 
@@ -56,11 +57,11 @@ public class MovieRequestDTO {
         this.duration = duration;
     }
 
-    public void setGenreIds(List<Integer> genreIds) {
+    public void setGenreIds(Set<Long> genreIds) {
         this.genreIds = genreIds;
     }
 
-    public void setActorIds(List<Integer> actorIds) {
+    public void setActorIds(Set<Long> actorIds) {
         this.actorIds = actorIds;
     }
 
