@@ -43,7 +43,7 @@ public class ActorController {
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest() // /api/genres
-                .path("/{id}")           // append /{id}
+                .path("/{id}")
                 .buildAndExpand(dto.getId()) // replace {id} with the generated ID
                 .toUri();
 
@@ -72,7 +72,7 @@ public class ActorController {
      * GET /api/movies?actor={Actor.id}: Retrieve movies that the actor with the given id has starred in
      */
     @GetMapping(params = "actor")
-    public List<MovieEntity> getMoviesActorStarred(@RequestParam("actor") Integer actorId) {
+    public List<MovieEntity> getMoviesActorStarred(@RequestParam("actor") Long actorId) {
         return actorService.getMoviesWhereActorAppeared(actorId);
     }
     /**
@@ -90,7 +90,7 @@ public class ActorController {
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT) //  tells Spring to return 204 if the method completes successfully.
-    public void deleteActor(@PathVariable Integer id) {
+    public void deleteActor(@PathVariable Long id) {
         actorService.removeActor(id);
 
     }

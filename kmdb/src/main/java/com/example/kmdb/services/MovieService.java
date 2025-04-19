@@ -5,6 +5,7 @@ import com.example.kmdb.dtos.MovieResponseDTO;
 import com.example.kmdb.entities.ActorEntity;
 import com.example.kmdb.entities.GenreEntity;
 import com.example.kmdb.entities.MovieEntity;
+import com.example.kmdb.exceptions.ResourceNotFoundException;
 import com.example.kmdb.repositories.ActorRepository;
 import com.example.kmdb.repositories.GenreRepository;
 import com.example.kmdb.repositories.MovieRepository;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class MovieService {
@@ -19,6 +21,8 @@ public class MovieService {
     private final GenreRepository genreRepository;
     private final MovieRepository movieRepository;
     private final ActorRepository actorRepository;
+
+    private static final String GENRE_NOT_FOUND = "Genre not found by id: ";
 
     public MovieService(GenreRepository genreRepository, MovieRepository movieRepository, ActorRepository actorRepository) {
         this.genreRepository = genreRepository;
@@ -77,9 +81,19 @@ public class MovieService {
      * filter movies by genre or release year.
      * @return
      */
-    public List<MovieEntity> filterByGenre(Long id) {
-        GenreEntity genre = genreRepository.findById(id).orElseThrow(() -> new RuntimeException("Genre not found by that id: " + id));
-       return movieRepository.findByGenres(genre);
+    /**
+     * @param - genreId
+     * @return filter a list of movies with the genre
+     */
+    public Set<MovieResponseDTO> getMoviesByGenre(Long genreId) {
+
+        genreRepository.findById(genreId).orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + genreId));
+
+        return movieRepository.findMovieEntitiesByGenreIds(genreId)
+                .stream()
+                .map(this::movieToDto)
+                .collect(Collectors.toSet());
+
     }
 
     /**
@@ -93,7 +107,7 @@ public class MovieService {
      * /Updating a movie's details (including its title, release year, duration, genre, and actors)
      */
     public void modifyMovie(MovieRequestDTO dto) {
-
+        MovieEntity movie = movieRepository.findById(dto.getId())
     }
 
     /**

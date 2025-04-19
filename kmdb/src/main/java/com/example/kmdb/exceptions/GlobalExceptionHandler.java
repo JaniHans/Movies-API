@@ -1,7 +1,6 @@
 package com.example.kmdb.exceptions;
 
 import org.springframework.http.HttpStatus;
-import com.example.kmdb.exceptions.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;

@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size;
 
 public class GenreRequestDTO {
 
+    private Long id;
     @NotBlank(message = "Genre name is required")
     @Size(min = 4, message = "Length of genre must be at least 4 characters")
     private String name;
@@ -19,4 +20,11 @@ public class GenreRequestDTO {
         this.name = name;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

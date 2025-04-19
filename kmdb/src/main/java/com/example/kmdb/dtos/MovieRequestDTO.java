@@ -1,7 +1,7 @@
 package com.example.kmdb.dtos;
 
 
-import com.example.kmdb.entities.MovieEntity;
+
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -10,6 +10,7 @@ import java.util.List;
 
 public class MovieRequestDTO {
 
+    private Long id;
     @NotBlank(message = "Movie title is required")
     private String title;
     @Min(value = 1900, message = "Year must be no earlier than 1900")
@@ -61,5 +62,13 @@ public class MovieRequestDTO {
 
     public void setActorIds(List<Integer> actorIds) {
         this.actorIds = actorIds;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

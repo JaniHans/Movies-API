@@ -1,6 +1,7 @@
 package com.example.kmdb.controllers;
 
 import com.example.kmdb.dtos.MovieRequestDTO;
+import com.example.kmdb.dtos.MovieResponseDTO;
 import com.example.kmdb.entities.ActorEntity;
 import com.example.kmdb.entities.GenreEntity;
 import com.example.kmdb.entities.MovieEntity;
@@ -67,12 +68,12 @@ public class MovieController {
      */
     @PatchMapping("/{id}")
     public void modifyMovie(@PathVariable Long id, @RequestBody MovieRequestDTO requestDTO) {
-        movieService.modifyMovie(id,
-                requestDTO.getTitle(),
-                requestDTO.getReleaseYear(),
-                requestDTO.getDuration(),
-                requestDTO.getGenreIds(),
-                requestDTO.getActorIds());
+//        movieService.modifyMovie(id,
+//                requestDTO.getTitle(),
+//                requestDTO.getReleaseYear(),
+//                requestDTO.getDuration(),
+//                requestDTO.getGenreIds(),
+//                requestDTO.getActorIds());
     }
     /**
      * DELETE /api/{entity}/{id}: Delete an entity
@@ -88,12 +89,14 @@ public class MovieController {
     // Filtering endpoints
     /**
      * GET /api/movies?genre={genreId}:
+     *
      * Retrieve movies filtered by genre
      * RequestParam - Binds from the URL query string
      */
     @GetMapping(params = "genre")
-    public List<MovieEntity> filterByGenre(@RequestParam Long id) {
-        return movieService.filterByGenre(id);
+    // Only accept the request if there is a query parameter called genreId present.
+    public Set<MovieResponseDTO> getMoviesByGenre(@RequestParam("genre") Long genreId) {
+        return movieService.getMoviesByGenre(genreId);
     }
     /**
      * GET /api/movies?year={releaseYear}: Retrieve movies filtered by release year

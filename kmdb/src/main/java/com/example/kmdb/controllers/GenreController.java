@@ -19,6 +19,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/genres")
@@ -53,7 +54,7 @@ public class GenreController {
      * returns JSON - [{"id":1,"name":"Action"}, {"id":2,"name":"Comedy"}])
      */
     @GetMapping
-    public List<GenreResponseDTO> getGenres() {
+    public Set<GenreResponseDTO> getGenres() {
         return genreService.getAllGenres();
     }
 
@@ -73,7 +74,8 @@ public class GenreController {
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void modifyGenre(@PathVariable Long id, @Valid @RequestBody GenreRequestDTO request) {
-        genreService.modifyGenresName(id, request.getName());
+        request.setId(id);
+        genreService.modifyGenresName(request);
 
     }
     /**
@@ -83,6 +85,7 @@ public class GenreController {
     @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT) //  tells Spring to return 204 if the method completes successfully.
     public void deleteGenre(@PathVariable Long id) {
+
         genreService.removeGenre(id);
 
     }

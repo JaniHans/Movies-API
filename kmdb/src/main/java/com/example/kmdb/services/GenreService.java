@@ -59,11 +59,11 @@ public class GenreService {
      * GET /api/{genres}
      * return all genres
      */
-    public List<GenreResponseDTO> getAllGenres() {
+    public Set<GenreResponseDTO> getAllGenres() {
         return genreRepository.findAll()
                 .stream()
                 .map(this::toDto)
-                .toList();
+                .collect(Collectors.toSet());
 
     }
 
@@ -82,8 +82,9 @@ public class GenreService {
      * @param - genreId
      * @return filter a list of movies with the genre
      */
-   public Set<MovieResponseDTO> getMoviesByGenreId(Long genreId) {
-       GenreEntity genre = genreRepository.findById(genreId).orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + genreId));
+   public Set<MovieResponseDTO> getMoviesByGenre(Long genreId) {
+
+        genreRepository.findById(genreId).orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + genreId));
 
        return movieRepository.findMovieEntitiesByGenreIds(genreId)
                .stream()
@@ -96,10 +97,10 @@ public class GenreService {
      * @param - genreId and genre new Name
      * modify genres name with the newname, save to genre repository
      */
-    public void modifyGenresName(Long genreId, String newName) {
+    public void modifyGenresName(GenreRequestDTO dto) {
 
-        GenreEntity entity = genreRepository.findById(genreId).orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + genreId));
-        entity.setName(newName);
+        GenreEntity entity = genreRepository.findById(dto.getId()).orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + dto.getId()));
+        entity.setName(dto.getName());
         genreRepository.save(entity);
     }
     /**
@@ -107,11 +108,11 @@ public class GenreService {
      * check if it is present in genrerepository
      * delete and return true
      */
-    public void removeGenre(Long genreId) {
-        if (!genreRepository.existsById(genreId)) {
-            throw new ResourceNotFoundException(GENRE_NOT_FOUND + genreId);
+    public void removeGenre(Long id) {
+        if (!genreRepository.existsById(id)) {
+            throw new ResourceNotFoundException(GENRE_NOT_FOUND + id);
         }
-        genreRepository.deleteById(genreId);
+        genreRepository.deleteById(id);
     }
 
 
