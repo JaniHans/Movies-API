@@ -2,7 +2,10 @@ package com.example.kmdb.services;
 
 import com.example.kmdb.dtos.ActorRequestDTO;
 import com.example.kmdb.dtos.ActorResponseDTO;
+import com.example.kmdb.dtos.GenreResponseDTO;
+import com.example.kmdb.dtos.MovieResponseDTO;
 import com.example.kmdb.entities.ActorEntity;
+import com.example.kmdb.entities.GenreEntity;
 import com.example.kmdb.entities.MovieEntity;
 import com.example.kmdb.exceptions.ResourceNotFoundException;
 import com.example.kmdb.repositories.ActorRepository;
@@ -10,8 +13,10 @@ import com.example.kmdb.repositories.MovieRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ActorService {
@@ -27,6 +32,26 @@ public class ActorService {
         this.movieRepository = movieRepository;
 
     }
+    private ActorResponseDTO toDto(ActorEntity entity) {
+        return new ActorResponseDTO(entity.getId(), entity.getName(), entity.getBirthDate());
+    }
+    private MovieResponseDTO movieToDto(MovieEntity entity) {
+        return new MovieResponseDTO(entity.getId(),
+                entity.getTitle(),
+                entity.getReleaseYear(),
+                entity.getDuration());
+    }
+
+    /**
+     * takes in entity and DTO movieids to find the movies and sets entity correctly with the aforementioned movies
+     * @param entity
+     * @param dto
+     */
+    private void getAndSetMoviesToActor(ActorEntity entity, ActorRequestDTO dto) {
+        List<MovieEntity> movies = movieRepository.findAllById(dto.getMovieIds());
+        Set<MovieEntity> moviesEntities = new HashSet<>(movies);
+        entity.setMovies(moviesEntities);
+    }
 
     /**
      *POST /api/actors: Create a new actor entity
@@ -35,16 +60,11 @@ public class ActorService {
         ActorEntity actor = new ActorEntity();
         actor.setName(dto.getName());
         actor.setBirthDate(dto.getBirthDate());
+        // helper function
+        getAndSetMoviesToActor(actor, dto);
         actorRepository.save(actor);
 
-//        ActorResponseDTO dtoActor = new ActorResponseDTO();
-//        dtoActor.setName(dto.getName());
-//        dtoActor.setBirthDate(dto.getBirthDate());
-//        dtoActor.setId(dtoActor.getId());
-        return new ActorResponseDTO(dto.getId(), dto.getBirthDate(), dto.getBirthDate());
-
-
-
+        return new ActorResponseDTO(dto.getId(), dto.getName(), dto.getBirthDate());
 
     }
 
@@ -52,23 +72,32 @@ public class ActorService {
     /**Implement methods to retrieve all actors,
     *
     */
-    public List<ActorEntity> getActors() {
-        return actorRepository.findAll();
+    public Set<ActorResponseDTO> getActors() {
+        return actorRepository.findAll()
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toSet());
     }
 
     /**
-     * get a specific actor by ID, and filter actors by name.
+     * get a specific actor by ID
      */
-    public ActorEntity getActorById(Long id) {
-        return actorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + id));
+    public ActorResponseDTO getActorById(Long id) {
+       return toDto(actorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + id)));
+
     }
 
     /**  fetch all movies an actor has appeared in.
      * GET /api/movies?actor={Actor.id}
      */
-    public List<MovieEntity> getMoviesWhereActorAppeared(Long actorId) {
-        ActorEntity actor = getActorById(actorId);
-        return movieRepository.findByActors(actor);
+    public Set<MovieResponseDTO> getMoviesWhereActorAppeared(Long actorId) {
+        actorRepository.findById(actorId).orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + actorId));
+
+        return movieRepository.findByActorsIds(actorId)
+                .stream()
+                .map(this::movieToDto)
+                .collect(Collectors.toSet());
+
     }
 
 
@@ -77,24 +106,32 @@ public class ActorService {
      * Modify actor's name, date of birth, and associated movies.
      * Saves the changes to the actor repository.
      */
-    public void modifyActor(Long id, String newName, LocalDate birthDate, Set<Long> movieIds) {
-     ActorEntity actor = actorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + id));
+    public void modifyActor(ActorRequestDTO dto) {
+     ActorEntity actor = actorRepository
+             .findById(dto.getId())
+             .orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + dto.getId()));
 
-     actor.setName(newName);
-     actor.setBirthDate(birthDate);
+     actor.setName(dto.getName());
+     actor.setBirthDate(dto.getBirthDate());
 
+     getAndSetMoviesToActor(actor, dto);
 
     }
 
     /**
      * and remove an actor from the database.
      */
-    public void removeActor(Long actorId) {
+    public void removeActor(Long actorId, boolean force) {
         if (!actorRepository.existsById(actorId)) {
             throw new ResourceNotFoundException("Actor with id: " + actorId + " not found");
         }
         actorRepository.deleteById(actorId);
     }
+
+    /**
+     * GET /api/actors?name={name}: Retrieve actors filtered by name
+     */
+    public void filterActorByName(Long actorId) {
 //
 
 }

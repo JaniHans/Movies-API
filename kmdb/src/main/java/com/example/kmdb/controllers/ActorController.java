@@ -2,6 +2,7 @@ package com.example.kmdb.controllers;
 
 import com.example.kmdb.dtos.ActorRequestDTO;
 import com.example.kmdb.dtos.ActorResponseDTO;
+import com.example.kmdb.dtos.MovieResponseDTO;
 import com.example.kmdb.entities.ActorEntity;
 import com.example.kmdb.entities.MovieEntity;
 import com.example.kmdb.services.ActorService;
@@ -23,6 +24,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/actors")
@@ -56,7 +58,7 @@ public class ActorController {
      * returns JSON - [{"id":1,"name":"Action"}, {"id":2,"name":"Comedy"}])
      */
     @GetMapping
-    public List<ActorEntity> getActors() {
+    public Set<ActorResponseDTO> getActors() {
         return actorService.getActors();
     }
     /**
@@ -65,14 +67,14 @@ public class ActorController {
      * @return - returns genre by id
      */
     @GetMapping("/{id}")
-    public ActorEntity getActorById(@PathVariable Long id) {
+    public ActorResponseDTO getActorById(@PathVariable Long id) {
         return actorService.getActorById(id);
     }
     /**
      * GET /api/movies?actor={Actor.id}: Retrieve movies that the actor with the given id has starred in
      */
     @GetMapping(params = "actor")
-    public List<MovieEntity> getMoviesActorStarred(@RequestParam("actor") Long actorId) {
+    public Set<MovieResponseDTO> getMoviesActorStarred(@RequestParam("actor") Long actorId) {
         return actorService.getMoviesWhereActorAppeared(actorId);
     }
     /**
@@ -81,7 +83,8 @@ public class ActorController {
      */
     @PatchMapping("/{id}")
     public void modifyActor(@PathVariable Long id, @RequestBody ActorRequestDTO request) {
-        actorService.modifyActor(id, request.getName(), request.getBirthDate(), request.getMovieIds());
+        request.setId(id);
+        actorService.modifyActor(request);
     }
 
     /**

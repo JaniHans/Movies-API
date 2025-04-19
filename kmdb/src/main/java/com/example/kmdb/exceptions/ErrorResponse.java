@@ -2,8 +2,8 @@ package com.example.kmdb.exceptions;
 
 public class ErrorResponse {
 
-    private String error;
-    private int status;
+    private final String error;
+    private final int status;
 
     public ErrorResponse(String error, int status) {
         this.error = error;

@@ -12,11 +12,11 @@ public class ActorResponseDTO {
     private LocalDate birthDate;
     private Set<MovieResponseDTO> movies = new HashSet<>();
 
-    public ActorResponseDTO(String name, Long id, LocalDate birthDate, Set<MovieResponseDTO> movies) {
+    public ActorResponseDTO(Long id, String name, LocalDate birthDate) {
         this.name = name;
         this.id = id;
         this.birthDate = birthDate;
-        this.movies = movies;
+
     }
 
     public Long getId() {

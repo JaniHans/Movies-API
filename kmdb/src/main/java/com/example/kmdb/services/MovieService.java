@@ -151,7 +151,7 @@ public class MovieService {
     /**
      * and removing a movie should also be supported.
      */
-    public void removeMovie(Long movieId) {
+    public void removeMovie(Long movieId, boolean force) {
         if (!movieRepository.existsById(movieId)) {
 
             throw new RuntimeException("Movie not found");

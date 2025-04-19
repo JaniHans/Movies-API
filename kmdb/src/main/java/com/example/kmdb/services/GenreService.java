@@ -108,7 +108,7 @@ public class GenreService {
      * check if it is present in genrerepository
      * delete and return true
      */
-    public void removeGenre(Long id) {
+    public void removeGenre(Long id, boolean force) {
         if (!genreRepository.existsById(id)) {
             throw new ResourceNotFoundException(GENRE_NOT_FOUND + id);
         }
