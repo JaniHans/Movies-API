@@ -1,5 +1,6 @@
 package com.example.kmdb.controllers;
 
+import com.example.kmdb.dtos.ActorResponseDTO;
 import com.example.kmdb.dtos.MovieRequestDTO;
 import com.example.kmdb.dtos.MovieResponseDTO;
 import com.example.kmdb.entities.ActorEntity;
@@ -66,11 +67,11 @@ public class MovieController {
         return movieService.getAllMovies();
     }
     /**
-     * GET /api/{entity}/{id}
-     * retrieve a specific entity by ID
+     * GET /api/{movie}/{id}
+     * retrieve a specific movie by ID
      */
     @GetMapping("/{id}")
-    public MovieEntity getMovieId(@PathVariable Long id) {
+    public MovieResponseDTO getMovieId(@PathVariable Long id) {
         return movieService.getMovieById(id);
     }
     /**
@@ -89,8 +90,11 @@ public class MovieController {
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT) //  tells Spring to return 204 if the method completes successfully.
-    public void deleteMovie(@PathVariable Long id) {
-        movieService.removeMovie(id);
+    public void deleteMovie(@PathVariable Long id,
+                            @RequestParam(defaultValue = "false") boolean force) {
+        movieService.removeMovie(id, force);
+
+
 
     }
     // Filtering endpoints
@@ -119,8 +123,8 @@ public class MovieController {
      * returns all actors that belong to a specific movie
      */
     @GetMapping("/{id}/actors") // This is a nested resource.
-    public Set<ActorEntity> getActorsInMovie(@PathVariable Long id) {
-        return movieService.getActorsInMovie(id);
+    public Set<ActorResponseDTO> getActorsInMovie(@PathVariable Long id) {
+        return movieService.getAllActorsInMovie(id);
     }
 
 }

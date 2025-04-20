@@ -85,7 +85,7 @@ public class GenreService {
      * @param - genreId
      * @return filter a list of movies with the genre
      */
-   public Set<MovieResponseDTO> getMoviesByGenre(Long genreId) {
+   public Set<MovieResponseDTO> filterMoviesByGenre(Long genreId) {
 
         genreRepository.findById(genreId).orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + genreId));
 

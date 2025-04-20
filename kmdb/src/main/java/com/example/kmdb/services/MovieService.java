@@ -1,10 +1,12 @@
 package com.example.kmdb.services;
 
+import com.example.kmdb.dtos.ActorResponseDTO;
 import com.example.kmdb.dtos.MovieRequestDTO;
 import com.example.kmdb.dtos.MovieResponseDTO;
 import com.example.kmdb.entities.ActorEntity;
 import com.example.kmdb.entities.GenreEntity;
 import com.example.kmdb.entities.MovieEntity;
+import com.example.kmdb.exceptions.DeleteNotAllowedException;
 import com.example.kmdb.exceptions.ResourceNotFoundException;
 import com.example.kmdb.repositories.ActorRepository;
 import com.example.kmdb.repositories.GenreRepository;
@@ -92,8 +94,9 @@ public class MovieService {
      * @param - genre id
      * @return - returns genre by id
      */
-    public MovieEntity getMovieById(Long id) {
-        return movieRepository.findById(id).orElseThrow(() -> new RuntimeException("Movie not found by that id: " + id));
+    public MovieResponseDTO getMovieById(Long id) {
+       return movieToDto(movieRepository.findById(id).orElseThrow(() -> new RuntimeException("Movie not found by that id: " + id)));
+
     }
 
     /**
@@ -143,16 +146,53 @@ public class MovieService {
     /**
      * Don't forget to implement a way to get all actors in a specific movie.
      */
-    public Set<ActorEntity> getActorsInMovie(Long id) {
-        MovieEntity movie =  movieRepository.findById(id).orElseThrow(() -> new RuntimeException("Movie not found by that id: " + id));
+    public Set<ActorResponseDTO> getAllActorsInMovie(Long movieId) {
+        MovieResponseDTO movie = movieToDto(movieRepository.findById(movieId).orElseThrow(() -> new ResourceNotFoundException(MOVIE_NOT_FOUND + movieId)));
         return movie.getActors();
 
     }
     /**
+     * DELETE /api/{entity}/{id}: Delete an entity
+     * DELETE /api/movies/1?force=true
      * and removing a movie should also be supported.
      */
     public void removeMovie(Long movieId, boolean force) {
 
+        MovieEntity movie = movieRepository.findById(movieId)
+                .orElseThrow(() -> new ResourceNotFoundException(MOVIE_NOT_FOUND + movieId));
+
+        // boolean flags for correct error message
+
+        boolean hasActors = !movie.getActors().isEmpty();
+        boolean hasGenres = !movie.getGenres().isEmpty();
+
+        if ((hasActors || hasGenres && !force)) {
+
+            StringBuilder message = new StringBuilder("Cannot delete movie ");
+            message.append(movie.getTitle())
+                    .append(" because it has ");
+
+            if (hasActors) {
+                message.append(movie.getActors().size())
+                        .append(" associated actors");
+            }
+
+            if (hasActors && hasGenres) {
+                message.append(" and ");
+            }
+
+            if (hasGenres) {
+                message.append(movie.getGenres().size())
+                        .append(" associated genre(s).");
+            }
+            throw new DeleteNotAllowedException(message.toString());
+
+        }
+        movieRepository.deleteById(movieId);
+
     }
 
-}
+
+    }
+
+

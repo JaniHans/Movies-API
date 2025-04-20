@@ -87,8 +87,8 @@ public class GenreController {
      * @return
      */
     @GetMapping("/{genreId}")
-    public Set<MovieResponseDTO> getMoviesByGenre(@PathVariable Long genreId) {
-        return genreService.getMoviesByGenre(genreId);
+    public Set<MovieResponseDTO> filterMoviesByGenre(@PathVariable Long genreId) {
+        return genreService.filterMoviesByGenre(genreId);
     }
 
     /**
