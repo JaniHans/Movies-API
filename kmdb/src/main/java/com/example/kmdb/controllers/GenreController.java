@@ -2,6 +2,7 @@ package com.example.kmdb.controllers;
 
 import com.example.kmdb.dtos.GenreRequestDTO;
 import com.example.kmdb.dtos.GenreResponseDTO;
+import com.example.kmdb.dtos.MovieResponseDTO;
 import com.example.kmdb.services.GenreService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -78,15 +80,28 @@ public class GenreController {
         genreService.modifyGenresName(request);
 
     }
+
+    /**
+     * GET /api/movies?genre={genreId}: Retrieve movies filtered by genre
+     * @param genreId
+     * @return
+     */
+    @GetMapping("/{genreId}")
+    public Set<MovieResponseDTO> getMoviesByGenre(@PathVariable Long genreId) {
+        return genreService.getMoviesByGenre(genreId);
+    }
+
     /**
      * DELETE /api/{entity}/{id}: Delete an entity
      * modify path variable id
      */
     @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT) //  tells Spring to return 204 if the method completes successfully.
-    public void deleteGenre(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteGenre(@PathVariable Long id,
+                            @RequestParam(defaultValue = "false") boolean force) {
 
-        genreService.removeGenre(id);
+        genreService.removeGenre(id, force);
+        return ResponseEntity.noContent().build(); // ssa
 
     }
 

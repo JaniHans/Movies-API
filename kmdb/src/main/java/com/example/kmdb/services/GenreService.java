@@ -5,6 +5,7 @@ import com.example.kmdb.dtos.GenreResponseDTO;
 import com.example.kmdb.dtos.MovieResponseDTO;
 import com.example.kmdb.entities.GenreEntity;
 import com.example.kmdb.entities.MovieEntity;
+import com.example.kmdb.exceptions.DeleteNotAllowedException;
 import com.example.kmdb.exceptions.ResourceNotFoundException;
 import com.example.kmdb.repositories.GenreRepository;
 import com.example.kmdb.repositories.MovieRepository;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -79,6 +81,7 @@ public class GenreService {
     }
 
     /**
+     * GET /api/movies?genre={genreId}: Retrieve movies filtered by genre
      * @param - genreId
      * @return filter a list of movies with the genre
      */
@@ -104,15 +107,44 @@ public class GenreService {
         genreRepository.save(entity);
     }
     /**
+     * DELETE /api/genres/1
+     * DELETE /api/genres/1?force=true
      * @param - genre id
      * check if it is present in genrerepository
      * delete and return true
      */
     public void removeGenre(Long id, boolean force) {
-        if (!genreRepository.existsById(id)) {
-            throw new ResourceNotFoundException(GENRE_NOT_FOUND + id);
+
+        GenreEntity genre = genreRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + id));
+        // if associations exist and force is not true
+        if (!genre.getMovies().isEmpty() && !force) {
+            throw new DeleteNotAllowedException("Cannot delete genre "
+                    + genre.getName()
+                    + " because it has "
+                    + genre.getMovies().size()
+                    + " associated movies.");
         }
-        genreRepository.deleteById(id);
+
+        if (genre.getMovies().isEmpty()) {
+            genreRepository.deleteById(id);
+        }
+
+        // force break associations
+
+        if (force) {
+
+            // reference to movie entity objects
+            Set<MovieEntity> temporaryMovies = new HashSet<>(genre.getMovies());
+
+            for (MovieEntity movies : temporaryMovies) {
+                // modify the real MovieEntity objects through Hibernate persistence context
+                movies.getGenres().remove(genre);
+            }
+
+            genreRepository.deleteById(id);
+        }
+
+
     }
 
 

@@ -93,8 +93,20 @@ public class ActorController {
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT) //  tells Spring to return 204 if the method completes successfully.
-    public void deleteActor(@PathVariable Long id) {
-        actorService.removeActor(id);
+    public ResponseEntity<Void> deleteActor(@PathVariable Long id,
+                            @RequestParam(defaultValue = "false") boolean force) {
 
+        actorService.removeActor(id, force);
+
+        return ResponseEntity.noContent().build();
+
+    }
+
+    /**
+     * GET /api/actors?name={name}: Retrieve actors filtered by name
+     */
+    @GetMapping("/api/actors")
+    public Set<ActorResponseDTO> filterActorsByName(@RequestParam String name) {
+        return actorService.filterActorsByName(name);
     }
 }
