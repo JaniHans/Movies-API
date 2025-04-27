@@ -1,11 +1,8 @@
 package com.example.kmdb.controllers;
 
-import com.example.kmdb.dtos.ActorResponseDTO;
-import com.example.kmdb.dtos.MovieRequestDTO;
-import com.example.kmdb.dtos.MovieResponseDTO;
-import com.example.kmdb.entities.ActorEntity;
-import com.example.kmdb.entities.GenreEntity;
-import com.example.kmdb.entities.MovieEntity;
+import com.example.kmdb.dtos.ActorResponseDto;
+import com.example.kmdb.dtos.MovieRequestDto;
+import com.example.kmdb.dtos.MovieResponseDto;
 import com.example.kmdb.services.ActorService;
 import com.example.kmdb.services.GenreService;
 import com.example.kmdb.services.MovieService;
@@ -25,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -45,8 +41,8 @@ public class MovieController {
      * POST /api/{entity}
      */
     @PostMapping
-    public ResponseEntity<MovieResponseDTO> createMovie(@Valid @RequestBody MovieRequestDTO requestDTO) {
-    MovieResponseDTO dto = movieService.createMovie(requestDTO);
+    public ResponseEntity<MovieResponseDto> createMovie(@Valid @RequestBody MovieRequestDto requestDTO) {
+    MovieResponseDto dto = movieService.createMovie(requestDTO);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest() // /api/genres
@@ -63,7 +59,7 @@ public class MovieController {
      * returns JSON - [{"id":1,"name":"Action"}, {"id":2,"name":"Comedy"}])
      */
     @GetMapping
-    public Set<MovieResponseDTO> getMovies() {
+    public Set<MovieResponseDto> getMovies() {
         return movieService.getAllMovies();
     }
     /**
@@ -71,7 +67,7 @@ public class MovieController {
      * retrieve a specific movie by ID
      */
     @GetMapping("/{id}")
-    public MovieResponseDTO getMovieId(@PathVariable Long id) {
+    public MovieResponseDto getMovieId(@PathVariable Long id) {
         return movieService.getMovieById(id);
     }
     /**
@@ -79,7 +75,7 @@ public class MovieController {
      * retrieve a specific entity by ID
      */
     @PatchMapping("/{id}")
-    public void modifyMovie(@PathVariable Long id, @RequestBody MovieRequestDTO requestDTO) {
+    public void modifyMovie(@PathVariable Long id, @RequestBody MovieRequestDto requestDTO) {
         requestDTO.setId(id);
         movieService.modifyMovie(requestDTO);
     }
@@ -105,7 +101,7 @@ public class MovieController {
      */
     @GetMapping(params = "genre")
     // Only accept the request if there is a query parameter called genreId present.
-    public Set<MovieResponseDTO> getMoviesByGenre(@RequestParam("genre") Long genreId) {
+    public Set<MovieResponseDto> getMoviesByGenre(@RequestParam("genre") Long genreId) {
         return movieService.getMoviesByGenre(genreId);
     }
     /**
@@ -114,7 +110,7 @@ public class MovieController {
      * RequestParam - Binds from the URL query string
      */
     @GetMapping(params = "releaseYear")
-    public Set<MovieResponseDTO> filterByYear(@RequestParam int releaseYear) {
+    public Set<MovieResponseDto> filterByYear(@RequestParam int releaseYear) {
         return movieService.filterByYear(releaseYear);
     }
 
@@ -123,7 +119,7 @@ public class MovieController {
      * returns all actors that belong to a specific movie
      */
     @GetMapping("/{id}/actors") // This is a nested resource.
-    public Set<ActorResponseDTO> getActorsInMovie(@PathVariable Long id) {
+    public Set<ActorResponseDto> getActorsInMovie(@PathVariable Long id) {
         return movieService.getAllActorsInMovie(id);
     }
 

@@ -1,7 +1,7 @@
 package com.example.kmdb.repositories;
 
 import com.example.kmdb.entities.ActorEntity;
-import com.example.kmdb.entities.MovieEntity;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

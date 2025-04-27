@@ -2,13 +2,13 @@ package com.example.kmdb.dtos;
 
 import java.util.List;
 
-public class GenreResponseDTO {
+public class GenreResponseDto {
 
     private Long id;
     private String name;
-    private List<MovieResponseDTO> movies;
+    private List<MovieResponseDto> movies;
 
-    public GenreResponseDTO(Long id, String name) {
+    public GenreResponseDto(Long id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -21,7 +21,7 @@ public class GenreResponseDTO {
         return name;
     }
 
-    public List<MovieResponseDTO> getMovies() {
+    public List<MovieResponseDto> getMovies() {
         return movies;
     }
 
@@ -29,7 +29,7 @@ public class GenreResponseDTO {
         this.id = id;
     }
 
-    public void setMovies(List<MovieResponseDTO> movies) {
+    public void setMovies(List<MovieResponseDto> movies) {
         this.movies = movies;
     }
 

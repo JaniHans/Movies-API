@@ -1,10 +1,8 @@
 package com.example.kmdb.controllers;
 
-import com.example.kmdb.dtos.ActorRequestDTO;
-import com.example.kmdb.dtos.ActorResponseDTO;
-import com.example.kmdb.dtos.MovieResponseDTO;
-import com.example.kmdb.entities.ActorEntity;
-import com.example.kmdb.entities.MovieEntity;
+import com.example.kmdb.dtos.ActorRequestDto;
+import com.example.kmdb.dtos.ActorResponseDto;
+import com.example.kmdb.dtos.MovieResponseDto;
 import com.example.kmdb.services.ActorService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -23,7 +21,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 
 import java.net.URI;
-import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -40,8 +37,8 @@ public class ActorController {
      * POST /api/{entity}
      */
     @PostMapping
-    public ResponseEntity<ActorResponseDTO> createActor(@Valid @RequestBody ActorRequestDTO requestDTO) {
-        ActorResponseDTO dto = actorService.createActor(requestDTO);
+    public ResponseEntity<ActorResponseDto> createActor(@Valid @RequestBody ActorRequestDto requestDTO) {
+        ActorResponseDto dto = actorService.createActor(requestDTO);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest() // /api/genres
@@ -58,7 +55,7 @@ public class ActorController {
      * returns JSON - [{"id":1,"name":"Action"}, {"id":2,"name":"Comedy"}])
      */
     @GetMapping
-    public Set<ActorResponseDTO> getActors() {
+    public Set<ActorResponseDto> getActors() {
         return actorService.getActors();
     }
     /**
@@ -67,14 +64,14 @@ public class ActorController {
      * @return - returns genre by id
      */
     @GetMapping("/{id}")
-    public ActorResponseDTO getActorById(@PathVariable Long id) {
+    public ActorResponseDto getActorById(@PathVariable Long id) {
         return actorService.getActorById(id);
     }
     /**
      * GET /api/movies?actor={Actor.id}: Retrieve movies that the actor with the given id has starred in
      */
     @GetMapping(params = "actor")
-    public Set<MovieResponseDTO> getMoviesActorStarred(@RequestParam("actor") Long actorId) {
+    public Set<MovieResponseDto> getMoviesActorStarred(@RequestParam("actor") Long actorId) {
         return actorService.getMoviesWhereActorAppeared(actorId);
     }
     /**
@@ -82,7 +79,7 @@ public class ActorController {
      * modify path variable id
      */
     @PatchMapping("/{id}")
-    public void modifyActor(@PathVariable Long id, @RequestBody ActorRequestDTO request) {
+    public void modifyActor(@PathVariable Long id, @RequestBody ActorRequestDto request) {
         request.setId(id);
         actorService.modifyActor(request);
     }
@@ -106,7 +103,7 @@ public class ActorController {
      * GET /api/actors?name={name}: Retrieve actors filtered by name
      */
     @GetMapping("/api/actors")
-    public Set<ActorResponseDTO> filterActorsByName(@RequestParam String name) {
+    public Set<ActorResponseDto> filterActorsByName(@RequestParam String name) {
         return actorService.filterActorsByName(name);
     }
 }

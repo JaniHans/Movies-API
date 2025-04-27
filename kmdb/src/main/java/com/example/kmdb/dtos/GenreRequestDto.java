@@ -4,7 +4,7 @@ package com.example.kmdb.dtos;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public class GenreRequestDTO {
+public class GenreRequestDto {
 
     private Long id;
     @NotBlank(message = "Genre name is required")

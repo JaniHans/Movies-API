@@ -1,7 +1,6 @@
 package com.example.kmdb.repositories;
 
-import com.example.kmdb.entities.ActorEntity;
-import com.example.kmdb.entities.GenreEntity;
+
 import com.example.kmdb.entities.MovieEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

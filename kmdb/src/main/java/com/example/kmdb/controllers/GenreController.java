@@ -1,8 +1,8 @@
 package com.example.kmdb.controllers;
 
-import com.example.kmdb.dtos.GenreRequestDTO;
-import com.example.kmdb.dtos.GenreResponseDTO;
-import com.example.kmdb.dtos.MovieResponseDTO;
+import com.example.kmdb.dtos.GenreRequestDto;
+import com.example.kmdb.dtos.GenreResponseDto;
+import com.example.kmdb.dtos.MovieResponseDto;
 import com.example.kmdb.services.GenreService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -37,8 +36,8 @@ public class GenreController {
      * POST /api/{entity}
      */
     @PostMapping
-    public ResponseEntity<GenreResponseDTO> createGenre(@Valid @RequestBody GenreRequestDTO request) {
-        GenreResponseDTO dto = genreService.createGenre(request);
+    public ResponseEntity<GenreResponseDto> createGenre(@Valid @RequestBody GenreRequestDto request) {
+        GenreResponseDto dto = genreService.createGenre(request);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest() // /api/genres
@@ -56,7 +55,7 @@ public class GenreController {
      * returns JSON - [{"id":1,"name":"Action"}, {"id":2,"name":"Comedy"}])
      */
     @GetMapping
-    public Set<GenreResponseDTO> getGenres() {
+    public Set<GenreResponseDto> getGenres() {
         return genreService.getAllGenres();
     }
 
@@ -65,7 +64,7 @@ public class GenreController {
      * retrieve a specific entity by ID
      */
     @GetMapping("/{id}")
-    public GenreResponseDTO getGenreId(@PathVariable Long id) {
+    public GenreResponseDto getGenreId(@PathVariable Long id) {
        return genreService.getGenreById(id);
     }
 
@@ -75,7 +74,7 @@ public class GenreController {
      */
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void modifyGenre(@PathVariable Long id, @Valid @RequestBody GenreRequestDTO request) {
+    public void modifyGenre(@PathVariable Long id, @Valid @RequestBody GenreRequestDto request) {
         request.setId(id);
         genreService.modifyGenresName(request);
 
@@ -87,7 +86,7 @@ public class GenreController {
      * @return
      */
     @GetMapping("/{genreId}")
-    public Set<MovieResponseDTO> filterMoviesByGenre(@PathVariable Long genreId) {
+    public Set<MovieResponseDto> filterMoviesByGenre(@PathVariable Long genreId) {
         return genreService.filterMoviesByGenre(genreId);
     }
 
@@ -96,7 +95,7 @@ public class GenreController {
      * modify path variable id
      */
     @DeleteMapping("/{id}")
-  @ResponseStatus(HttpStatus.NO_CONTENT) //  tells Spring to return 204 if the method completes successfully.
+    @ResponseStatus(HttpStatus.NO_CONTENT) //  tells Spring to return 204 if the method completes successfully.
     public ResponseEntity<Void> deleteGenre(@PathVariable Long id,
                             @RequestParam(defaultValue = "false") boolean force) {
 

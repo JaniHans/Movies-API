@@ -5,10 +5,9 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-public class ActorRequestDTO {
+public class ActorRequestDto {
 
     private Long id;
     @NotBlank(message = "Actor name is required")

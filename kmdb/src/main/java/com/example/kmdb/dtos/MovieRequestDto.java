@@ -6,10 +6,9 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
-import java.util.List;
 import java.util.Set;
 
-public class MovieRequestDTO {
+public class MovieRequestDto {
 
     private Long id;
     @NotBlank(message = "Movie title is required")
