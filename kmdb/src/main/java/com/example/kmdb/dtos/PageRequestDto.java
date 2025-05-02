@@ -7,7 +7,7 @@ import java.util.Objects;
 
 public class PageRequestDto {
 
-    public Integer getPageNo() {
+    public Integer getPageNumber() {
         return pageNumber;
     }
 
@@ -23,6 +23,8 @@ public class PageRequestDto {
         this.pageSize = pageSize;
     }
 
+
+    // automatically provides a default no-argument constructor
     private Integer pageNumber = 0;
     private Integer pageSize = 10;
 
@@ -31,7 +33,7 @@ public class PageRequestDto {
      * @return pageable object
      */
     public Pageable getPageable(PageRequestDto dto) {
-       Integer page = Objects.nonNull(dto.getPageNo()) ? dto.pageNumber : this.pageNumber;
+       Integer page = Objects.nonNull(dto.getPageNumber()) ? dto.pageNumber : this.pageNumber;
        Integer size = Objects.nonNull(dto.getPageSize()) ? dto.pageSize : this.pageSize;
       return PageRequest.of(page, size);
     }

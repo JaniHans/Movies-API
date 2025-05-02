@@ -3,8 +3,14 @@ package com.example.kmdb.controllers;
 import com.example.kmdb.dtos.ActorRequestDto;
 import com.example.kmdb.dtos.ActorResponseDto;
 import com.example.kmdb.dtos.MovieResponseDto;
+import com.example.kmdb.dtos.PageRequestDto;
+import com.example.kmdb.dtos.PageResponseDto;
+import com.example.kmdb.entities.ActorEntity;
+import com.example.kmdb.repositories.ActorRepository;
 import com.example.kmdb.services.ActorService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,6 +27,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 
 import java.net.URI;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -28,10 +35,11 @@ import java.util.Set;
 public class ActorController {
 
     private final ActorService actorService;
+    private final ActorRepository actorRepository;
 
-
-    public ActorController(ActorService actorService) {
+    public ActorController(ActorService actorService, ActorRepository actorRepository) {
         this.actorService = actorService;
+        this.actorRepository = actorRepository;
     }
     /** create a new entity
      * POST /api/{entity}
@@ -106,4 +114,13 @@ public class ActorController {
     public Set<ActorResponseDto> filterActorsByName(@RequestParam String name) {
         return actorService.filterActorsByName(name);
     }
+
+    @PostMapping
+    public Page<ActorResponseDto> getAllActorsUsingPagination(@RequestBody PageRequestDto dto) {
+      Pageable pageable = new PageRequestDto().getPageable(dto);
+        Page<ActorEntity> actorPage = actorRepository.findAll(pageable);
+        return PageResponseDto.of(actorPage.map(productMapper::toDto));
+    }
+
+
 }

@@ -2,6 +2,10 @@ package com.example.kmdb.services;
 
 import com.example.kmdb.dtos.ActorRequestDto;
 import com.example.kmdb.dtos.ActorResponseDto;
+import com.example.kmdb.dtos.PageResponseDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import com.example.kmdb.dtos.MovieResponseDto;
 import com.example.kmdb.dtos.PageRequestDto;
@@ -12,7 +16,7 @@ import com.example.kmdb.exceptions.DeleteNotAllowedException;
 import com.example.kmdb.exceptions.ResourceNotFoundException;
 import com.example.kmdb.repositories.ActorRepository;
 import com.example.kmdb.repositories.MovieRepository;
-import org.hibernate.query.Page;
+
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -35,6 +39,9 @@ public class ActorService {
     }
     private ActorResponseDto toDto(ActorEntity entity) {
         return new ActorResponseDto(entity.getId(), entity.getName(), entity.getBirthDate());
+    }
+    private Page<ActorResponseDto> toPage(Page<ActorEntity> entity) {
+
     }
     private MovieResponseDto movieToDto(MovieEntity entity) {
         return new MovieResponseDto(entity.getId(),
@@ -153,8 +160,6 @@ public class ActorService {
             actorRepository.deleteById(actorId);
         }
 
-
-
     /**
      * GET /api/actors?name={name}: Retrieve actors filtered by name
      */
@@ -172,7 +177,10 @@ public class ActorService {
      * returns a page object containing the result and basic pagination information
      * @param dto - page request data transfer object , page and size through getters
      */
-    public Page getEntitiesByPageAndFilterBySize(PageRequestDto dto) {
+    public Page<ActorResponseDto> getEntitiesByPageAndFilterBySize(PageRequestDto dto) {
+        Pageable pageable = PageRequest.of(dto.getPageNumber(), dto.getPageSize());
+        Page<ActorEntity> page = actorRepository.findAll(pageable);
+
 
     }
 }
