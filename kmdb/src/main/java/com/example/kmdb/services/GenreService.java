@@ -1,14 +1,15 @@
 package com.example.kmdb.services;
 
-import com.example.kmdb.dtos.GenreRequestDto;
-import com.example.kmdb.dtos.GenreResponseDto;
-import com.example.kmdb.dtos.MovieResponseDto;
+import com.example.kmdb.dtos.GenreDto;
+import com.example.kmdb.dtos.MovieDto;
 import com.example.kmdb.entities.GenreEntity;
 import com.example.kmdb.entities.MovieEntity;
 import com.example.kmdb.exceptions.DeleteNotAllowedException;
 import com.example.kmdb.exceptions.ResourceNotFoundException;
+import com.example.kmdb.mapper.ActorMapper;
 import com.example.kmdb.repositories.GenreRepository;
 import com.example.kmdb.repositories.MovieRepository;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.query.Page;
 import org.springframework.stereotype.Service;
 
@@ -18,41 +19,39 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class GenreService {
 
     private final GenreRepository genreRepository;
     private final MovieRepository movieRepository;
 
     private static final String GENRE_NOT_FOUND = "Genre not found by id: ";
+    private final ActorMapper actorMapper;
 
-    public GenreService(GenreRepository genreRepository, MovieRepository movieRepository) {
-        this.genreRepository = genreRepository;
-        this.movieRepository = movieRepository;
-    }
 
-    private GenreResponseDto toDto(GenreEntity entity) {
-        return new GenreResponseDto(entity.getId(), entity.getName());
-    }
-    private MovieResponseDto movieToDto(MovieEntity entity) {
-        return new MovieResponseDto(entity.getId(),
-                entity.getTitle(),
-                entity.getReleaseYear(),
-                entity.getDuration());
-    }
+//    private GenreResponseDto toDto(GenreEntity entity) {
+//        return new GenreResponseDto(entity.getId(), entity.getName());
+//    }
+//    private MovieResponseDto movieToDto(MovieEntity entity) {
+//        return new MovieResponseDto(entity.getId(),
+//                entity.getTitle(),
+//                entity.getReleaseYear(),
+//                entity.getDuration());
+//    }
     /**
      * POST /api/{genres}: Create a new entity
      * create genre and save it into the database
      * @param - genre name
      * @return - returns genre by id
      */
-    public GenreResponseDto createGenre(GenreRequestDto dto) {
+    public GenreDto createGenre(GenreRequestDto dto) {
 
         GenreEntity entity = new GenreEntity();
         entity.setName(dto.getName());
 
 
         genreRepository.save(entity);
-        return new GenreResponseDto(entity.getId(), entity.getName());
+        return new GenreDto(entity.getId(), entity.getName());
 
     }
 
@@ -60,10 +59,10 @@ public class GenreService {
      * GET /api/{genres}
      * return all genres
      */
-    public Set<GenreResponseDto> getAllGenres() {
+    public Set<GenreDto> getAllGenres() {
         return genreRepository.findAll()
                 .stream()
-                .map(this::toDto)
+                .map(actorMapper::toDto)
                 .collect(Collectors.toSet());
 
     }
@@ -74,7 +73,7 @@ public class GenreService {
      * @param - genre id
      * @return - returns genre by id
      */
-    public GenreResponseDto getGenreById(Long id) {
+    public GenreDto getGenreById(Long id) {
         return toDto(genreRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + id)));
     }
@@ -84,7 +83,7 @@ public class GenreService {
      * @param - genreId
      * @return filter a list of movies with the genre
      */
-   public Set<MovieResponseDto> filterMoviesByGenre(Long genreId) {
+   public Set<MovieDto> filterMoviesByGenre(Long genreId) {
 
         genreRepository.findById(genreId).orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + genreId));
 

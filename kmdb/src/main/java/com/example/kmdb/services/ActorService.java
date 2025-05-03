@@ -1,14 +1,14 @@
 package com.example.kmdb.services;
 
-import com.example.kmdb.dtos.ActorRequestDto;
-import com.example.kmdb.dtos.ActorResponseDto;
-import com.example.kmdb.dtos.PageResponseDto;
+import com.example.kmdb.dtos.ActorDto;
+import com.example.kmdb.dtos.PageDto;
+import com.example.kmdb.mapper.ActorMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import com.example.kmdb.dtos.MovieResponseDto;
-import com.example.kmdb.dtos.PageRequestDto;
+import com.example.kmdb.dtos.MovieDto;
 import com.example.kmdb.entities.ActorEntity;
 
 import com.example.kmdb.entities.MovieEntity;
@@ -25,30 +25,28 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor// auto create constructor that has final
 public class ActorService {
 
     private final ActorRepository actorRepository;
     private final MovieRepository movieRepository;
+    private final ActorMapper actorMapper;
 
     private static final String ACTOR_NOT_FOUND = "Actor not found by id: ";
 
-    public ActorService(ActorRepository actorRepository, MovieRepository movieRepository) {
-        this.actorRepository = actorRepository;
-        this.movieRepository = movieRepository;
 
-    }
-    private ActorResponseDto toDto(ActorEntity entity) {
-        return new ActorResponseDto(entity.getId(), entity.getName(), entity.getBirthDate());
-    }
-    private Page<ActorResponseDto> toPage(Page<ActorEntity> entity) {
-
-    }
-    private MovieResponseDto movieToDto(MovieEntity entity) {
-        return new MovieResponseDto(entity.getId(),
-                entity.getTitle(),
-                entity.getReleaseYear(),
-                entity.getDuration());
-    }
+//    private ActorResponseDto toDto(ActorEntity entity) {
+//        return new ActorResponseDto(entity.getId(), entity.getName(), entity.getBirthDate());
+//    }
+//    private Page<ActorResponseDto> toPage(Page<ActorEntity> entity) {
+//
+//    }
+//    private MovieResponseDto movieToDto(MovieEntity entity) {
+//        return new MovieResponseDto(entity.getId(),
+//                entity.getTitle(),
+//                entity.getReleaseYear(),
+//                entity.getDuration());
+//    }
 
     /**
      * takes in entity and DTO movieids to find the movies
@@ -56,7 +54,7 @@ public class ActorService {
      * @param entity
      * @param dto
      */
-    private void getAndSetMoviesToActor(ActorEntity entity, ActorRequestDto dto) {
+    private void getAndSetMoviesToActor(ActorEntity entity, ActorDto dto) {
         List<MovieEntity> movies = movieRepository.findAllById(dto.getMovieIds());
         Set<MovieEntity> moviesEntities = new HashSet<>(movies);
         entity.setMovies(moviesEntities);
@@ -65,7 +63,7 @@ public class ActorService {
     /**
      *POST /api/actors: Create a new actor entity
      */
-    public ActorResponseDto createActor(ActorRequestDto dto) {
+    public ActorDto createActor(ActorDto dto) {
         ActorEntity actor = new ActorEntity();
         actor.setName(dto.getName());
         actor.setBirthDate(dto.getBirthDate());
@@ -73,32 +71,33 @@ public class ActorService {
         getAndSetMoviesToActor(actor, dto);
         actorRepository.save(actor);
 
-        return new ActorResponseDto(dto.getId(), dto.getName(), dto.getBirthDate());
+        return new ActorDto(dto.getId(), dto.getName(), dto.getBirthDate());
 
     }
 
-    /*Implement methods to retrieve all actors,
-    *
+    /**
+     * Implement methods to retrieve all actors,
     */
-    public Set<ActorResponseDto> getActors() {
+    public Set<ActorDto> getActors() {
+
         return actorRepository.findAll()
                 .stream()
-                .map(this::toDto)
+                .map(actorMapper::toDto)
                 .collect(Collectors.toSet());
     }
 
     /**
      * get a specific actor by ID
      */
-    public ActorResponseDto getActorById(Long id) {
-       return toDto(actorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + id)));
+    public ActorDto getActorById(Long id) {
+       return actorMapper.toDto(actorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + id)));
 
     }
 
     /**  fetch all movies an actor has appeared in.
      * GET /api/movies?actor={Actor.id}
      */
-    public Set<MovieResponseDto> getMoviesWhereActorAppeared(Long actorId) {
+    public Set<MovieDto> getMoviesWhereActorAppeared(Long actorId) {
         actorRepository.findById(actorId).orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + actorId));
 
         return movieRepository.findByActorsIds(actorId)
@@ -111,18 +110,18 @@ public class ActorService {
 
 //    Lastly, ensure you can modify an existing actor's details
     /**
-     * PATCH /api/{entity}/{id}: Partially update an existing entit
+     * PATCH /api/{entity}/{id}: Partially update an existing entity
      * Modify actor's name, date of birth, and associated movies.
      * Saves the changes to the actor repository.
      */
-    public void modifyActor(ActorRequestDto dto) {
+    public void modifyActor(ActorDto dto) {
      ActorEntity actor = actorRepository
              .findById(dto.getId())
              .orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + dto.getId()));
 
      actor.setName(dto.getName());
      actor.setBirthDate(dto.getBirthDate());
-
+     actor.setId(dto.getId());
      getAndSetMoviesToActor(actor, dto);
 
     }
@@ -163,11 +162,11 @@ public class ActorService {
     /**
      * GET /api/actors?name={name}: Retrieve actors filtered by name
      */
-    public Set<ActorResponseDto> filterActorsByName(String name) {
+    public Set<ActorDto> filterActorsByName(String name) {
 
         return actorRepository.findActorEntitiesByNameContainingIgnoreCase(name)
                 .stream()
-                .map(this::toDto)
+                .map(this::)
                 .collect(Collectors.toSet());
     }
 
@@ -177,7 +176,7 @@ public class ActorService {
      * returns a page object containing the result and basic pagination information
      * @param dto - page request data transfer object , page and size through getters
      */
-    public Page<ActorResponseDto> getEntitiesByPageAndFilterBySize(PageRequestDto dto) {
+    public Page<ActorDto> getEntitiesByPageAndFilterBySize(PageDto dto) {
         Pageable pageable = PageRequest.of(dto.getPageNumber(), dto.getPageSize());
         Page<ActorEntity> page = actorRepository.findAll(pageable);
 

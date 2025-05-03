@@ -1,14 +1,17 @@
 package com.example.kmdb.dtos;
 
+import lombok.Data;
+
 import java.util.List;
 
-public class GenreResponseDto {
+@Data
+public class GenreDto {
 
     private Long id;
     private String name;
-    private List<MovieResponseDto> movies;
+    private List<MovieDto> movies;
 
-    public GenreResponseDto(Long id, String name) {
+    public GenreDto(Long id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -21,7 +24,7 @@ public class GenreResponseDto {
         return name;
     }
 
-    public List<MovieResponseDto> getMovies() {
+    public List<MovieDto> getMovies() {
         return movies;
     }
 
@@ -29,7 +32,7 @@ public class GenreResponseDto {
         this.id = id;
     }
 
-    public void setMovies(List<MovieResponseDto> movies) {
+    public void setMovies(List<MovieDto> movies) {
         this.movies = movies;
     }
 

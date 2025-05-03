@@ -1,10 +1,10 @@
 package com.example.kmdb.controllers;
 
-import com.example.kmdb.dtos.GenreRequestDto;
-import com.example.kmdb.dtos.GenreResponseDto;
-import com.example.kmdb.dtos.MovieResponseDto;
+import com.example.kmdb.dtos.GenreDto;
+import com.example.kmdb.dtos.MovieDto;
 import com.example.kmdb.services.GenreService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,20 +24,17 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/api/genres")
+@RequiredArgsConstructor // fields that have final create constructor
 public class GenreController {
     private final GenreService genreService;
 
-
-    public GenreController(GenreService genreService) {
-        this.genreService = genreService;
-    }
 
     /** create a new entity
      * POST /api/{entity}
      */
     @PostMapping
-    public ResponseEntity<GenreResponseDto> createGenre(@Valid @RequestBody GenreRequestDto request) {
-        GenreResponseDto dto = genreService.createGenre(request);
+    public ResponseEntity<GenreDto> createGenre(@Valid @RequestBody GenreRequestDto request) {
+        GenreDto dto = genreService.createGenre(request);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest() // /api/genres
@@ -55,7 +52,7 @@ public class GenreController {
      * returns JSON - [{"id":1,"name":"Action"}, {"id":2,"name":"Comedy"}])
      */
     @GetMapping
-    public Set<GenreResponseDto> getGenres() {
+    public Set<GenreDto> getGenres() {
         return genreService.getAllGenres();
     }
 
@@ -64,7 +61,7 @@ public class GenreController {
      * retrieve a specific entity by ID
      */
     @GetMapping("/{id}")
-    public GenreResponseDto getGenreId(@PathVariable Long id) {
+    public GenreDto getGenreId(@PathVariable Long id) {
        return genreService.getGenreById(id);
     }
 
@@ -86,7 +83,7 @@ public class GenreController {
      * @return
      */
     @GetMapping("/{genreId}")
-    public Set<MovieResponseDto> filterMoviesByGenre(@PathVariable Long genreId) {
+    public Set<MovieDto> filterMoviesByGenre(@PathVariable Long genreId) {
         return genreService.filterMoviesByGenre(genreId);
     }
 

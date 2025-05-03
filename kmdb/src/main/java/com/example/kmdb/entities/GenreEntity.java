@@ -2,12 +2,19 @@ package com.example.kmdb.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-@Entity // Marks this class as a JPA entity (i.e., a table in the database)
+@Entity
+@Getter
+@Setter
 public class GenreEntity {
 
 
@@ -23,25 +30,4 @@ public class GenreEntity {
     private Set<MovieEntity> movies = new HashSet<>();
 
 
-
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Set<MovieEntity> getMovies() {
-        return movies;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setMovies(Set<MovieEntity> movies) {
-        this.movies = movies;
-    }
 }

@@ -1,8 +1,7 @@
 package com.example.kmdb.services;
 
-import com.example.kmdb.dtos.ActorResponseDto;
-import com.example.kmdb.dtos.MovieRequestDto;
-import com.example.kmdb.dtos.MovieResponseDto;
+import com.example.kmdb.dtos.ActorDto;
+import com.example.kmdb.dtos.MovieDto;
 import com.example.kmdb.entities.ActorEntity;
 import com.example.kmdb.entities.GenreEntity;
 import com.example.kmdb.entities.MovieEntity;
@@ -11,6 +10,7 @@ import com.example.kmdb.exceptions.ResourceNotFoundException;
 import com.example.kmdb.repositories.ActorRepository;
 import com.example.kmdb.repositories.GenreRepository;
 import com.example.kmdb.repositories.MovieRepository;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.query.Page;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class MovieService {
 
     private final GenreRepository genreRepository;
@@ -29,11 +30,6 @@ public class MovieService {
     private static final String GENRE_NOT_FOUND = "Genre not found by id: ";
     private static final String MOVIE_NOT_FOUND = "Movie not found by id: ";
 
-    public MovieService(GenreRepository genreRepository, MovieRepository movieRepository, ActorRepository actorRepository) {
-        this.genreRepository = genreRepository;
-        this.movieRepository = movieRepository;
-        this.actorRepository = actorRepository;
-    }
 
     private void assignGenresAndActors(MovieEntity entity, MovieRequestDto dto) {
         List<GenreEntity> genreList = genreRepository.findAllById(dto.getGenreIds());
@@ -48,18 +44,18 @@ public class MovieService {
     // Movie CRUD endpoints
 
 
-    private MovieResponseDto movieToDto(MovieEntity entity) {
-        return new MovieResponseDto(entity.getId(),
-                entity.getTitle(),
-                entity.getReleaseYear(),
-                entity.getDuration());
-    }
+//    private MovieResponseDto movieToDto(MovieEntity entity) {
+//        return new MovieResponseDto(entity.getId(),
+//                entity.getTitle(),
+//                entity.getReleaseYear(),
+//                entity.getDuration());
+//    }
     /**
      * POST - movies
      * new movies with their title, release year, duration, associated genre, and actors.
      * @return
      */
-    public MovieResponseDto createMovie(MovieRequestDto dto) {
+    public MovieDto createMovie(MovieRequestDto dto) {
         MovieEntity entity = new MovieEntity();
         entity.setTitle(dto.getTitle());
         entity.setReleaseYear(dto.getReleaseYear());
@@ -73,7 +69,7 @@ public class MovieService {
 
 
 
-        return new MovieResponseDto(entity.getId(), entity.getTitle(), entity.getReleaseYear(), entity.getDuration());
+        return new MovieDto(entity.getId(), entity.getTitle(), entity.getReleaseYear(), entity.getDuration());
 
     }
 //You'll need methods to retrieve all movies,
@@ -81,7 +77,7 @@ public class MovieService {
      * Get - movies
      * return all movies
      */
-    public Set<MovieResponseDto> getAllMovies() {
+    public Set<MovieDto> getAllMovies() {
         return movieRepository.findAll().stream()
                 .map(this::movieToDto)
                 .collect(Collectors.toSet());
@@ -95,7 +91,7 @@ public class MovieService {
      * @param - genre id
      * @return - returns genre by id
      */
-    public MovieResponseDto getMovieById(Long id) {
+    public MovieDto getMovieById(Long id) {
        return movieToDto(movieRepository.findById(id).orElseThrow(() -> new RuntimeException("Movie not found by that id: " + id)));
 
     }
@@ -108,7 +104,7 @@ public class MovieService {
      * @param - genreId
      * @return filter a list of movies with the genre
      */
-    public Set<MovieResponseDto> getMoviesByGenre(Long genreId) {
+    public Set<MovieDto> getMoviesByGenre(Long genreId) {
 
         genreRepository.findById(genreId).orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + genreId));
 
@@ -123,7 +119,7 @@ public class MovieService {
      * GET /api/movies?year={releaseYear}: Retrieve movies filtered by release year
      * filter or release year.
      */
-    public Set<MovieResponseDto> filterByYear(int releaseYear) {
+    public Set<MovieDto> filterByYear(int releaseYear) {
         return movieRepository.findByReleaseYear(releaseYear)
                 .stream()
                 .map(this::movieToDto)
@@ -147,8 +143,8 @@ public class MovieService {
     /**
      * Don't forget to implement a way to get all actors in a specific movie.
      */
-    public Set<ActorResponseDto> getAllActorsInMovie(Long movieId) {
-        MovieResponseDto movie = movieToDto(movieRepository.findById(movieId).orElseThrow(() -> new ResourceNotFoundException(MOVIE_NOT_FOUND + movieId)));
+    public Set<ActorDto> getAllActorsInMovie(Long movieId) {
+        MovieDto movie = movieToDto(movieRepository.findById(movieId).orElseThrow(() -> new ResourceNotFoundException(MOVIE_NOT_FOUND + movieId)));
         return movie.getActors();
 
     }

@@ -1,16 +1,14 @@
 package com.example.kmdb.controllers;
 
-import com.example.kmdb.dtos.ActorRequestDto;
-import com.example.kmdb.dtos.ActorResponseDto;
-import com.example.kmdb.dtos.MovieResponseDto;
-import com.example.kmdb.dtos.PageRequestDto;
-import com.example.kmdb.dtos.PageResponseDto;
-import com.example.kmdb.entities.ActorEntity;
-import com.example.kmdb.repositories.ActorRepository;
+import com.example.kmdb.dtos.ActorDto;
+import com.example.kmdb.dtos.MovieDto;
+
 import com.example.kmdb.services.ActorService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,26 +25,21 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 
 import java.net.URI;
-import java.util.List;
 import java.util.Set;
 
 @RestController
 @RequestMapping("/api/actors")
+@RequiredArgsConstructor // fields that have final create constructor
 public class ActorController {
 
     private final ActorService actorService;
-    private final ActorRepository actorRepository;
 
-    public ActorController(ActorService actorService, ActorRepository actorRepository) {
-        this.actorService = actorService;
-        this.actorRepository = actorRepository;
-    }
     /** create a new entity
      * POST /api/{entity}
      */
     @PostMapping
-    public ResponseEntity<ActorResponseDto> createActor(@Valid @RequestBody ActorRequestDto requestDTO) {
-        ActorResponseDto dto = actorService.createActor(requestDTO);
+    public ResponseEntity<ActorDto> createActor(@Valid @RequestBody ActorDto requestDTO) {
+        ActorDto dto = actorService.createActor(requestDTO);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest() // /api/genres
@@ -63,7 +56,7 @@ public class ActorController {
      * returns JSON - [{"id":1,"name":"Action"}, {"id":2,"name":"Comedy"}])
      */
     @GetMapping
-    public Set<ActorResponseDto> getActors() {
+    public Set<ActorDto> getActors() {
         return actorService.getActors();
     }
     /**
@@ -72,14 +65,14 @@ public class ActorController {
      * @return - returns genre by id
      */
     @GetMapping("/{id}")
-    public ActorResponseDto getActorById(@PathVariable Long id) {
+    public ActorDto getActorById(@PathVariable Long id) {
         return actorService.getActorById(id);
     }
     /**
      * GET /api/movies?actor={Actor.id}: Retrieve movies that the actor with the given id has starred in
      */
     @GetMapping(params = "actor")
-    public Set<MovieResponseDto> getMoviesActorStarred(@RequestParam("actor") Long actorId) {
+    public Set<MovieDto> getMoviesActorStarred(@RequestParam("actor") Long actorId) {
         return actorService.getMoviesWhereActorAppeared(actorId);
     }
     /**
@@ -87,9 +80,9 @@ public class ActorController {
      * modify path variable id
      */
     @PatchMapping("/{id}")
-    public void modifyActor(@PathVariable Long id, @RequestBody ActorRequestDto request) {
-        request.setId(id);
-        actorService.modifyActor(request);
+    public void modifyActor(@PathVariable Long id, @RequestBody ActorDto dto) {
+
+        actorService.modifyActor(dto);
     }
 
     /**
@@ -111,15 +104,13 @@ public class ActorController {
      * GET /api/actors?name={name}: Retrieve actors filtered by name
      */
     @GetMapping("/api/actors")
-    public Set<ActorResponseDto> filterActorsByName(@RequestParam String name) {
+    public Set<ActorDto> filterActorsByName(@RequestParam String name) {
         return actorService.filterActorsByName(name);
     }
 
     @PostMapping
-    public Page<ActorResponseDto> getAllActorsUsingPagination(@RequestBody PageRequestDto dto) {
-      Pageable pageable = new PageRequestDto().getPageable(dto);
-        Page<ActorEntity> actorPage = actorRepository.findAll(pageable);
-        return PageResponseDto.of(actorPage.map(productMapper::toDto));
+    public Page<ActorDto> getAllActorsUsingPagination(@RequestBody PageRequest dto) {
+
     }
 
 

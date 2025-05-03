@@ -1,27 +1,13 @@
 package com.example.kmdb.dtos;
 
-import org.springframework.data.domain.PageRequest;
+import lombok.Data;
 import org.springframework.data.domain.Pageable;
 
 import java.util.Objects;
 
-public class PageResponseDto {
+@Data
+public class PageDto {
 
-    public Integer getPageNumber() {
-        return pageNumber;
-    }
-
-    public Integer getPageSize() {
-        return pageSize;
-    }
-
-    public void setPageNo(Integer pageNo) {
-        this.pageNumber = pageNo;
-    }
-
-    public void setPageSize(Integer pageSize) {
-        this.pageSize = pageSize;
-    }
 
 
     // automatically provides a default no-argument constructor
@@ -32,10 +18,8 @@ public class PageResponseDto {
      * @param dto - page number and size through ternary not null object check
      * @return pageable object
      */
-    public Pageable getPageable(PageResponseDto dto) {
+    public Pageable getPageable(PageDto dto) {
         Integer page = Objects.nonNull(dto.getPageNumber()) ? getPageNumber() : this.pageNumber;
         Integer size = Objects.nonNull(dto.getPageNumber()) ? getPageSize() : this.pageSize;
-
-        return new P
     }
 }

@@ -1,19 +1,22 @@
 package com.example.kmdb.dtos;
 
+import lombok.Data;
+
 import java.util.HashSet;
 import java.util.Set;
 
-public class MovieResponseDto {
+@Data
+public class MovieDto {
 
     private Long id;
     private String title;
     private int releaseYear;
     private int duration;
 
-    private Set<GenreResponseDto> genres = new HashSet<>();
-    private Set<ActorResponseDto> actors = new HashSet<>();
+    private Set<GenreDto> genres = new HashSet<>();
+    private Set<ActorDto> actors = new HashSet<>();
 
-    public MovieResponseDto(Long id, String title, int releaseYear, int duration) {
+    public MovieDto(Long id, String title, int releaseYear, int duration) {
         this.id = id;
         this.title = title;
         this.releaseYear = releaseYear;
@@ -45,16 +48,16 @@ public class MovieResponseDto {
     public void setDuration(int duration) {
         this.duration = duration;
     }
-    public Set<GenreResponseDto> getGenres() {
+    public Set<GenreDto> getGenres() {
         return genres;
     }
-    public void setGenres(Set<GenreResponseDto> genres) {
+    public void setGenres(Set<GenreDto> genres) {
         this.genres = genres;
     }
-    public Set<ActorResponseDto> getActors() {
+    public Set<ActorDto> getActors() {
         return actors;
     }
-    public void setActors(Set<ActorResponseDto> actors) {
+    public void setActors(Set<ActorDto> actors) {
         this.actors = actors;
     }
 
