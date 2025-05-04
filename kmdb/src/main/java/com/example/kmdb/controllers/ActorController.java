@@ -3,6 +3,7 @@ package com.example.kmdb.controllers;
 import com.example.kmdb.dtos.ActorDto;
 import com.example.kmdb.dtos.MovieDto;
 
+import com.example.kmdb.dtos.create.CreateActorDto;
 import com.example.kmdb.services.ActorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 
 import java.net.URI;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -38,25 +40,15 @@ public class ActorController {
      * POST /api/{entity}
      */
     @PostMapping
-    public ResponseEntity<ActorDto> createActor(@Valid @RequestBody ActorDto requestDTO) {
-        ActorDto dto = actorService.createActor(requestDTO);
+    public ResponseEntity<ActorDto> createActor(@Valid @RequestBody CreateActorDto createActor) {
 
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest() // /api/genres
-                .path("/{id}")
-                .buildAndExpand(dto.getId()) // replace {id} with the generated ID
-                .toUri();
-
-        return ResponseEntity
-                .created(location) // sets 201 and location header
-                .body(dto);
 }
     /** retrieve all entities
      * GET /api/{entity}:
      * returns JSON - [{"id":1,"name":"Action"}, {"id":2,"name":"Comedy"}])
      */
     @GetMapping
-    public Set<ActorDto> getActors() {
+    public List<ActorDto> getActors() {
         return actorService.getActors();
     }
     /**
@@ -72,7 +64,7 @@ public class ActorController {
      * GET /api/movies?actor={Actor.id}: Retrieve movies that the actor with the given id has starred in
      */
     @GetMapping(params = "actor")
-    public Set<MovieDto> getMoviesActorStarred(@RequestParam("actor") Long actorId) {
+    public List<MovieDto> getMoviesActorStarred(@RequestParam("actor") Long actorId) {
         return actorService.getMoviesWhereActorAppeared(actorId);
     }
     /**
@@ -104,7 +96,7 @@ public class ActorController {
      * GET /api/actors?name={name}: Retrieve actors filtered by name
      */
     @GetMapping("/api/actors")
-    public Set<ActorDto> filterActorsByName(@RequestParam String name) {
+    public List<ActorDto> filterActorsByName(@RequestParam String name) {
         return actorService.filterActorsByName(name);
     }
 

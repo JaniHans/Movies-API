@@ -2,8 +2,10 @@ package com.example.kmdb.services;
 
 import com.example.kmdb.dtos.ActorDto;
 import com.example.kmdb.dtos.PageDto;
+import com.example.kmdb.dtos.create.CreateActorDto;
 import com.example.kmdb.mapper.ActorMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,14 +19,15 @@ import com.example.kmdb.exceptions.ResourceNotFoundException;
 import com.example.kmdb.repositories.ActorRepository;
 import com.example.kmdb.repositories.MovieRepository;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor// auto create constructor that has final
 public class ActorService {
 
@@ -34,56 +37,43 @@ public class ActorService {
 
     private static final String ACTOR_NOT_FOUND = "Actor not found by id: ";
 
-
-//    private ActorResponseDto toDto(ActorEntity entity) {
-//        return new ActorResponseDto(entity.getId(), entity.getName(), entity.getBirthDate());
-//    }
-//    private Page<ActorResponseDto> toPage(Page<ActorEntity> entity) {
-//
-//    }
-//    private MovieResponseDto movieToDto(MovieEntity entity) {
-//        return new MovieResponseDto(entity.getId(),
-//                entity.getTitle(),
-//                entity.getReleaseYear(),
-//                entity.getDuration());
-//    }
-
     /**
      * takes in entity and DTO movieids to find the movies
      * and sets entity correctly with the movies
      * @param entity
      * @param dto
      */
-    private void getAndSetMoviesToActor(ActorEntity entity, ActorDto dto) {
+    private void getAndSetMoviesToActor(ActorEntity entity, CreateActorDto dto) {
         List<MovieEntity> movies = movieRepository.findAllById(dto.getMovieIds());
-        Set<MovieEntity> moviesEntities = new HashSet<>(movies);
+        List<MovieEntity> moviesEntities = new ArrayList<>(movies);
         entity.setMovies(moviesEntities);
     }
 
     /**
      *POST /api/actors: Create a new actor entity
      */
-    public ActorDto createActor(ActorDto dto) {
-        ActorEntity actor = new ActorEntity();
-        actor.setName(dto.getName());
-        actor.setBirthDate(dto.getBirthDate());
-        // helper function
-        getAndSetMoviesToActor(actor, dto);
-        actorRepository.save(actor);
+    public ResponseEntity<ActorDto> createActor(CreateActorDto createDto) {
 
-        return new ActorDto(dto.getId(), dto.getName(), dto.getBirthDate());
+        log.info("createActor {}, {}, {}", createDto.getId(), createDto.getName(), createDto.getBirthDate());
+
+        ActorEntity actorEntity = actorRepository.save(actorMapper.toEntity(createDto));
+
+        // helper function
+        getAndSetMoviesToActor(actorEntity, createDto);
+
+        return ResponseEntity.ok(actorMapper.toDto(actorEntity));
 
     }
 
     /**
      * Implement methods to retrieve all actors,
     */
-    public Set<ActorDto> getActors() {
+    public List<ActorDto> getActors() {
 
         return actorRepository.findAll()
                 .stream()
                 .map(actorMapper::toDto)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
     /**
@@ -97,7 +87,7 @@ public class ActorService {
     /**  fetch all movies an actor has appeared in.
      * GET /api/movies?actor={Actor.id}
      */
-    public Set<MovieDto> getMoviesWhereActorAppeared(Long actorId) {
+    public List<MovieDto> getMoviesWhereActorAppeared(Long actorId) {
         actorRepository.findById(actorId).orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + actorId));
 
         return movieRepository.findByActorsIds(actorId)
@@ -151,7 +141,7 @@ public class ActorService {
         if (force) {
             // reference to movie entity objects
         }
-            Set<MovieEntity> temporaryMovies = new HashSet<>(actor.getMovies());
+        List<MovieEntity> temporaryMovies = new ArrayList<>(actor.getMovies());
 
             for (MovieEntity movie : temporaryMovies) {
                 movie.getActors().remove(actor);
@@ -162,12 +152,12 @@ public class ActorService {
     /**
      * GET /api/actors?name={name}: Retrieve actors filtered by name
      */
-    public Set<ActorDto> filterActorsByName(String name) {
+    public List<ActorDto> filterActorsByName(String name) {
 
         return actorRepository.findActorEntitiesByNameContainingIgnoreCase(name)
                 .stream()
                 .map(this::)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
     /**

@@ -1,13 +1,13 @@
 package com.example.kmdb.dtos;
 
 import lombok.Data;
-import lombok.Getter;
 
-import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+
+import java.util.List;
+
 @Data
 
 public class ActorDto {
@@ -15,6 +15,6 @@ public class ActorDto {
     private final Long id;
     private final String name;
     private final LocalDate birthDate;
-    private final Set<MovieDto> movies = new HashSet<>();
+    private final List<Long> movieIds = new ArrayList<>();
 
 }

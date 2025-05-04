@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -52,7 +53,7 @@ public class GenreController {
      * returns JSON - [{"id":1,"name":"Action"}, {"id":2,"name":"Comedy"}])
      */
     @GetMapping
-    public Set<GenreDto> getGenres() {
+    public List<GenreDto> getGenres() {
         return genreService.getAllGenres();
     }
 
@@ -71,7 +72,7 @@ public class GenreController {
      */
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void modifyGenre(@PathVariable Long id, @Valid @RequestBody GenreRequestDto request) {
+    public void modifyGenre(@PathVariable Long id, @Valid @RequestBody GenreDto request) {
         request.setId(id);
         genreService.modifyGenresName(request);
 
@@ -83,7 +84,7 @@ public class GenreController {
      * @return
      */
     @GetMapping("/{genreId}")
-    public Set<MovieDto> filterMoviesByGenre(@PathVariable Long genreId) {
+    public List<MovieDto> filterMoviesByGenre(@PathVariable Long genreId) {
         return genreService.filterMoviesByGenre(genreId);
     }
 

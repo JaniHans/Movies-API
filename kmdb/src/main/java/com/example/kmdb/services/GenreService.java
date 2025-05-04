@@ -13,9 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.query.Page;
 import org.springframework.stereotype.Service;
 
-
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,7 +43,7 @@ public class GenreService {
      * @param - genre name
      * @return - returns genre by id
      */
-    public GenreDto createGenre(GenreRequestDto dto) {
+    public GenreDto createGenre(GenreDto dto) {
 
         GenreEntity entity = new GenreEntity();
         entity.setName(dto.getName());
@@ -59,7 +58,7 @@ public class GenreService {
      * GET /api/{genres}
      * return all genres
      */
-    public Set<GenreDto> getAllGenres() {
+    public List<GenreDto> getAllGenres() {
         return genreRepository.findAll()
                 .stream()
                 .map(actorMapper::toDto)
@@ -83,7 +82,7 @@ public class GenreService {
      * @param - genreId
      * @return filter a list of movies with the genre
      */
-   public Set<MovieDto> filterMoviesByGenre(Long genreId) {
+   public List<MovieDto> filterMoviesByGenre(Long genreId) {
 
         genreRepository.findById(genreId).orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + genreId));
 
@@ -98,7 +97,7 @@ public class GenreService {
      * @param - genreId and genre new Name
      * modify genres name with the newname, save to genre repository
      */
-    public void modifyGenresName(GenreRequestDto dto) {
+    public void modifyGenresName(GenreDto dto) {
 
         GenreEntity entity = genreRepository.findById(dto.getId()).orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + dto.getId()));
         entity.setName(dto.getName());
@@ -132,7 +131,7 @@ public class GenreService {
         if (force) {
 
             // reference to movie entity objects
-            Set<MovieEntity> temporaryMovies = new HashSet<>(genre.getMovies());
+            List<MovieEntity> temporaryMovies = new ArrayList<>(genre.getMovies());
 
             for (MovieEntity movies : temporaryMovies) {
                 // modify the real MovieEntity objects through Hibernate persistence context
@@ -141,7 +140,6 @@ public class GenreService {
 
             genreRepository.deleteById(id);
         }
-
 
     }
     /**

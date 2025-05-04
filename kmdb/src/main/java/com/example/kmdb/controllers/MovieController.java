@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -33,7 +34,7 @@ public class MovieController {
      * POST /api/{entity}
      */
     @PostMapping
-    public ResponseEntity<MovieDto> createMovie(@Valid @RequestBody MovieRequestDto requestDTO) {
+    public ResponseEntity<MovieDto> createMovie(@Valid @RequestBody MovieDto requestDTO) {
     MovieDto dto = movieService.createMovie(requestDTO);
 
         URI location = ServletUriComponentsBuilder
@@ -51,7 +52,7 @@ public class MovieController {
      * returns JSON - [{"id":1,"name":"Action"}, {"id":2,"name":"Comedy"}])
      */
     @GetMapping
-    public Set<MovieDto> getMovies() {
+    public List<MovieDto> getMovies() {
         return movieService.getAllMovies();
     }
     /**
@@ -67,7 +68,7 @@ public class MovieController {
      * retrieve a specific entity by ID
      */
     @PatchMapping("/{id}")
-    public void modifyMovie(@PathVariable Long id, @RequestBody MovieRequestDto requestDTO) {
+    public void modifyMovie(@PathVariable Long id, @RequestBody MovieDto requestDTO) {
         requestDTO.setId(id);
         movieService.modifyMovie(requestDTO);
     }
@@ -93,7 +94,7 @@ public class MovieController {
      */
     @GetMapping(params = "genre")
     // Only accept the request if there is a query parameter called genreId present.
-    public Set<MovieDto> getMoviesByGenre(@RequestParam("genre") Long genreId) {
+    public List<MovieDto> getMoviesByGenre(@RequestParam("genre") Long genreId) {
         return movieService.getMoviesByGenre(genreId);
     }
     /**
@@ -102,7 +103,7 @@ public class MovieController {
      * RequestParam - Binds from the URL query string
      */
     @GetMapping(params = "releaseYear")
-    public Set<MovieDto> filterByYear(@RequestParam int releaseYear) {
+    public List<MovieDto> filterByYear(@RequestParam int releaseYear) {
         return movieService.filterByYear(releaseYear);
     }
 
@@ -111,7 +112,7 @@ public class MovieController {
      * returns all actors that belong to a specific movie
      */
     @GetMapping("/{id}/actors") // This is a nested resource.
-    public Set<ActorDto> getActorsInMovie(@PathVariable Long id) {
+    public List<ActorDto> getActorsInMovie(@PathVariable Long id) {
         return movieService.getAllActorsInMovie(id);
     }
 

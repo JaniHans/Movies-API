@@ -77,10 +77,10 @@ public class MovieService {
      * Get - movies
      * return all movies
      */
-    public Set<MovieDto> getAllMovies() {
+    public List<MovieDto> getAllMovies() {
         return movieRepository.findAll().stream()
                 .map(this::movieToDto)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
 
@@ -104,14 +104,14 @@ public class MovieService {
      * @param - genreId
      * @return filter a list of movies with the genre
      */
-    public Set<MovieDto> getMoviesByGenre(Long genreId) {
+    public List<MovieDto> getMoviesByGenre(Long genreId) {
 
         genreRepository.findById(genreId).orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + genreId));
 
         return movieRepository.findMovieEntitiesByGenreIds(genreId)
                 .stream()
                 .map(this::movieToDto)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
 
     }
 
@@ -119,11 +119,11 @@ public class MovieService {
      * GET /api/movies?year={releaseYear}: Retrieve movies filtered by release year
      * filter or release year.
      */
-    public Set<MovieDto> filterByYear(int releaseYear) {
+    public List<MovieDto> filterByYear(int releaseYear) {
         return movieRepository.findByReleaseYear(releaseYear)
                 .stream()
                 .map(this::movieToDto)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
     /**
      * /Updating a movie's details (including its title, release year, duration, genre, and actors)
@@ -143,7 +143,7 @@ public class MovieService {
     /**
      * Don't forget to implement a way to get all actors in a specific movie.
      */
-    public Set<ActorDto> getAllActorsInMovie(Long movieId) {
+    public List<ActorDto> getAllActorsInMovie(Long movieId) {
         MovieDto movie = movieToDto(movieRepository.findById(movieId).orElseThrow(() -> new ResourceNotFoundException(MOVIE_NOT_FOUND + movieId)));
         return movie.getActors();
 

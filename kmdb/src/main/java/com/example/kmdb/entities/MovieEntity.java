@@ -12,8 +12,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
+import java.util.List;
 import java.util.Set;
 @Entity
 @Getter
@@ -37,7 +39,7 @@ public class MovieEntity {
             joinColumns = @JoinColumn(name = "movie_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
-    private Set<GenreEntity> genres = new HashSet<>();
+    private List<GenreEntity> genres = new ArrayList<>();
 
     // Movie ↔ Actor
     @ManyToMany
@@ -47,7 +49,7 @@ public class MovieEntity {
             inverseJoinColumns = @JoinColumn(name = "actor_id")
     )
 
-    private Set<ActorEntity> actors = new HashSet<>();
+    private List<ActorEntity> actors = new ArrayList<>();
 
 // Lombok no need gfor setters and getters
 //    public String getTitle() {
