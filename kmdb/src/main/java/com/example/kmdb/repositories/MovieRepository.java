@@ -11,10 +11,10 @@ import java.util.Set;
 public interface MovieRepository extends JpaRepository<MovieEntity, Long> {
 
     @Query("SELECT m FROM MovieEntity m JOIN m.genres g WHERE g.id = :id")
-    Set<MovieEntity> findMovieEntitiesByGenreIds(Long id);
+    List<MovieEntity> findMovieEntitiesByGenreIds(Long id);
 
     List<MovieEntity> findByReleaseYear(int releaseYear);
 
     @Query("SELECT m FROM MovieEntity m JOIN m.actors g WHERE g.id = :id")
-   Set<MovieEntity> findByActorsIds(Long Id);
+   List<MovieEntity> findByActorsIds(Long Id);
 }

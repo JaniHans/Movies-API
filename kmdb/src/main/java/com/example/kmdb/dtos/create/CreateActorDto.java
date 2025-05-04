@@ -16,8 +16,6 @@ import java.util.List;
 @NoArgsConstructor
 public class CreateActorDto {
 
-    @NotNull
-    private Long id;
 
     @NotNull
     private String name;

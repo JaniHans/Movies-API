@@ -27,7 +27,7 @@ public class GenreEntity {
     @ManyToMany(mappedBy = "genres") // inverse side of Movie-Genre
     // This is the inverse side of the Many-to-Many relationship (Movie owns the relation)
     @JsonIgnore
-    private List<MovieEntity> movies = new ArrayList<>();;
+    private List<MovieEntity> movies = new ArrayList<>();
 
 
 }

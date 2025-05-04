@@ -4,6 +4,7 @@ import com.example.kmdb.dtos.ActorDto;
 import com.example.kmdb.dtos.PageDto;
 import com.example.kmdb.dtos.create.CreateActorDto;
 import com.example.kmdb.mapper.ActorMapper;
+import com.example.kmdb.mapper.MovieMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -19,7 +20,7 @@ import com.example.kmdb.exceptions.ResourceNotFoundException;
 import com.example.kmdb.repositories.ActorRepository;
 import com.example.kmdb.repositories.MovieRepository;
 
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class ActorService {
     private final ActorRepository actorRepository;
     private final MovieRepository movieRepository;
     private final ActorMapper actorMapper;
+    private final MovieMapper movieMapper;
 
     private static final String ACTOR_NOT_FOUND = "Actor not found by id: ";
 
@@ -50,29 +52,25 @@ public class ActorService {
     }
 
     /**
-     *POST /api/actors: Create a new actor entity
+     * POST /api/actor: Create a new actor entity
      */
-    public ResponseEntity<ActorDto> createActor(CreateActorDto createDto) {
-
-        log.info("createActor {}, {}, {}", createDto.getId(), createDto.getName(), createDto.getBirthDate());
-
+    public ActorDto createActor(CreateActorDto createDto) {
+        log.info("createActor {}, {}", createDto.getName(), createDto.getBirthDate());
         ActorEntity actorEntity = actorRepository.save(actorMapper.toEntity(createDto));
-
         // helper function
         getAndSetMoviesToActor(actorEntity, createDto);
-
-        return ResponseEntity.ok(actorMapper.toDto(actorEntity));
-
+        actorRepository.save(actorEntity);
+        return actorMapper.toActorDto(actorEntity);
     }
-
     /**
-     * Implement methods to retrieve all actors,
+     *
+     *Implement methods to retrieve all actors,
     */
     public List<ActorDto> getActors() {
-
+        log.info("Retrieving all actors");
         return actorRepository.findAll()
                 .stream()
-                .map(actorMapper::toDto)
+                .map(actorMapper::toActorDto)
                 .collect(Collectors.toList());
     }
 
@@ -80,11 +78,11 @@ public class ActorService {
      * get a specific actor by ID
      */
     public ActorDto getActorById(Long id) {
-       return actorMapper.toDto(actorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + id)));
+       return actorMapper.toActorDto(actorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + id)));
 
     }
 
-    /**  fetch all movies an actor has appeared in.
+    /**fetch all movies an actor has appeared in.
      * GET /api/movies?actor={Actor.id}
      */
     public List<MovieDto> getMoviesWhereActorAppeared(Long actorId) {
@@ -92,8 +90,8 @@ public class ActorService {
 
         return movieRepository.findByActorsIds(actorId)
                 .stream()
-                .map(this::movieToDto)
-                .collect(Collectors.toSet());
+                .map(movieMapper::toMovieDto)
+                .collect(Collectors.toList());
 
     }
 
@@ -170,7 +168,7 @@ public class ActorService {
         Pageable pageable = PageRequest.of(dto.getPageNumber(), dto.getPageSize());
         Page<ActorEntity> page = actorRepository.findAll(pageable);
 
-
+        return null;
     }
 }
 

@@ -30,22 +30,23 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/api/actors")
+@RequestMapping("/api/actor")
 @RequiredArgsConstructor // fields that have final create constructor
 public class ActorController {
 
     private final ActorService actorService;
 
     /** create a new entity
-     * POST /api/{entity}
+     * POST/api/actor
      */
     @PostMapping
-    public ResponseEntity<ActorDto> createActor(@Valid @RequestBody CreateActorDto createActor) {
+    public ResponseEntity<ActorDto> createActor(@Valid @RequestBody CreateActorDto createActorDto) {
 
+        return ResponseEntity.ok(actorService.createActor(createActorDto));
 }
-    /** retrieve all entities
+    /** retrieve all actors
      * GET /api/{entity}:
-     * returns JSON - [{"id":1,"name":"Action"}, {"id":2,"name":"Comedy"}])
+     *
      */
     @GetMapping
     public List<ActorDto> getActors() {
