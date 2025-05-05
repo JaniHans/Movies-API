@@ -188,16 +188,6 @@ public class MovieService {
         movieRepository.deleteById(movieId);
 
     }
-    /**
-     * Implements pagination for GET requests that return multiple entities.
-     * GET /api/movies?page=0&size=10
-     * returns a page object containing the result and basic pagination information
-     * @param page, size
-     */
-    public Page getEntitiesByPageAndFilterBySize(Integer page, Integer size) {
-
-    }
-
 
     }
 

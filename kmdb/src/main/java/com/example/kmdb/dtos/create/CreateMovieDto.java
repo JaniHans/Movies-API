@@ -15,6 +15,6 @@ public class CreateMovieDto {
     private String title;
     private int releaseYear;
     private int duration;
-    private List<GenreEntity> genres = new ArrayList<>();
-    private List<ActorEntity> actors = new ArrayList<>();
+    private List<Long> genresIds = new ArrayList<>();
+    private List<Long> actorsIds = new ArrayList<>();
 }

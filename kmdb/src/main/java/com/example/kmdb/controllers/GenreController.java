@@ -71,9 +71,9 @@ public class GenreController {
      */
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void modifyGenre(@PathVariable Long id, @Valid @RequestBody GenreDto request) {
-        request.setId(id);
-        genreService.modifyGenresName(request);
+    public void modifyGenre(@PathVariable Long id, @Valid @RequestBody CreateGenreDto request) {
+
+        genreService.modifyGenresName(id, request);
 
     }
 
@@ -83,8 +83,10 @@ public class GenreController {
      * @return
      */
     @GetMapping("/{genreId}")
-    public List<MovieDto> filterMoviesByGenre(@PathVariable Long genreId) {
-        return genreService.filterMoviesByGenre(genreId);
+    public ResponseEntity<Page<MovieDto>> filterMoviesByGenre(@PathVariable Long genreId, Pageable pageable) {
+       Page<MovieDto> movies =  genreService.filterMoviesByGenre(genreId, pageable);
+
+        return ResponseEntity.ok(movies);
     }
 
     /**

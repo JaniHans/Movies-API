@@ -9,6 +9,7 @@ import com.example.kmdb.dtos.create.CreateActorDto;
 import com.example.kmdb.mapper.ActorMapper;
 import com.example.kmdb.repositories.ActorRepository;
 import com.example.kmdb.services.ActorService;
+import com.example.kmdb.services.GenreService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -39,6 +40,7 @@ public class ActorController {
     private final ActorService actorService;
     private final ActorRepository actorRepository;
     private final ActorMapper actorMapper;
+    private final GenreService genreService;
 
     /** create a new entity
      * POST/api/actor
@@ -65,14 +67,15 @@ public class ActorController {
      * @return - returns genre by id
      */
     @GetMapping("/{id}")
-    public ActorDto getActorById(@PathVariable Long id) {
-        return actorService.getActorById(id);
+    public ResponseEntity<ActorDto> getActorById(@PathVariable Long id) {
+        ActorDto actor = actorService.getActorById(id);
+        return ResponseEntity.ok(actor);
     }
     /**
      * GET /api/movies?actor={Actor.id}: Retrieve movies that the actor with the given id has starred in
      */
     @GetMapping(params = "actor")
-    public ResponseEntity<Page<MovieDto>> getMoviesActorStarred(@RequestParam("actor") Long actorId, Pageable pageable) {
+    public ResponseEntity<Page<MovieDto>> filterMoviesActorStarred(@RequestParam("actor") Long actorId, Pageable pageable) {
         Page<MovieDto> movies =  actorService.getMoviesWhereActorAppeared(actorId, pageable);
 
         return ResponseEntity.ok(movies);
@@ -84,7 +87,7 @@ public class ActorController {
     @PatchMapping("/{id}")
     public void modifyActor(@PathVariable Long id, @RequestBody CreateActorDto actorDto) {
 
-        actorService.modifyActor(id , actorDto);
+        actorService.modifyActor(id, actorDto);
     }
 
     /**

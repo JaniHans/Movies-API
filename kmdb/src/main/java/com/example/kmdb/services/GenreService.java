@@ -86,7 +86,7 @@ public class GenreService {
      * @param - genreId
      * @return filter a list of movies with the genre
      */
-   public Page<MovieDto> filterMoviesByGenre(Long genreId,Pageable pageable) {
+   public Page<MovieDto> filterMoviesByGenre(Long genreId, Pageable pageable) {
 
         genreRepository.findById(genreId).orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + genreId));
 
