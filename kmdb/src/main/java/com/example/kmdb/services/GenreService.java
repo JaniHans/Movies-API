@@ -2,6 +2,7 @@ package com.example.kmdb.services;
 
 import com.example.kmdb.dtos.GenreDto;
 import com.example.kmdb.dtos.MovieDto;
+import com.example.kmdb.dtos.create.CreateGenreDto;
 import com.example.kmdb.entities.GenreEntity;
 import com.example.kmdb.entities.MovieEntity;
 import com.example.kmdb.exceptions.DeleteNotAllowedException;
@@ -38,10 +39,10 @@ public class GenreService {
      * @param - genre name
      * @return - returns genre by id
      */
-    public GenreDto createGenre(GenreDto dto) {
+    public GenreDto createGenre(CreateGenreDto dto) {
 
-        GenreEntity entity = new GenreEntity();
-        entity.setName(dto.getName());
+        GenreEntity entity = genreRepository.save(genreMapper.toEntity(dto));
+
 
         genreRepository.save(entity);
         log.info("createGenre() {}, {}", dto.getName(), dto.getMovies());

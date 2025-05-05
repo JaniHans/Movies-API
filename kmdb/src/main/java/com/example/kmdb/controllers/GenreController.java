@@ -2,6 +2,8 @@ package com.example.kmdb.controllers;
 
 import com.example.kmdb.dtos.GenreDto;
 import com.example.kmdb.dtos.MovieDto;
+import com.example.kmdb.dtos.create.CreateGenreDto;
+import com.example.kmdb.entities.GenreEntity;
 import com.example.kmdb.services.GenreService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +39,9 @@ public class GenreController {
      * POST /api/{entity}
      */
     @PostMapping
-    public ResponseEntity<GenreDto> createGenre(@Valid @RequestBody GenreRequestDto request) {
+    public ResponseEntity<GenreDto> createGenre(@Valid @RequestBody CreateGenreDto request) {
+
+        return ResponseEntity.ok(genreService.createGenre(request));
 
     }
 
