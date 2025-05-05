@@ -18,7 +18,7 @@ public interface ActorMapper {
     ActorDto toActorDto(ActorEntity actorEntity);
     ActorEntity toEntity(ActorDto actorDto);
     ActorEntity toEntity(CreateActorDto actorDto);
-    Page<ActorDto> pagetoDto(Page <ActorEntity> pageActorEntity);
+
     List<ActorDto> toActorDtoList(List<ActorEntity> actorEntityList);
 
 }

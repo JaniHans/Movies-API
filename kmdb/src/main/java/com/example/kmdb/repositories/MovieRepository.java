@@ -2,6 +2,8 @@ package com.example.kmdb.repositories;
 
 
 import com.example.kmdb.entities.MovieEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -17,4 +19,7 @@ public interface MovieRepository extends JpaRepository<MovieEntity, Long> {
 
     @Query("SELECT m FROM MovieEntity m JOIN m.actors g WHERE g.id = :id")
    List<MovieEntity> findByActorsIds(Long Id);
+
+    Page<MovieEntity> findByActors_Id(Long actorId, Pageable pageable);
+
 }

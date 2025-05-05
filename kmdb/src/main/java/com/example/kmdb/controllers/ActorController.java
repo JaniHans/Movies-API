@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -52,11 +53,12 @@ public class ActorController {
         return ResponseEntity.ok(actorService.createActor(createActorDto));
 }
     /** retrieve all actors
-     * GET /api/{entity}:
+     * GET/api/{entity}:
      *
      */
     @GetMapping
-    public ResponseEntity<Page<ActorDto>> getActors(Pageable pageable) {
+    public ResponseEntity<Page<ActorDto>> getAllActors(
+            @PageableDefault(page = 0, size = 10)  Pageable pageable) {
         Page<ActorDto> actors = actorService.getActors(pageable);
 
         return ResponseEntity.ok(actors);
@@ -74,8 +76,10 @@ public class ActorController {
      * GET /api/movies?actor={Actor.id}: Retrieve movies that the actor with the given id has starred in
      */
     @GetMapping(params = "actor")
-    public List<MovieDto> getMoviesActorStarred(@RequestParam("actor") Long actorId) {
-        return actorService.getMoviesWhereActorAppeared(actorId);
+    public ResponseEntity<Page<MovieDto>> getMoviesActorStarred(@RequestParam("actor") Long actorId, Pageable pageable) {
+        Page<MovieDto> movies =  actorService.getMoviesWhereActorAppeared(actorId, pageable);
+
+        return ResponseEntity.ok(movies);
     }
     /**
      * PATCH /api/{entity}/{id}
@@ -109,7 +113,4 @@ public class ActorController {
     public List<ActorDto> filterActorsByName(@RequestParam String name) {
         return actorService.filterActorsByName(name);
     }
-
-
-
 }

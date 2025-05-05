@@ -82,14 +82,13 @@ public class ActorService {
 
     /**fetch all movies an actor has appeared in.
      * GET /api/movies?actor={Actor.id}
+     * Pagination
      */
-    public List<MovieDto> getMoviesWhereActorAppeared(Long actorId) {
+    public Page<MovieDto> getMoviesWhereActorAppeared(Long actorId, Pageable pageable) {
         actorRepository.findById(actorId).orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + actorId));
 
-        return movieRepository.findByActorsIds(actorId)
-                .stream()
-                .map(movieMapper::toMovieDto)
-                .collect(Collectors.toList());
+        return movieRepository.findByActors_Id(actorId, pageable)
+                .map(movieMapper::toMovieDto);
 
     }
 
