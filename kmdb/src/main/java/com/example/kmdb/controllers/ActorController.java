@@ -3,13 +3,18 @@ package com.example.kmdb.controllers;
 import com.example.kmdb.dtos.ActorDto;
 import com.example.kmdb.dtos.MovieDto;
 
+import com.example.kmdb.dtos.PageDto;
 import com.example.kmdb.dtos.create.CreateActorDto;
+import com.example.kmdb.entities.ActorEntity;
+import com.example.kmdb.mapper.ActorMapper;
+import com.example.kmdb.repositories.ActorRepository;
 import com.example.kmdb.services.ActorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,6 +40,8 @@ import java.util.Set;
 public class ActorController {
 
     private final ActorService actorService;
+    private final ActorRepository actorRepository;
+    private final ActorMapper actorMapper;
 
     /** create a new entity
      * POST/api/actor
@@ -49,8 +56,10 @@ public class ActorController {
      *
      */
     @GetMapping
-    public List<ActorDto> getActors() {
-        return actorService.getActors();
+    public ResponseEntity<Page<ActorDto>> getActors(Pageable pageable) {
+        Page<ActorDto> actors = actorService.getActors(pageable);
+
+        return ResponseEntity.ok(actors);
     }
     /**
      * retrieving a specific actor by ID
@@ -101,10 +110,6 @@ public class ActorController {
         return actorService.filterActorsByName(name);
     }
 
-    @PostMapping
-    public Page<ActorDto> getAllActorsUsingPagination(@RequestBody PageRequest dto) {
-
-    }
 
 
 }

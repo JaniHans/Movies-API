@@ -62,16 +62,14 @@ public class ActorService {
         return actorMapper.toActorDto(actorEntity);
     }
     /**
-     *
      *Implement methods to retrieve all actors,
+     * Also pagination, default page 0 , size 10 GET /api/actors?page=0&size=10
     */
-    public List<ActorDto> getActors() {
+    public Page<ActorDto> getActors(Pageable pageable) {
 
        log.info("Retrieving all actors");
-        return actorRepository.findAll()
-                .stream()
-                .map(actorMapper::toActorDto)
-               .collect(Collectors.toList());
+        return actorRepository.findAll(pageable)
+                .map(actorMapper::toActorDto);
     }
 
     /**
@@ -161,12 +159,7 @@ public class ActorService {
      * returns a page object containing the result and basic pagination information
      * @param pageDto - page request data transfer object , page and size through getters
      */
-    public Page<ActorDto> getEntitiesByPageAndFilterBySize(PageDto pageDto) {
-        Pageable pageable = PageRequest.of(pageDto.getPageNumber(), pageDto.getPageSize());
-        Page<ActorEntity> page = actorRepository.findAll(pageable);
 
-        return null;
-    }
 }
 
 

@@ -4,6 +4,7 @@ import com.example.kmdb.dtos.ActorDto;
 import com.example.kmdb.dtos.create.CreateActorDto;
 import com.example.kmdb.entities.ActorEntity;
 import org.mapstruct.Mapper;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ public interface ActorMapper {
     ActorDto toActorDto(ActorEntity actorEntity);
     ActorEntity toEntity(ActorDto actorDto);
     ActorEntity toEntity(CreateActorDto actorDto);
-
+    Page<ActorDto> pagetoDto(Page <ActorEntity> pageActorEntity);
     List<ActorDto> toActorDtoList(List<ActorEntity> actorEntityList);
 
 }
