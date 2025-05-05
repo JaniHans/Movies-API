@@ -8,7 +8,7 @@ import com.example.kmdb.mapper.MovieMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+
 import org.springframework.data.domain.Pageable;
 
 import com.example.kmdb.dtos.MovieDto;
@@ -54,7 +54,7 @@ public class ActorService {
      * POST /api/actor: Create a new actor entity
      */
     public ActorDto createActor(CreateActorDto createDto) {
-        log.info("createActor {}, {}", createDto.getName(), createDto.getBirthDate());
+        log.info("createActor {}, {}, {}", createDto.getName(), createDto.getBirthDate());
         ActorEntity actorEntity = actorRepository.save(actorMapper.toEntity(createDto));
         // helper function
         getAndSetMoviesToActor(actorEntity, createDto);

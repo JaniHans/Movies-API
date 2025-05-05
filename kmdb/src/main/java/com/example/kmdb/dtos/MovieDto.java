@@ -1,6 +1,8 @@
 package com.example.kmdb.dtos;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -9,7 +11,7 @@ import java.util.Set;
 
 @Data
 public class MovieDto {
-
+    @Setter(AccessLevel.NONE)
     private Long id;
     private String title;
     private int releaseYear;
@@ -18,12 +20,6 @@ public class MovieDto {
     private List<GenreDto> genres = new ArrayList<>();
     private List<ActorDto> actors = new ArrayList<>();
 
-    public MovieDto(Long id, String title, int releaseYear, int duration) {
-        this.id = id;
-        this.title = title;
-        this.releaseYear = releaseYear;
-        this.duration = duration;
-    }
 
 
 }

@@ -7,10 +7,13 @@ import com.example.kmdb.entities.MovieEntity;
 import com.example.kmdb.exceptions.DeleteNotAllowedException;
 import com.example.kmdb.exceptions.ResourceNotFoundException;
 import com.example.kmdb.mapper.ActorMapper;
+import com.example.kmdb.mapper.GenreMapper;
 import com.example.kmdb.repositories.GenreRepository;
 import com.example.kmdb.repositories.MovieRepository;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.query.Page;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class GenreService {
 
@@ -26,17 +30,8 @@ public class GenreService {
 
     private static final String GENRE_NOT_FOUND = "Genre not found by id: ";
     private final ActorMapper actorMapper;
+    private final GenreMapper genreMapper;
 
-
-//    private GenreResponseDto toDto(GenreEntity entity) {
-//        return new GenreResponseDto(entity.getId(), entity.getName());
-//    }
-//    private MovieResponseDto movieToDto(MovieEntity entity) {
-//        return new MovieResponseDto(entity.getId(),
-//                entity.getTitle(),
-//                entity.getReleaseYear(),
-//                entity.getDuration());
-//    }
     /**
      * POST /api/{genres}: Create a new entity
      * create genre and save it into the database
@@ -48,21 +43,21 @@ public class GenreService {
         GenreEntity entity = new GenreEntity();
         entity.setName(dto.getName());
 
-
         genreRepository.save(entity);
-        return new GenreDto(entity.getId(), entity.getName());
+        log.info("createGenre() {}, {}", dto.getName(), dto.getMovies());
+        return genreMapper.toDto(entity);
 
     }
 
     /**
      * GET /api/{genres}
+     * PAGINATION
      * return all genres
      */
-    public List<GenreDto> getAllGenres() {
-        return genreRepository.findAll()
-                .stream()
-                .map(actorMapper::toDto)
-                .collect(Collectors.toSet());
+    public Page<GenreDto> getAllGenres(Pageable pageable) {
+        log.info("Retrieving all genres");
+        return genreRepository.findAll(pageable)
+                .map(genreMapper::toDto);
 
     }
 

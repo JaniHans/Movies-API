@@ -7,20 +7,18 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import lombok.AccessLevel;
-import lombok.Data;
+
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+
 import lombok.Setter;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 import java.util.List;
-import java.util.Set;
+
 @Entity
 @Getter
-@Setter
+
 public class MovieEntity {
 
     @Id // Marks 'id' as the primary key
@@ -54,52 +52,5 @@ public class MovieEntity {
     @Setter
     private List<ActorEntity> actors = new ArrayList<>();
 
-// Lombok no need gfor setters and getters
-//    public String getTitle() {
-//        return title;
-//    }
-//
-//    public int getReleaseYear() {
-//        return releaseYear;
-//    }
-//
-//    public int getDuration() {
-//        return duration;
-//    }
-//
-//    public Set<ActorEntity> getActors() {
-//        return actors;
-//    }
-//
-//    public Set<GenreEntity> getGenres() {
-//        return genres;
-//    }
-//
-//    public void setTitle(String title) {
-//        this.title = title;
-//    }
-//
-//    public void setReleaseYear(int releaseYear) {
-//        this.releaseYear = releaseYear;
-//    }
-//
-//    public void setDuration(int duration) {
-//        this.duration = duration;
-//    }
-//
-//    public void setActors(Set<ActorEntity> actors) {
-//        this.actors = actors;
-//    }
-//
-//    public void setGenres(Set<GenreEntity> genres) {
-//        this.genres = genres;
-//    }
-//
-//    public Long getId() {
-//        return id;
-//    }
-//
-//    public void setId(Long id) {
-//        this.id = id;
-//    }
+
 }

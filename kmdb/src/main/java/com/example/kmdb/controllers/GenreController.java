@@ -5,6 +5,9 @@ import com.example.kmdb.dtos.MovieDto;
 import com.example.kmdb.services.GenreService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,17 +38,7 @@ public class GenreController {
      */
     @PostMapping
     public ResponseEntity<GenreDto> createGenre(@Valid @RequestBody GenreRequestDto request) {
-        GenreDto dto = genreService.createGenre(request);
 
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest() // /api/genres
-                .path("/{id}")           // append /{id}
-                .buildAndExpand(dto.getId()) // replace {id} with the generated ID
-                .toUri();
-
-        return ResponseEntity
-                .created(location) // sets 201 and location header
-                .body(dto);
     }
 
     /** retrieve all entities
@@ -53,8 +46,10 @@ public class GenreController {
      * returns JSON - [{"id":1,"name":"Action"}, {"id":2,"name":"Comedy"}])
      */
     @GetMapping
-    public List<GenreDto> getGenres() {
-        return genreService.getAllGenres();
+    public ResponseEntity<Page<GenreDto>> getGenres(@PageableDefault(page = 0, size = 10)
+                                                        Pageable pageable) {
+        Page<GenreDto> genres = genreService.getAllGenres(pageable);
+        return ResponseEntity.ok(genres);
     }
 
     /**
