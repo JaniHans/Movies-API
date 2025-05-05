@@ -21,5 +21,6 @@ public interface MovieRepository extends JpaRepository<MovieEntity, Long> {
    List<MovieEntity> findByActorsIds(Long Id);
 
     Page<MovieEntity> findByActors_Id(Long actorId, Pageable pageable);
+    Page<MovieEntity> findByGenre_Id(Long actorId, Pageable pageable);
 
 }

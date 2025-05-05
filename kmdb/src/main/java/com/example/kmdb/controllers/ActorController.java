@@ -3,9 +3,9 @@ package com.example.kmdb.controllers;
 import com.example.kmdb.dtos.ActorDto;
 import com.example.kmdb.dtos.MovieDto;
 
-import com.example.kmdb.dtos.PageDto;
+
 import com.example.kmdb.dtos.create.CreateActorDto;
-import com.example.kmdb.entities.ActorEntity;
+
 import com.example.kmdb.mapper.ActorMapper;
 import com.example.kmdb.repositories.ActorRepository;
 import com.example.kmdb.services.ActorService;
@@ -13,7 +13,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;

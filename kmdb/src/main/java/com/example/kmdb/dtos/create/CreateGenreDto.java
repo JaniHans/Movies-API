@@ -13,5 +13,5 @@ import java.util.List;
 public class CreateGenreDto {
 
     private String name;
-    private List<MovieEntity> movies = new ArrayList<>();
+    private List<Long> movieIds = new ArrayList<>();
 }

@@ -2,13 +2,16 @@ package com.example.kmdb.services;
 
 import com.example.kmdb.dtos.GenreDto;
 import com.example.kmdb.dtos.MovieDto;
+import com.example.kmdb.dtos.create.CreateActorDto;
 import com.example.kmdb.dtos.create.CreateGenreDto;
+import com.example.kmdb.entities.ActorEntity;
 import com.example.kmdb.entities.GenreEntity;
 import com.example.kmdb.entities.MovieEntity;
 import com.example.kmdb.exceptions.DeleteNotAllowedException;
 import com.example.kmdb.exceptions.ResourceNotFoundException;
 import com.example.kmdb.mapper.ActorMapper;
 import com.example.kmdb.mapper.GenreMapper;
+import com.example.kmdb.mapper.MovieMapper;
 import com.example.kmdb.repositories.GenreRepository;
 import com.example.kmdb.repositories.MovieRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +35,13 @@ public class GenreService {
     private static final String GENRE_NOT_FOUND = "Genre not found by id: ";
     private final ActorMapper actorMapper;
     private final GenreMapper genreMapper;
+    private final MovieMapper movieMapper;
+
+    private void getAndSetMoviesToGenre(GenreEntity entity, CreateGenreDto genreDto) {
+        List<MovieEntity> movies = movieRepository.findAllById(genreDto.getMovieIds());
+        List<MovieEntity> moviesEntities = new ArrayList<>(movies);
+        entity.setMovies(moviesEntities);
+    }
 
     /**
      * POST /api/{genres}: Create a new entity
@@ -40,12 +50,9 @@ public class GenreService {
      * @return - returns genre by id
      */
     public GenreDto createGenre(CreateGenreDto dto) {
-
+        log.info("createGenre() {}, {}", dto.getName(), dto.getMovieIds());
         GenreEntity entity = genreRepository.save(genreMapper.toEntity(dto));
 
-
-        genreRepository.save(entity);
-        log.info("createGenre() {}, {}", dto.getName(), dto.getMovies());
         return genreMapper.toDto(entity);
 
     }
@@ -69,23 +76,23 @@ public class GenreService {
      * @return - returns genre by id
      */
     public GenreDto getGenreById(Long id) {
-        return toDto(genreRepository.findById(id)
+        return genreMapper.toDto(genreRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + id)));
     }
 
     /**
      * GET /api/movies?genre={genreId}: Retrieve movies filtered by genre
+     *
      * @param - genreId
      * @return filter a list of movies with the genre
      */
-   public List<MovieDto> filterMoviesByGenre(Long genreId) {
+   public Page<MovieDto> filterMoviesByGenre(Long genreId,Pageable pageable) {
 
         genreRepository.findById(genreId).orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + genreId));
 
-       return movieRepository.findMovieEntitiesByGenreIds(genreId)
-               .stream()
-               .map(this::movieToDto)
-               .collect(Collectors.toSet());
+       return movieRepository.findByGenre_Id(genreId, pageable)
+               .map(movieMapper::toMovieDto);
+       // .map(...) on Page<T> Keeps pagination metadata: page number, size, total elements
 
    }
     /**
@@ -93,10 +100,13 @@ public class GenreService {
      * @param - genreId and genre new Name
      * modify genres name with the newname, save to genre repository
      */
-    public void modifyGenresName(GenreDto dto) {
+    public void modifyGenresName(Long genreId, CreateGenreDto genreDto) {
 
-        GenreEntity entity = genreRepository.findById(dto.getId()).orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + dto.getId()));
-        entity.setName(dto.getName());
+        GenreEntity entity = genreRepository
+                .findById(genreId)
+                .orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + genreId));
+        entity.setName(genreDto.getName());
+        getAndSetMoviesToGenre(entity, genreDto);
         genreRepository.save(entity);
     }
     /**
@@ -138,15 +148,5 @@ public class GenreService {
         }
 
     }
-    /**
-     * Implements pagination for GET requests that return multiple entities.
-     * GET /api/actors?page=0&size=10
-     * returns a page object containing the result and basic pagination information
-     * @param page, size
-     */
-    public Page getEntitiesByPageAndFilterBySize(Integer page, Integer size) {
-
-    }
-
 
 }
