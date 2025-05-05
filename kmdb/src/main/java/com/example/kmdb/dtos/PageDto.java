@@ -12,21 +12,19 @@ public class PageDto {
 
     // automatically provides a default no-argument constructor
     @NotNull
-    private Integer pageNumber = 0;
+    private Integer pageNumber;
     @NotNull
-    private Integer pageSize = 10;
+    private Integer pageSize;
 
     /**
-     * @param pageDto - page number and size through ternary not null object check
      * Pageable is an interface built in spring
      * @return pageable object
      */
     public Pageable getPageable() {
-        Integer page = Objects.nonNull(getPageNumber()) ? getPageNumber() : this.pageNumber;
-        Integer size = Objects.nonNull(getPageNumber()) ? getPageSize() : this.pageSize;
+        Integer page = Objects.nonNull(this.pageNumber) ? this.pageNumber : 0;
+        Integer size = Objects.nonNull(this.pageSize) ? this.pageSize : 10;
 
-        PageRequest request = PageRequest.of(page, size);
+        return PageRequest.of(page, size);
 
-        return request; // returning a PageRequest as a Pageable
     }
 }
