@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,10 +27,11 @@ public class MovieEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     private String title;
-
+    @Setter
     private int releaseYear;
-
+    @Setter
     private int duration;
 
     // Movie ↔ Genre
@@ -39,6 +41,7 @@ public class MovieEntity {
             joinColumns = @JoinColumn(name = "movie_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
+    @Setter
     private List<GenreEntity> genres = new ArrayList<>();
 
     // Movie ↔ Actor
@@ -48,7 +51,7 @@ public class MovieEntity {
             joinColumns = @JoinColumn(name = "movie_id"),
             inverseJoinColumns = @JoinColumn(name = "actor_id")
     )
-
+    @Setter
     private List<ActorEntity> actors = new ArrayList<>();
 
 // Lombok no need gfor setters and getters

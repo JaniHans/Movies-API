@@ -73,9 +73,9 @@ public class ActorController {
      * modify path variable id
      */
     @PatchMapping("/{id}")
-    public void modifyActor(@PathVariable Long id, @RequestBody ActorDto dto) {
+    public void modifyActor(@PathVariable Long id, @RequestBody CreateActorDto actorDto) {
 
-        actorService.modifyActor(dto);
+        actorService.modifyActor(id , actorDto);
     }
 
     /**

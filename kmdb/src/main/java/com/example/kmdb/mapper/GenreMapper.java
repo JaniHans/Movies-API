@@ -17,5 +17,6 @@ public interface GenreMapper {
     GenreEntity toEntity(CreateGenreDto createGenreDto);
 
 
+
     List<GenreDto> toDtoList(List<GenreEntity> actor);
 }

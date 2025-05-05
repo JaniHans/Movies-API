@@ -20,7 +20,6 @@ import com.example.kmdb.exceptions.ResourceNotFoundException;
 import com.example.kmdb.repositories.ActorRepository;
 import com.example.kmdb.repositories.MovieRepository;
 
-
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -43,10 +42,10 @@ public class ActorService {
      * takes in entity and DTO movieids to find the movies
      * and sets entity correctly with the movies
      * @param entity
-     * @param dto
+     * @param actor
      */
-    private void getAndSetMoviesToActor(ActorEntity entity, CreateActorDto dto) {
-        List<MovieEntity> movies = movieRepository.findAllById(dto.getMovieIds());
+    private void getAndSetMoviesToActor(ActorEntity entity, CreateActorDto actor) {
+        List<MovieEntity> movies = movieRepository.findAllById(actor.getMovieIds());
         List<MovieEntity> moviesEntities = new ArrayList<>(movies);
         entity.setMovies(moviesEntities);
     }
@@ -67,11 +66,12 @@ public class ActorService {
      *Implement methods to retrieve all actors,
     */
     public List<ActorDto> getActors() {
-        log.info("Retrieving all actors");
+
+       log.info("Retrieving all actors");
         return actorRepository.findAll()
                 .stream()
                 .map(actorMapper::toActorDto)
-                .collect(Collectors.toList());
+               .collect(Collectors.toList());
     }
 
     /**
@@ -95,22 +95,21 @@ public class ActorService {
 
     }
 
-
 //    Lastly, ensure you can modify an existing actor's details
     /**
      * PATCH /api/{entity}/{id}: Partially update an existing entity
      * Modify actor's name, date of birth, and associated movies.
      * Saves the changes to the actor repository.
      */
-    public void modifyActor(ActorDto dto) {
+    public void modifyActor(Long actorId, CreateActorDto actorDto) {
      ActorEntity actor = actorRepository
-             .findById(dto.getId())
-             .orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + dto.getId()));
+             .findById(actorId)
+             .orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + actorId));
 
-     actor.setName(dto.getName());
-     actor.setBirthDate(dto.getBirthDate());
-     actor.setId(dto.getId());
-     getAndSetMoviesToActor(actor, dto);
+     actor.setName(actor.getName());
+     actor.setBirthDate(actor.getBirthDate());
+     getAndSetMoviesToActor(actor, actorDto);
+     actorRepository.save(actor);
 
     }
 
@@ -133,9 +132,7 @@ public class ActorService {
       if (actor.getMovies().isEmpty()) {
           actorRepository.deleteById(actorId);
       }
-
       // force break
-
         if (force) {
             // reference to movie entity objects
         }
@@ -154,7 +151,7 @@ public class ActorService {
 
         return actorRepository.findActorEntitiesByNameContainingIgnoreCase(name)
                 .stream()
-                .map(this::)
+                .map(actorMapper::toActorDto)
                 .collect(Collectors.toList());
     }
 
@@ -162,10 +159,10 @@ public class ActorService {
      * Implements pagination for GET requests that return multiple entities.
      * GET /api/actors?page=0&size=10
      * returns a page object containing the result and basic pagination information
-     * @param dto - page request data transfer object , page and size through getters
+     * @param pageDto - page request data transfer object , page and size through getters
      */
-    public Page<ActorDto> getEntitiesByPageAndFilterBySize(PageDto dto) {
-        Pageable pageable = PageRequest.of(dto.getPageNumber(), dto.getPageSize());
+    public Page<ActorDto> getEntitiesByPageAndFilterBySize(PageDto pageDto) {
+        Pageable pageable = PageRequest.of(pageDto.getPageNumber(), pageDto.getPageSize());
         Page<ActorEntity> page = actorRepository.findAll(pageable);
 
         return null;

@@ -3,6 +3,7 @@ package com.example.kmdb.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,13 +21,16 @@ public class GenreEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id;
+    @Setter
     private String name;
 
 
     @ManyToMany(mappedBy = "genres") // inverse side of Movie-Genre
     // This is the inverse side of the Many-to-Many relationship (Movie owns the relation)
     @JsonIgnore
+    @Setter
     private List<MovieEntity> movies = new ArrayList<>();
 
 
