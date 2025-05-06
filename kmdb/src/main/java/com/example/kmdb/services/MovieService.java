@@ -8,6 +8,7 @@ import com.example.kmdb.entities.GenreEntity;
 import com.example.kmdb.entities.MovieEntity;
 import com.example.kmdb.exceptions.DeleteNotAllowedException;
 import com.example.kmdb.exceptions.ResourceNotFoundException;
+import com.example.kmdb.mapper.ActorMapper;
 import com.example.kmdb.mapper.MovieMapper;
 import com.example.kmdb.repositories.ActorRepository;
 import com.example.kmdb.repositories.GenreRepository;
@@ -33,10 +34,12 @@ public class MovieService {
     private final GenreRepository genreRepository;
     private final MovieRepository movieRepository;
     private final ActorRepository actorRepository;
+
     private final MovieMapper movieMapper;
 
     private static final String GENRE_NOT_FOUND = "Genre not found by id: ";
     private static final String MOVIE_NOT_FOUND = "Movie not found by id: ";
+    private final ActorMapper actorMapper;
 
 
     private void assignGenresToMovies(MovieEntity entity, CreateMovieDto dto) {
@@ -89,7 +92,8 @@ public class MovieService {
         }
         pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("title").ascending());
 
-        return movieRepository.findByTitleContainingIgnoreCase(searchCriteria, pageable);
+        return movieRepository.findByTitleContainingIgnoreCase(searchCriteria, pageable)
+                .map(movieMapper::toMovieDto);
     }
 
 
@@ -101,15 +105,16 @@ public class MovieService {
      * @return - returns genre by id
      */
     public MovieDto getMovieById(Long id) {
-       return movieToDto(movieRepository.findById(id).orElseThrow(() -> new RuntimeException("Movie not found by that id: " + id)));
+       return movieMapper.toMovieDto(movieRepository
+               .findById(id)
+               .orElseThrow(() -> new RuntimeException("Movie not found by that id: " + id)));
 
     }
 
     /**
      * filter movies by genre or release year.
+     * NOT DONE
      * @return
-     */
-    /**
      * @param - genreId
      * @return filter a list of movies with the genre
      */
@@ -117,27 +122,23 @@ public class MovieService {
 
         genreRepository.findById(genreId).orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + genreId));
 
-        return movieRepository.findMovieEntitiesByGenreIds(genreId)
-                .stream()
-                .map(this::movieToDto)
-                .collect(Collectors.toList());
-
+        return movieMapper.toMovieDtoList(movieRepository.findMovieEntitiesByGenreIds(genreId));
     }
 
     /**
      * GET /api/movies?year={releaseYear}: Retrieve movies filtered by release year
      * filter or release year.
      */
-    public List<MovieDto> filterByYear(int releaseYear) {
-        return movieRepository.findByReleaseYear(releaseYear)
-                .stream()
-                .map(this::movieToDto)
-                .collect(Collectors.toList());
+    public Page<MovieDto> filterByYear(int releaseYear, Pageable pageable) {
+        
+        return movieRepository.findByReleaseYear(releaseYear, pageable)
+                .map(movieMapper::toMovieDto);
+
     }
     /**
      * /Updating a movie's details (including its title, release year, duration, genre, and actors)
      */
-    public void modifyMovie(Long movieId, dto) {
+    public void modifyMovie(Long movieId, CreateMovieDto dto) {
         MovieEntity movie = movieRepository.
                 findById(movieId)
                 .orElseThrow(() -> new ResourceNotFoundException(MOVIE_NOT_FOUND + movieId));
@@ -147,15 +148,21 @@ public class MovieService {
         movie.setDuration(dto.getDuration());
         // helper method to retrieve actors and genres
         assignGenresToMovies(movie, dto);
-        assignActorsToMovies(movie, dto)
+        assignActorsToMovies(movie, dto);
+
+        movieRepository.save(movie);
     }
 
     /**
+     * GET /api/movies/{movieId}/actors: Retrieve all actors starring in a movie
      * Don't forget to implement a way to get all actors in a specific movie.
      */
-    public List<ActorDto> getAllActorsInMovie(Long movieId) {
-        MovieDto movie = movieToDto(movieRepository.findById(movieId).orElseThrow(() -> new ResourceNotFoundException(MOVIE_NOT_FOUND + movieId)));
-        return movie.getActors();
+    public Page<ActorDto> getAllActorsInMovie(Long movieId, Pageable pageable) {
+      movieRepository.findById(movieId).orElseThrow(() ->
+              new ResourceNotFoundException(MOVIE_NOT_FOUND + movieId));
+
+      return actorRepository.findActorEntitiesByMovieId(movieId, pageable)
+              .map(actorMapper::toActorDto);
 
     }
     /**

@@ -90,7 +90,7 @@ public class GenreService {
 
         genreRepository.findById(genreId).orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + genreId));
 
-       return movieRepository.findByGenre_Id(genreId, pageable)
+       return movieRepository.findByGenreId(genreId, pageable)
                .map(movieMapper::toMovieDto);
        // .map(...) on Page<T> Keeps pagination metadata: page number, size, total elements
 

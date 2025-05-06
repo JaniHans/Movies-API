@@ -98,8 +98,6 @@ public class MovieController {
                             @RequestParam(defaultValue = "false") boolean force) {
         movieService.removeMovie(id, force);
 
-
-
     }
     // Filtering endpoints
     /**
@@ -118,8 +116,11 @@ public class MovieController {
      * RequestParam - Binds from the URL query string
      */
     @GetMapping(params = "releaseYear")
-    public List<MovieDto> filterByYear(@RequestParam int releaseYear) {
-        return movieService.filterByYear(releaseYear);
+    public ResponseEntity<Page<MovieDto>> filterByYear(
+            @RequestParam int releaseYear,
+    @PageableDefault(page = 0, size = 10)  Pageable pageable) {
+        Page<MovieDto> moviesByYear = movieService.filterByYear(releaseYear, pageable);
+        return ResponseEntity.ok(moviesByYear);
     }
 
     /**
@@ -127,8 +128,11 @@ public class MovieController {
      * returns all actors that belong to a specific movie
      */
     @GetMapping("/{id}/actors") // This is a nested resource.
-    public List<ActorDto> getActorsInMovie(@PathVariable Long id) {
-        return movieService.getAllActorsInMovie(id);
+    public ResponseEntity<Page<ActorDto>> getActorsInMovie(@PathVariable Long id, @PageableDefault(page = 0, size = 10)  Pageable pageable) {
+
+        Page<ActorDto> actors = movieService.getAllActorsInMovie(id, pageable);
+
+        return ResponseEntity.ok(actors);
     }
 
 }

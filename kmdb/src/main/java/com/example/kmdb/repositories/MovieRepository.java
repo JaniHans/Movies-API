@@ -12,18 +12,21 @@ import java.util.List;
 import java.util.Set;
 
 public interface MovieRepository extends JpaRepository<MovieEntity, Long> {
-
+    // This selects instances of MovieEntity (aliased as m).
+    // This performs an inner join between MovieEntity and its genres collection.
+    // Filters the joined genres where the genre ID matches the parameter :id.
     @Query("SELECT m FROM MovieEntity m JOIN m.genres g WHERE g.id = :id")
     List<MovieEntity> findMovieEntitiesByGenreIds(Long id);
 
-    List<MovieEntity> findByReleaseYear(int releaseYear);
+    Page<MovieEntity> findByReleaseYear(int releaseYear, Pageable pageable);
+
 
     @Query("SELECT m FROM MovieEntity m JOIN m.actors g WHERE g.id = :id")
-   List<MovieEntity> findByActorsIds(Long Id);
+    List<MovieEntity> findByActorsIds(Long id);
 
-    Page<MovieEntity> findByActors_Id(Long actorId, Pageable pageable);
-    Page<MovieEntity> findByGenre_Id(Long actorId, Pageable pageable);
+    Page<MovieEntity> findByActorsId(Long actorId, Pageable pageable);
+    Page<MovieEntity> findByGenreId(Long actorId, Pageable pageable);
 
-    Page<MovieDto> findByTitleContainingIgnoreCase(String searchCriteria, Pageable pageable);
+    Page<MovieEntity> findByTitleContainingIgnoreCase(String title, Pageable pageable);
 
 }

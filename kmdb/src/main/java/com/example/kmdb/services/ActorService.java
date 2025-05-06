@@ -87,7 +87,7 @@ public class ActorService {
     public Page<MovieDto> getMoviesWhereActorAppeared(Long actorId, Pageable pageable) {
         actorRepository.findById(actorId).orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + actorId));
 
-        return movieRepository.findByActors_Id(actorId, pageable)
+        return movieRepository.findByActorsId(actorId, pageable)
                 .map(movieMapper::toMovieDto);
 
     }
@@ -142,6 +142,7 @@ public class ActorService {
         }
 
     /**
+     * @param - NOT DONE pagination
      * GET /api/actors?name={name}: Retrieve actors filtered by name
      */
     public List<ActorDto> filterActorsByName(String name) {
@@ -151,13 +152,6 @@ public class ActorService {
                 .map(actorMapper::toActorDto)
                 .collect(Collectors.toList());
     }
-
-    /**
-     * Implements pagination for GET requests that return multiple entities.
-     * GET /api/actors?page=0&size=10
-     * returns a page object containing the result and basic pagination information
-     * @param pageDto - page request data transfer object , page and size through getters
-     */
 
 }
 
