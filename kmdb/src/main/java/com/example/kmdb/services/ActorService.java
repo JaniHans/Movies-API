@@ -20,7 +20,9 @@ import com.example.kmdb.exceptions.ResourceNotFoundException;
 import com.example.kmdb.repositories.ActorRepository;
 import com.example.kmdb.repositories.MovieRepository;
 
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -145,12 +147,14 @@ public class ActorService {
      * @param - NOT DONE pagination
      * GET /api/actors?name={name}: Retrieve actors filtered by name
      */
-    public List<ActorDto> filterActorsByName(String name) {
+    public Page<ActorDto> filterActorsByName(String name, Pageable pageable) {
+        if (name.isEmpty()) {
+            throw new IllegalArgumentException("Actor name can't be empty");
+        }
+        return actorRepository.findActorEntitiesByNameContainingIgnoreCase(name, pageable)
+        .map(actorMapper::toActorDto);
 
-        return actorRepository.findActorEntitiesByNameContainingIgnoreCase(name)
-                .stream()
-                .map(actorMapper::toActorDto)
-                .collect(Collectors.toList());
+
     }
 
 }

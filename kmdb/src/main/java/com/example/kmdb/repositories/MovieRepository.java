@@ -16,7 +16,7 @@ public interface MovieRepository extends JpaRepository<MovieEntity, Long> {
     // This performs an inner join between MovieEntity and its genres collection.
     // Filters the joined genres where the genre ID matches the parameter :id.
     @Query("SELECT m FROM MovieEntity m JOIN m.genres g WHERE g.id = :id")
-    List<MovieEntity> findMovieEntitiesByGenreIds(Long id);
+    Page<MovieEntity> findMovieEntitiesByGenreIds(Long id, Pageable pageable);
 
     Page<MovieEntity> findByReleaseYear(int releaseYear, Pageable pageable);
 

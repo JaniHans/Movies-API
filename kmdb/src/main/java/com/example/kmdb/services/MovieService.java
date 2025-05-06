@@ -118,11 +118,11 @@ public class MovieService {
      * @param - genreId
      * @return filter a list of movies with the genre
      */
-    public List<MovieDto> getMoviesByGenre(Long genreId) {
+    public Page<MovieDto> getMoviesByGenre(Long genreId, Pageable pageable) {
 
-        genreRepository.findById(genreId).orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + genreId));
+        return movieRepository.findMovieEntitiesByGenreIds(genreId, pageable)
+                .map(movieMapper::toMovieDto);
 
-        return movieMapper.toMovieDtoList(movieRepository.findMovieEntitiesByGenreIds(genreId));
     }
 
     /**

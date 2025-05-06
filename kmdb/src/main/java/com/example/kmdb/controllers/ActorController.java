@@ -108,7 +108,10 @@ public class ActorController {
      * GET /api/actors?name={name}: Retrieve actors filtered by name
      */
     @GetMapping("/api/actors")
-    public List<ActorDto> filterActorsByName(@RequestParam String name) {
-        return actorService.filterActorsByName(name);
+    public ResponseEntity<Page<ActorDto>> filterActorsByName(@RequestParam String name,
+                                             @PageableDefault(page = 0, size = 10)  Pageable pageable) {
+
+        Page<ActorDto> actors =  actorService.filterActorsByName(name, pageable);
+        return ResponseEntity.ok(actors);
     }
 }

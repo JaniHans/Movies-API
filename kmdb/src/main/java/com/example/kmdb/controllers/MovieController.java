@@ -107,8 +107,11 @@ public class MovieController {
      */
     @GetMapping(params = "genre")
     // Only accept the request if there is a query parameter called genreId present.
-    public List<MovieDto> getMoviesByGenre(@RequestParam("genre") Long genreId) {
-        return movieService.getMoviesByGenre(genreId);
+    public ResponseEntity<Page<MovieDto>> getMoviesByGenre(
+            @RequestParam("genre") Long genreId,
+            @PageableDefault(page = 0, size = 10)  Pageable pageable) {
+        Page<MovieDto> movies = movieService.getMoviesByGenre(genreId, pageable);
+        return ResponseEntity.ok(movies);
     }
     /**
      * GET /api/movies?year={releaseYear}: Retrieve movies filtered by release year
@@ -118,7 +121,8 @@ public class MovieController {
     @GetMapping(params = "releaseYear")
     public ResponseEntity<Page<MovieDto>> filterByYear(
             @RequestParam int releaseYear,
-    @PageableDefault(page = 0, size = 10)  Pageable pageable) {
+            @PageableDefault(page = 0, size = 10)  Pageable pageable) {
+
         Page<MovieDto> moviesByYear = movieService.filterByYear(releaseYear, pageable);
         return ResponseEntity.ok(moviesByYear);
     }
@@ -128,8 +132,9 @@ public class MovieController {
      * returns all actors that belong to a specific movie
      */
     @GetMapping("/{id}/actors") // This is a nested resource.
-    public ResponseEntity<Page<ActorDto>> getActorsInMovie(@PathVariable Long id, @PageableDefault(page = 0, size = 10)  Pageable pageable) {
-
+    public ResponseEntity<Page<ActorDto>> getActorsInMovie(
+            @PathVariable Long id,
+            @PageableDefault(page = 0, size = 10) Pageable pageable) {
         Page<ActorDto> actors = movieService.getAllActorsInMovie(id, pageable);
 
         return ResponseEntity.ok(actors);

@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface ActorRepository extends JpaRepository<ActorEntity, Long> {
-    List<ActorEntity> findActorEntitiesByNameContainingIgnoreCase(String name);
+    Page<ActorEntity> findActorEntitiesByNameContainingIgnoreCase(String name, Pageable pageable);
 
     // This method will not work automatically, because ActorEntity likely does not have a direct movieId field.
     @Query("SELECT a FROM ActorEntity a JOIN a.movies m WHERE m.id = :movieId")

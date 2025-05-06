@@ -82,7 +82,6 @@ public class GenreService {
 
     /**
      * GET /api/movies?genre={genreId}: Retrieve movies filtered by genre
-     *
      * @param - genreId
      * @return filter a list of movies with the genre
      */
