@@ -2,6 +2,7 @@ package com.example.kmdb.controllers;
 
 import com.example.kmdb.dtos.ActorDto;
 import com.example.kmdb.dtos.MovieDto;
+import com.example.kmdb.dtos.create.CreateMovieDto;
 import com.example.kmdb.services.MovieService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,17 +35,10 @@ public class MovieController {
      * POST /api/{entity}
      */
     @PostMapping
-    public ResponseEntity<MovieDto> createMovie(@Valid @RequestBody MovieDto requestDTO) {
-    MovieDto dto = movieService.createMovie(requestDTO);
+    public ResponseEntity<MovieDto> createMovie(@Valid @RequestBody CreateMovieDto request) {
+    MovieDto dto = movieService.createMovie(request);
 
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest() // /api/genres
-                .path("/{id}")           // append /{id}
-                .buildAndExpand(dto.getId()) // replace {id} with the generated ID
-                .toUri();
-
-    return ResponseEntity.created(location)
-            .body(dto);
+    return ResponseEntity.ok(dto);
 
     }
     /** retrieve all entities
@@ -68,9 +62,9 @@ public class MovieController {
      * retrieve a specific entity by ID
      */
     @PatchMapping("/{id}")
-    public void modifyMovie(@PathVariable Long id, @RequestBody MovieDto requestDTO) {
-        requestDTO.setId(id);
-        movieService.modifyMovie(requestDTO);
+    public void modifyMovie(@PathVariable Long id, @RequestBody CreateMovieDto request) {
+
+        movieService.modifyMovie(id, request);
     }
     /**
      * DELETE /api/{entity}/{id}: Delete an entity

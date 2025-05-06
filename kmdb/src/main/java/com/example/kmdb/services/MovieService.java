@@ -2,21 +2,24 @@ package com.example.kmdb.services;
 
 import com.example.kmdb.dtos.ActorDto;
 import com.example.kmdb.dtos.MovieDto;
+import com.example.kmdb.dtos.create.CreateMovieDto;
 import com.example.kmdb.entities.ActorEntity;
 import com.example.kmdb.entities.GenreEntity;
 import com.example.kmdb.entities.MovieEntity;
 import com.example.kmdb.exceptions.DeleteNotAllowedException;
 import com.example.kmdb.exceptions.ResourceNotFoundException;
+import com.example.kmdb.mapper.MovieMapper;
 import com.example.kmdb.repositories.ActorRepository;
 import com.example.kmdb.repositories.GenreRepository;
 import com.example.kmdb.repositories.MovieRepository;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.query.Page;
+
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+
 import java.util.List;
-import java.util.Set;
+
 import java.util.stream.Collectors;
 
 @Service
@@ -26,50 +29,45 @@ public class MovieService {
     private final GenreRepository genreRepository;
     private final MovieRepository movieRepository;
     private final ActorRepository actorRepository;
+    private final MovieMapper movieMapper;
 
     private static final String GENRE_NOT_FOUND = "Genre not found by id: ";
     private static final String MOVIE_NOT_FOUND = "Movie not found by id: ";
 
 
-    private void assignGenresAndActors(MovieEntity entity, MovieRequestDto dto) {
-        List<GenreEntity> genreList = genreRepository.findAllById(dto.getGenreIds());
-        Set<GenreEntity> genreEntities = new HashSet<>(genreList);
+    private void assignGenresToMovies(MovieEntity entity, CreateMovieDto dto) {
+        // find all genres with the associated movieids
+        List<GenreEntity> genreList = genreRepository.findAllById(dto.getGenresIds());
+        List<GenreEntity> genreEntities = new ArrayList<>(genreList);
         entity.setGenres(genreEntities);
+    }
 
-        List<ActorEntity> actorList = actorRepository.findAllById(dto.getActorIds());
-        Set<ActorEntity> actorEntities = new HashSet<>(actorList);
+    private void assignActorsToMovies(MovieEntity entity, CreateMovieDto dto) {
+        // find all actors with the associated movieids
+        List<ActorEntity> actorList = actorRepository.findAllById(dto.getActorsIds());
+        List<ActorEntity> actorEntities = new ArrayList<>(actorList);
         entity.setActors(actorEntities);
     }
 
     // Movie CRUD endpoints
 
-
-//    private MovieResponseDto movieToDto(MovieEntity entity) {
-//        return new MovieResponseDto(entity.getId(),
-//                entity.getTitle(),
-//                entity.getReleaseYear(),
-//                entity.getDuration());
-//    }
     /**
      * POST - movies
      * new movies with their title, release year, duration, associated genre, and actors.
      * @return
      */
-    public MovieDto createMovie(MovieRequestDto dto) {
-        MovieEntity entity = new MovieEntity();
-        entity.setTitle(dto.getTitle());
-        entity.setReleaseYear(dto.getReleaseYear());
-        entity.setDuration(dto.getDuration());
+    public MovieDto createMovie(CreateMovieDto createMovieDto) {
+        MovieEntity entity = movieRepository.save(movieMapper.toEntity(createMovieDto));
 
         // helper method to retrieve actors and genres
-        assignGenresAndActors(entity, dto);
+        assignActorsToMovies(entity, createMovieDto);
+        assignGenresToMovies(entity, createMovieDto);
+
         // entities
 
         movieRepository.save(entity);
 
-
-
-        return new MovieDto(entity.getId(), entity.getTitle(), entity.getReleaseYear(), entity.getDuration());
+        return movieMapper.toMovieDto(entity);
 
     }
 //You'll need methods to retrieve all movies,
@@ -128,16 +126,17 @@ public class MovieService {
     /**
      * /Updating a movie's details (including its title, release year, duration, genre, and actors)
      */
-    public void modifyMovie(MovieRequestDto dto) {
+    public void modifyMovie(Long movieId, dto) {
         MovieEntity movie = movieRepository.
-                findById(dto.getId())
-                .orElseThrow(() -> new ResourceNotFoundException(MOVIE_NOT_FOUND + dto.getId()));
+                findById(movieId)
+                .orElseThrow(() -> new ResourceNotFoundException(MOVIE_NOT_FOUND + movieId));
 
         movie.setTitle(dto.getTitle());
         movie.setReleaseYear(dto.getReleaseYear());
         movie.setDuration(dto.getDuration());
         // helper method to retrieve actors and genres
-        assignGenresAndActors(movie, dto);
+        assignGenresToMovies(movie, dto);
+        assignActorsToMovies(movie, dto)
     }
 
     /**
