@@ -21,6 +21,7 @@ import com.example.kmdb.repositories.ActorRepository;
 import com.example.kmdb.repositories.MovieRepository;
 
 import org.springframework.data.web.PageableDefault;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -56,7 +57,7 @@ public class ActorService {
      * POST /api/actor: Create a new actor entity
      */
     public ActorDto createActor(CreateActorDto createDto) {
-        log.info("createActor {}, {}, {}", createDto.getName(), createDto.getBirthDate());
+        log.info("createActor {}, {}", createDto.getName(), createDto.getBirthDate());
         ActorEntity actorEntity = actorRepository.save(actorMapper.toEntity(createDto));
         // helper function
         getAndSetMoviesToActor(actorEntity, createDto);
@@ -89,7 +90,7 @@ public class ActorService {
     public Page<MovieDto> getMoviesWhereActorAppeared(Long actorId, Pageable pageable) {
         actorRepository.findById(actorId).orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + actorId));
 
-        return movieRepository.findByActorsId(actorId, pageable)
+        return movieRepository.findByActorsIds(actorId, pageable)
                 .map(movieMapper::toMovieDto);
 
     }

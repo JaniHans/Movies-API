@@ -37,9 +37,6 @@ import java.util.List;
 public class ActorController {
 
     private final ActorService actorService;
-    private final ActorRepository actorRepository;
-    private final ActorMapper actorMapper;
-    private final GenreService genreService;
 
     /** create a new entity
      * POST/api/actor
@@ -83,7 +80,7 @@ public class ActorController {
      * PATCH /api/{entity}/{id}
      * modify path variable id
      */
-    @PatchMapping("/{id}")
+    @PatchMapping("api/{id}")
     public void modifyActor(@PathVariable Long id, @RequestBody CreateActorDto actorDto) {
 
         actorService.modifyActor(id, actorDto);

@@ -33,7 +33,6 @@ public class GenreService {
     private final MovieRepository movieRepository;
 
     private static final String GENRE_NOT_FOUND = "Genre not found by id: ";
-    private final ActorMapper actorMapper;
     private final GenreMapper genreMapper;
     private final MovieMapper movieMapper;
 
@@ -50,6 +49,7 @@ public class GenreService {
      * @return - returns genre by id
      */
     public GenreDto createGenre(CreateGenreDto dto) {
+
         log.info("createGenre() {}, {}", dto.getName(), dto.getMovieIds());
         GenreEntity entity = genreRepository.save(genreMapper.toEntity(dto));
 
@@ -89,7 +89,7 @@ public class GenreService {
 
         genreRepository.findById(genreId).orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + genreId));
 
-       return movieRepository.findByGenreId(genreId, pageable)
+       return movieRepository.findByGenresId(genreId, pageable)
                .map(movieMapper::toMovieDto);
        // .map(...) on Page<T> Keeps pagination metadata: page number, size, total elements
 

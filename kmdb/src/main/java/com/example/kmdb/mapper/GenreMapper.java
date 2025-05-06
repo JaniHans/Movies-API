@@ -4,10 +4,11 @@ import com.example.kmdb.dtos.GenreDto;
 import com.example.kmdb.dtos.create.CreateGenreDto;
 import com.example.kmdb.entities.GenreEntity;
 import org.mapstruct.Mapper;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Set;
 
+@Repository
 @Mapper(componentModel = "spring")
 public interface GenreMapper {
 
