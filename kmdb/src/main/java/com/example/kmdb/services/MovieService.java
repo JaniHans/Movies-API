@@ -14,6 +14,10 @@ import com.example.kmdb.repositories.GenreRepository;
 import com.example.kmdb.repositories.MovieRepository;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -66,19 +70,26 @@ public class MovieService {
         // entities
 
         movieRepository.save(entity);
-
         return movieMapper.toMovieDto(entity);
-
     }
-//You'll need methods to retrieve all movies,
+
     /**
-     * Get - movies
+     * Get all movies, including pagination and search
+     * Partial TitleMatch Search
+     * @param searchCriteria - title search
+     * @param pageable - default page 0 , size 10
      * return all movies
      */
-    public List<MovieDto> getAllMovies() {
-        return movieRepository.findAll().stream()
-                .map(this::movieToDto)
-                .collect(Collectors.toList());
+    public Page<MovieDto> getAllMovies(String searchCriteria, Pageable pageable) {
+
+        if (searchCriteria.isEmpty()) {
+            // create regular pageable with page and size
+            return movieRepository.findAll(pageable)
+                    .map(movieMapper::toMovieDto);
+        }
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("title").ascending());
+
+        return movieRepository.findByTitleContainingIgnoreCase(searchCriteria, pageable);
     }
 
 

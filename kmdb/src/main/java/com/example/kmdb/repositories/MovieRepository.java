@@ -1,6 +1,7 @@
 package com.example.kmdb.repositories;
 
 
+import com.example.kmdb.dtos.MovieDto;
 import com.example.kmdb.entities.MovieEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,5 +23,7 @@ public interface MovieRepository extends JpaRepository<MovieEntity, Long> {
 
     Page<MovieEntity> findByActors_Id(Long actorId, Pageable pageable);
     Page<MovieEntity> findByGenre_Id(Long actorId, Pageable pageable);
+
+    Page<MovieDto> findByTitleContainingIgnoreCase(String searchCriteria, Pageable pageable);
 
 }

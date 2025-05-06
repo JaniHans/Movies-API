@@ -3,9 +3,15 @@ package com.example.kmdb.controllers;
 import com.example.kmdb.dtos.ActorDto;
 import com.example.kmdb.dtos.MovieDto;
 import com.example.kmdb.dtos.create.CreateMovieDto;
+import com.example.kmdb.repositories.MovieRepository;
 import com.example.kmdb.services.MovieService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,6 +36,7 @@ import java.util.Set;
 public class MovieController {
 
     private final MovieService movieService;
+    private final MovieRepository movieRepository;
 
     /** create a new entity
      * POST /api/{entity}
@@ -44,10 +51,24 @@ public class MovieController {
     /** retrieve all entities
      * GET /api/{entity}:
      * returns JSON - [{"id":1,"name":"Action"}, {"id":2,"name":"Comedy"}])
+     * GET /api/movies/search?title=matrix
      */
     @GetMapping
-    public List<MovieDto> getMovies() {
-        return movieService.getAllMovies();
+    public ResponseEntity<Page<MovieDto>> getMovies(
+            @RequestParam(defaultValue = "") String searchCriteria,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable;
+        if (searchCriteria.isEmpty()) {
+            // create regular pageable with page and size
+            pageable = PageRequest.of(page, size);
+        } else {
+            pageable = PageRequest.of(page, size, Sort.by("title").ascending());
+        }
+        Page<MovieDto> movies = movieService.getAllMovies(searchCriteria, pageable);
+
+        return ResponseEntity.ok(movies);
     }
     /**
      * GET /api/{movie}/{id}
