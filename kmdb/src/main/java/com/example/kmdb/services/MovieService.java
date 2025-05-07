@@ -25,7 +25,6 @@ import java.util.ArrayList;
 
 import java.util.List;
 
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,14 +40,18 @@ public class MovieService {
     private static final String MOVIE_NOT_FOUND = "Movie not found by id: ";
     private final ActorMapper actorMapper;
 
-
+    /**
+     * helper method to find and assign genres that are associated with the movies
+     */
     private void assignGenresToMovies(MovieEntity entity, CreateMovieDto dto) {
         // find all genres with the associated movieids
         List<GenreEntity> genreList = genreRepository.findAllById(dto.getGenresIds());
         List<GenreEntity> genreEntities = new ArrayList<>(genreList);
         entity.setGenres(genreEntities);
     }
-
+    /**
+     * helper method to find and assign actors that are associated with the movies
+     */
     private void assignActorsToMovies(MovieEntity entity, CreateMovieDto dto) {
         // find all actors with the associated movieids
         List<ActorEntity> actorList = actorRepository.findAllById(dto.getActorsIds());
@@ -59,9 +62,12 @@ public class MovieService {
     // Movie CRUD endpoints
 
     /**
-     * POST - movies
-     * new movies with their title, release year, duration, associated genre, and actors.
-     * @return
+     * Method for POST endpoint - create movie
+     * creates new movie with their title, release year, duration, associated genres, and actors.
+     * saves to repository
+     * uses movieMapper interface to convert entity to DTO
+     * @param createMovieDto - DTO object of movie for creating and modifying movies
+     * @return MovieDto to controller
      */
     public MovieDto createMovie(CreateMovieDto createMovieDto) {
         MovieEntity entity = movieRepository.save(movieMapper.toEntity(createMovieDto));
@@ -78,10 +84,10 @@ public class MovieService {
 
     /**
      * Get all movies, including pagination and search
-     * Partial TitleMatch Search
+     * using mapper interface method to convert entity to dto
      * @param searchCriteria - title search
-     * @param pageable - default page 0 , size 10
-     * return all movies
+     * @param pageable - default page 0 , size 10, and searchCriteria if present
+     * @return movies
      */
     public Page<MovieDto> getAllMovies(String searchCriteria, Pageable pageable) {
 
@@ -96,27 +102,24 @@ public class MovieService {
                 .map(movieMapper::toMovieDto);
     }
 
-
-// fetch a specific movie by ID,
     /**
-     * get movies id
+     * get movie by id
+     * using mapper interface method to convert entity to dto
      * retrieving a specific genre by ID
-     * @param - genre id
-     * @return - returns genre by id
+     * @param movieId - movie id
+     * @return - returns single item of movieDto
      */
-    public MovieDto getMovieById(Long id) {
+    public MovieDto getMovieById(Long movieId) {
        return movieMapper.toMovieDto(movieRepository
-               .findById(id)
-               .orElseThrow(() -> new RuntimeException("Movie not found by that id: " + id)));
+               .findById(movieId)
+               .orElseThrow(() -> new RuntimeException("Movie not found by that id: " + movieId)));
 
     }
-
     /**
-     * filter movies by genre or release year.
-     * NOT DONE
-     * @return
-     * @param - genreId
-     * @return filter a list of movies with the genre
+     * get and filter movies by genre or release year using pagination.
+     * @param genreId - genre id
+     * @param pageable - pageable object with size and page
+     * @return page type of MovieDTOs filtered by genre
      */
     public Page<MovieDto> getMoviesByGenre(Long genreId, Pageable pageable) {
 
@@ -127,6 +130,8 @@ public class MovieService {
 
     /**
      * GET /api/movies?year={releaseYear}: Retrieve movies filtered by release year
+     * @param releaseYear - movie release year
+     * @param pageable - pageable object with size and page
      * filter or release year.
      */
     public Page<MovieDto> filterByYear(int releaseYear, Pageable pageable) {
@@ -136,30 +141,37 @@ public class MovieService {
 
     }
     /**
-     * /Updating a movie's details (including its title, release year, duration, genre, and actors)
+     * PATCH
+     * Modify movies including its title, release year, duration, genre, and actors
+     * @param movieId - id of the movie
+     * @param dto - DTO object of movie for creating and modifying movies
      */
     public void modifyMovie(Long movieId, CreateMovieDto dto) {
-        MovieEntity movie = movieRepository.
-                findById(movieId)
+        MovieEntity movie = movieRepository
+                .findById(movieId)
                 .orElseThrow(() -> new ResourceNotFoundException(MOVIE_NOT_FOUND + movieId));
 
         movie.setTitle(dto.getTitle());
         movie.setReleaseYear(dto.getReleaseYear());
         movie.setDuration(dto.getDuration());
-        // helper method to retrieve actors and genres
+        // helper method to retrieve and save actors
         assignGenresToMovies(movie, dto);
+        // helper method to retrieve and save genres
         assignActorsToMovies(movie, dto);
 
         movieRepository.save(movie);
     }
 
     /**
-     * GET /api/movies/{movieId}/actors: Retrieve all actors starring in a movie
-     * Don't forget to implement a way to get all actors in a specific movie.
+     * GET /api/movies/{movieId}/actors: Retrieves all actors starring in a movie
+     * @param movieId - id of the movie
+     * @param pageable - pageable object including parameters for pagination
+     * @return - page type of movieDto
      */
     public Page<ActorDto> getAllActorsInMovie(Long movieId, Pageable pageable) {
       movieRepository.findById(movieId).orElseThrow(() ->
               new ResourceNotFoundException(MOVIE_NOT_FOUND + movieId));
+
 
       return actorRepository.findActorEntitiesByMovieId(movieId, pageable)
               .map(actorMapper::toActorDto);
@@ -167,8 +179,11 @@ public class MovieService {
     }
     /**
      * DELETE /api/{entity}/{id}: Delete an entity
+     * deletes movie by id if there is no associated genres and actors
      * DELETE /api/movies/1?force=true
-     * and removing a movie should also be supported.
+     * forces delete regardless
+     * @param movieId - id of the movie
+     * @param force - boolean value whether to override delete
      */
     public void removeMovie(Long movieId, boolean force) {
 
@@ -203,9 +218,7 @@ public class MovieService {
 
         }
         movieRepository.deleteById(movieId);
-
     }
-
     }
 
 
