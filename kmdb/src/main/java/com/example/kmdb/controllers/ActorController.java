@@ -32,14 +32,15 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/actor")
+@RequestMapping("/api/actors")
 @RequiredArgsConstructor // fields that have final create constructor
 public class ActorController {
 
     private final ActorService actorService;
 
-    /** create a new entity
+    /** create a new actor
      * POST/api/actor
+     * returns response entity actorDto
      */
     @PostMapping
     public ResponseEntity<ActorDto> createActor(@Valid @RequestBody CreateActorDto createActorDto) {
@@ -47,8 +48,9 @@ public class ActorController {
         return ResponseEntity.ok(actorService.createActor(createActorDto));
 }
     /** retrieve all actors
-     * GET/api/{entity}:
-     *
+     * GET/api/{entity}
+     * pagination default 0, size 10
+     * @param pageable - takes in pageable object
      */
     @GetMapping
     public ResponseEntity<Page<ActorDto>> getAllActors(
@@ -59,7 +61,7 @@ public class ActorController {
     }
     /**
      * retrieving a specific actor by ID
-     * @param - genre id
+     * @param id - genre id
      * @return - returns genre by id
      */
     @GetMapping("/{id}")
@@ -67,28 +69,31 @@ public class ActorController {
         ActorDto actor = actorService.getActorById(id);
         return ResponseEntity.ok(actor);
     }
-    /**
-     * GET /api/movies?actor={Actor.id}: Retrieve movies that the actor with the given id has starred in
+    /** Retrieve movies that the actor with the given id has starred in
+     * GET /api/movies?actor={Actor.id}
+     * @param actorId - actor id
+     * @param pageable - pageable object
+     * @return type of page MovieDtos
      */
     @GetMapping(params = "actor")
-    public ResponseEntity<Page<MovieDto>> filterMoviesActorStarred(@RequestParam("actor") Long actorId, Pageable pageable) {
+    public ResponseEntity<Page<MovieDto>> getMoviesWhereActorAppeared(@RequestParam("actor") Long actorId, Pageable pageable) {
         Page<MovieDto> movies =  actorService.getMoviesWhereActorAppeared(actorId, pageable);
 
         return ResponseEntity.ok(movies);
     }
-    /**
+    /** partial actor update
      * PATCH /api/{entity}/{id}
-     * modify path variable id
+     * @param id - Path Variable for actor id
      */
-    @PatchMapping("api/{id}")
+    @PatchMapping("/{id}")
     public void modifyActor(@PathVariable Long id, @RequestBody CreateActorDto actorDto) {
 
         actorService.modifyActor(id, actorDto);
     }
 
     /**
-     * DELETE /api/{entity}/{id}: Delete an actor
-     * modify path variable id
+     * DELETE /api/{actors}/{id}: Delete an actor
+     * @param id - Path Variable for actor id
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT) //  tells Spring to return 204 if the method completes successfully.
@@ -103,6 +108,8 @@ public class ActorController {
 
     /**
      * GET /api/actors?name={name}: Retrieve actors filtered by name
+     * @param name - request param for string name
+     * @param pageable - pageable object
      */
     @GetMapping("/api/actors")
     public ResponseEntity<Page<ActorDto>> filterActorsByName(@RequestParam String name,

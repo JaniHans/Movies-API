@@ -3,7 +3,7 @@ package com.example.kmdb.controllers;
 import com.example.kmdb.dtos.GenreDto;
 import com.example.kmdb.dtos.MovieDto;
 import com.example.kmdb.dtos.create.CreateGenreDto;
-import com.example.kmdb.entities.GenreEntity;
+
 import com.example.kmdb.services.GenreService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,11 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import java.net.URI;
-import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/genres")
@@ -36,7 +31,7 @@ public class GenreController {
 
 
     /** create a new entity
-     * POST /api/{entity}
+     * POST /api/{genres}
      */
     @PostMapping
     public ResponseEntity<GenreDto> createGenre(@Valid @RequestBody CreateGenreDto request) {
@@ -45,9 +40,9 @@ public class GenreController {
 
     }
 
-    /** retrieve all entities
-     * GET /api/{entity}:
-     * returns JSON - [{"id":1,"name":"Action"}, {"id":2,"name":"Comedy"}])
+    /** retrieve all genres
+     * GET /api/{genres}:
+     * @param pageable -pageable object containing all genres
      */
     @GetMapping
     public ResponseEntity<Page<GenreDto>> getGenres(@PageableDefault(page = 0, size = 10)
@@ -57,17 +52,23 @@ public class GenreController {
     }
 
     /**
-     * GET /api/{entity}/{id}
-     * retrieve a specific entity by ID
+     * retrieve a specific genre by id
+     * GET /api/{genres}/{id}
+     * @param id - genre id
      */
     @GetMapping("/{id}")
-    public GenreDto getGenreId(@PathVariable Long id) {
-       return genreService.getGenreById(id);
+    public ResponseEntity<GenreDto> getGenreId(@PathVariable Long id) {
+
+        GenreDto genre = genreService.getGenreById(id);
+
+        return ResponseEntity.ok(genre);
+
     }
 
     /**
-     * PATCH /api/{entity}/{id}
-     * modify path variable id
+     * modify existing genre details
+     * PATCH /api/{genres}/{id}
+     * @param id - genre id
      */
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -79,19 +80,21 @@ public class GenreController {
 
     /**
      * GET /api/movies?genre={genreId}: Retrieve movies filtered by genre
-     * @param genreId
-     * @return
+     * @param id - genre id
+     * @return movies associated with the genre
      */
-    @GetMapping("/{genreId}")
-    public ResponseEntity<Page<MovieDto>> filterMoviesByGenre(@PathVariable Long genreId, Pageable pageable) {
-       Page<MovieDto> movies =  genreService.filterMoviesByGenre(genreId, pageable);
+    @GetMapping(params = "genre")
+    public ResponseEntity<Page<MovieDto>> filterMoviesByGenre(@RequestParam("genre") Long id, Pageable pageable) {
+       Page<MovieDto> movies =  genreService.filterMoviesByGenre(id, pageable);
 
         return ResponseEntity.ok(movies);
     }
 
     /**
-     * DELETE /api/{entity}/{id}: Delete an entity
-     * modify path variable id
+     * DELETE /api/{genres}/{id}: Delete an entity
+     * DELETE /api/genres/1?force=true
+     * @param id - genre id
+     * @param force - force delete
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT) //  tells Spring to return 204 if the method completes successfully.

@@ -15,6 +15,7 @@ import com.example.kmdb.repositories.GenreRepository;
 import com.example.kmdb.repositories.MovieRepository;
 import lombok.RequiredArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +26,7 @@ import java.util.ArrayList;
 
 import java.util.List;
 
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MovieService {
@@ -178,12 +179,12 @@ public class MovieService {
 
     }
     /**
-     * DELETE /api/{entity}/{id}: Delete an entity
      * deletes movie by id if there is no associated genres and actors
+     * DELETE /api/{entity}/{id}: Delete an entity
      * DELETE /api/movies/1?force=true
      * forces delete regardless
      * @param movieId - id of the movie
-     * @param force - boolean value whether to override delete
+     * @param force - boolean value whether regular delete
      */
     public void removeMovie(Long movieId, boolean force) {
 
@@ -218,6 +219,7 @@ public class MovieService {
 
         }
         movieRepository.deleteById(movieId);
+        log.info("Movie deleted");
     }
     }
 

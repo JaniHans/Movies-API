@@ -44,8 +44,8 @@ public class ActorService {
     /**
      * takes in entity and DTO movieids to find the movies
      * and sets entity correctly with the movies
-     * @param entity
-     * @param actor
+     * @param entity - actor entity
+     * @param actor - createActorDto
      */
     private void getAndSetMoviesToActor(ActorEntity entity, CreateActorDto actor) {
         List<MovieEntity> movies = movieRepository.findAllById(actor.getMovieIds());
@@ -65,8 +65,9 @@ public class ActorService {
         return actorMapper.toActorDto(actorEntity);
     }
     /**
-     *Implement methods to retrieve all actors,
-     * Also pagination, default page 0 , size 10 GET /api/actors?page=0&size=10
+     *Implement methods to retrieve all actors, pagination included
+     * GET /api/actors?page=0&size=10
+     * return pageable object
     */
     public Page<ActorDto> getActors(Pageable pageable) {
 
@@ -83,9 +84,13 @@ public class ActorService {
 
     }
 
-    /**fetch all movies an actor has appeared in.
+    /**
+     * fetch all movies an actor has appeared in.
      * GET /api/movies?actor={Actor.id}
      * Pagination
+     * @param actorId -actor id
+     * @param pageable - pageable object
+     * @return MovieDto of page type
      */
     public Page<MovieDto> getMoviesWhereActorAppeared(Long actorId, Pageable pageable) {
         actorRepository.findById(actorId).orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + actorId));
@@ -97,9 +102,12 @@ public class ActorService {
 
 //    Lastly, ensure you can modify an existing actor's details
     /**
-     * PATCH /api/{entity}/{id}: Partially update an existing entity
+     * PATCH /api/{actor}/{id}
+     * Partially update an existing entity
      * Modify actor's name, date of birth, and associated movies.
      * Saves the changes to the actor repository.
+     * @param actorId - actor id
+     * @param actorDto - createActorDto
      */
     public void modifyActor(Long actorId, CreateActorDto actorDto) {
      ActorEntity actor = actorRepository
@@ -114,8 +122,12 @@ public class ActorService {
     }
 
     /**
+     * Remove actor from the database
+     * Force delete if actor has associated movies
      * DELETE /api/actors/1
      * DELETE /api/actors/1?force=true
+     * @param actorId - actor id
+     * @param force - boolean for force deletion
      * and remove an actor from the database.
      */
     public void removeActor(Long actorId, boolean force) {
@@ -142,11 +154,13 @@ public class ActorService {
                 movie.getActors().remove(actor);
             }
             actorRepository.deleteById(actorId);
+            log.info("Actor deleted");
         }
 
     /**
-     * @param - NOT DONE pagination
      * GET /api/actors?name={name}: Retrieve actors filtered by name
+     * @param name - actor name
+     * @param pageable - pageable object
      */
     public Page<ActorDto> filterActorsByName(String name, Pageable pageable) {
         if (name.isEmpty()) {

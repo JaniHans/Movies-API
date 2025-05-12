@@ -45,8 +45,8 @@ public class GenreService {
     /**
      * POST /api/{genres}: Create a new entity
      * create genre and save it into the database
-     * @param - genre name
-     * @return - returns genre by id
+     * @param dto - genreDto for creation
+     * @return - returns genreDTo by id
      */
     public GenreDto createGenre(CreateGenreDto dto) {
 
@@ -60,6 +60,7 @@ public class GenreService {
     /**
      * GET /api/{genres}
      * PAGINATION
+     * @param pageable - genre pageable object
      * return all genres
      */
     public Page<GenreDto> getAllGenres(Pageable pageable) {
@@ -111,9 +112,8 @@ public class GenreService {
     /**
      * DELETE /api/genres/1
      * DELETE /api/genres/1?force=true
-     * @param - genre id
-     * check if it is present in genrerepository
-     * delete and return true
+     * @param id - genre id
+     * @param force - force delete boolean
      */
     public void removeGenre(Long id, boolean force) {
 
@@ -144,6 +144,7 @@ public class GenreService {
             }
 
             genreRepository.deleteById(id);
+            log.info("Genre deleted");
         }
 
     }

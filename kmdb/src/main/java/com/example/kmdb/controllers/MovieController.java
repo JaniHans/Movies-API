@@ -24,11 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
-import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/movies")
@@ -36,10 +32,11 @@ import java.util.Set;
 public class MovieController {
 
     private final MovieService movieService;
-    private final MovieRepository movieRepository;
 
-    /** create a new entity
-     * POST /api/{entity}
+    /** create new movie
+     * POST /api/{movies}
+     * @param request - movie request details to create new movie
+     * @return movieDto of ResponseEntity for HTTP status
      */
     @PostMapping
     public ResponseEntity<MovieDto> createMovie(@Valid @RequestBody CreateMovieDto request) {
@@ -48,10 +45,13 @@ public class MovieController {
     return ResponseEntity.ok(dto);
 
     }
-    /** retrieve all entities
-     * GET /api/{entity}:
-     * returns JSON - [{"id":1,"name":"Action"}, {"id":2,"name":"Comedy"}])
+
+    /** retrieve all entities using pagination and search if present
+     * GET /api/movies
      * GET /api/movies/search?title=matrix
+     * @param searchCriteria - for search criteria default empty string
+     * @param page - for pagination page size
+     * @param size - for pagination item size
      */
     @GetMapping
     public ResponseEntity<Page<MovieDto>> getMovies(
@@ -70,17 +70,20 @@ public class MovieController {
 
         return ResponseEntity.ok(movies);
     }
+
     /**
-     * GET /api/{movie}/{id}
+     * GET /api/{movies}/{id}
      * retrieve a specific movie by ID
      */
     @GetMapping("/{id}")
     public MovieDto getMovieId(@PathVariable Long id) {
         return movieService.getMovieById(id);
     }
+
     /**
-     * PATCH /api/{entity}/{id}: Partially update an existing entity
-     * retrieve a specific entity by ID
+     * PATCH /api/movies/{movieId}: Partially update an existing entity
+     * @param id - path variable in the http request movie id
+     * @param request - movie details comes in as request body
      */
     @PatchMapping("/{id}")
     public void modifyMovie(@PathVariable Long id, @RequestBody CreateMovieDto request) {
@@ -88,9 +91,11 @@ public class MovieController {
         movieService.modifyMovie(id, request);
     }
     /**
-     * DELETE /api/{entity}/{id}: Delete an entity
+     * DELETE /api/{movies}/{id}: Delete movie
+     * DELETE /api/movies/1?force=true
      * modify path variable id
-     *  PathVariable - Binds from the URL path
+     * @param id - path variable in the http request movie id
+     * @param force - force delete
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT) //  tells Spring to return 204 if the method completes successfully.
@@ -99,17 +104,15 @@ public class MovieController {
         movieService.removeMovie(id, force);
 
     }
-    // Filtering endpoints
+
     /**
      * GET /api/movies?genre={genreId}:
      * Retrieve movies filtered by genre
      * RequestParam - Binds from the URL query string
      */
     @GetMapping(params = "genre")
-    // Only accept the request if there is a query parameter called genreId present.
-    public ResponseEntity<Page<MovieDto>> getMoviesByGenre(
-            @RequestParam("genre") Long genreId,
-            @PageableDefault(page = 0, size = 10)  Pageable pageable) {
+    public ResponseEntity<Page<MovieDto>> getMoviesByGenre(@RequestParam("genre") Long genreId,
+                                                           @PageableDefault(page = 0, size = 10)  Pageable pageable) {
         Page<MovieDto> movies = movieService.getMoviesByGenre(genreId, pageable);
         return ResponseEntity.ok(movies);
     }
