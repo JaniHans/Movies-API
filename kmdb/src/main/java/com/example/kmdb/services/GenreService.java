@@ -50,10 +50,10 @@ public class GenreService {
      */
     public GenreDto createGenre(CreateGenreDto dto) {
 
-        log.info("createGenre() {}, {}", dto.getName(), dto.getMovieIds());
+        log.info("Genre created : {}, movieIds :{}", dto.getName(), dto.getMovieIds());
         GenreEntity entity = genreRepository.save(genreMapper.toEntity(dto));
 
-        return genreMapper.toDto(entity);
+        return genreMapper.toGenreDto(entity);
 
     }
 
@@ -66,8 +66,7 @@ public class GenreService {
     public Page<GenreDto> getAllGenres(Pageable pageable) {
         log.info("Retrieving all genres");
         return genreRepository.findAll(pageable)
-                .map(genreMapper::toDto);
-
+                .map(genreMapper::toGenreDto);
     }
 
     /**
@@ -77,7 +76,7 @@ public class GenreService {
      * @return - returns genre by id
      */
     public GenreDto getGenreById(Long id) {
-        return genreMapper.toDto(genreRepository.findById(id)
+        return genreMapper.toGenreDto(genreRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + id)));
     }
 

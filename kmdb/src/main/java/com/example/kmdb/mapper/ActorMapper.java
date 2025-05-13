@@ -4,17 +4,11 @@ import com.example.kmdb.dtos.ActorDto;
 import com.example.kmdb.dtos.create.CreateActorDto;
 import com.example.kmdb.entities.ActorEntity;
 import org.mapstruct.Mapper;
-import org.springframework.data.domain.Page;
-import org.springframework.stereotype.Repository;
+
 
 import java.util.List;
-@Repository
 @Mapper(componentModel = "spring") // mapper ends spring so we can inject
 public interface ActorMapper {
-
-//    List<ActorEntity> actorList = ActorRepository.findAll();
-//    ActorResponseDto actorDto = new ActorResponseDto();
-//    actorDto.setName(ActorRequestDto.getName());
 
     ActorDto toActorDto(ActorEntity actorEntity);
     ActorEntity toEntity(ActorDto actorDto);
