@@ -3,7 +3,7 @@ package com.example.kmdb.controllers;
 import com.example.kmdb.dtos.ActorDto;
 import com.example.kmdb.dtos.MovieDto;
 import com.example.kmdb.dtos.create.CreateMovieDto;
-import com.example.kmdb.repositories.MovieRepository;
+
 import com.example.kmdb.services.MovieService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
