@@ -105,3 +105,104 @@ The API digitizes the society’s movie collection previously managed via spread
    		<scope>test</scope>
    	</dependency>
    </dependencies>
+
+🚀 Usage Guide
+Base URL
+http://localhost:8080/api
+
+Endpoints Overview
+Genres
+POST /genres
+
+GET /genres
+
+GET /genres/{id}
+
+PATCH /genres/{id}
+
+DELETE /genres/{id}?force={true|false}
+
+GET /genres/{id}/movies
+
+Movies
+POST /movies
+
+GET /movies
+
+GET /movies/{id}
+
+PATCH /movies/{id}
+
+DELETE /movies/{id}?force={true|false}
+
+GET /movies?genre={id}
+
+GET /movies?year={YYYY}
+
+GET /movies?actor={actorId}
+
+GET /movies/{id}/actors
+
+GET /movies/search?title={query} ← partial, case-insensitive
+
+GET /movies?page=0&size=10 ← pagination
+
+Actors
+POST /actors
+
+GET /actors
+
+GET /actors/{id}
+
+PATCH /actors/{id}
+
+DELETE /actors/{id}?force={true|false}
+
+GET /actors?name={name}
+
+📑 Sample Data
+Populated with:
+
+Genres: 5+
+
+Movies: 20+ spanning multiple genres and decades
+
+Actors: 15+ with varying associations
+
+🛡️ Error Handling
+Validation: Bean Validation annotations (@NotNull, @Size, etc.)
+
+Custom Exception: ResourceNotFoundException
+
+Global Exception Handling: Via @ControllerAdvice
+
+Status Codes: Proper use of 200, 201, 400, 404, 204, etc.
+
+🧪 Testing
+All endpoints tested using Postman:
+
+CRUD for all entities
+
+Filtering and search endpoints
+
+Validation and error scenarios
+
+Force deletion logic
+
+🧠 What I Learned
+Building REST APIs with Spring Boot and JPA
+
+Managing many-to-many relationships
+
+Designing extensible services and controllers
+
+Implementing clean error handling strategies
+
+Pagination and custom search query logic
+
+✨ Extra Features
+✅ Pagination support via Pageable in GET requests
+
+✅ Title-based search endpoint for movies (/movies/search)
+
+🧹 Force-delete logic for safe resource management
