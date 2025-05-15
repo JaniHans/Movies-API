@@ -11,14 +11,16 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
+@Data
 public class CreateMovieDto {
+
+
     @NotNull
     private String title;
     @NotNull
     private int releaseYear;
     @NotNull
     private int duration;
-    private final List<Long> genresIds = new ArrayList<>();
-    private final List<Long> actorsIds = new ArrayList<>();
+    private List<Long> genresIds = new ArrayList<>();
+    private List<Long> actorsIds = new ArrayList<>();
 }

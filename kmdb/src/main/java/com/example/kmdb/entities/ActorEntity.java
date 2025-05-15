@@ -3,7 +3,7 @@ package com.example.kmdb.entities;
 
 import jakarta.persistence.*;
 
-import lombok.Data;
+
 import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDate;
@@ -30,8 +30,6 @@ public class ActorEntity {
     @Setter
     private List<MovieEntity> movies = new ArrayList<>();
 
-    private void setId(Long id) {
-        // Do nothing
-    }
+
 
 }

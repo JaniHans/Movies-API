@@ -3,7 +3,7 @@ package com.example.kmdb.dtos.create;
 
 import jakarta.validation.constraints.NotNull;
 
-import lombok.Getter;
+import lombok.Data;
 
 
 import java.time.LocalDate;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 import java.util.List;
 
-@Getter
+@Data
 
 public class CreateActorDto {
 
@@ -20,6 +20,6 @@ public class CreateActorDto {
 
     @NotNull
     private LocalDate birthDate;
-    private final List<Long> movieIds = new ArrayList<>();
+    private  List<Long> movieIds = new ArrayList<>();
 
 }
