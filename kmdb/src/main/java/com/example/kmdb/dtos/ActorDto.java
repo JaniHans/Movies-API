@@ -14,6 +14,8 @@ import java.util.List;
 
 public class ActorDto {
 
+    private Long id;
+
     private String name;
 
     private LocalDate birthDate;
