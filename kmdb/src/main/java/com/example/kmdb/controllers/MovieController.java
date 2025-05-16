@@ -53,9 +53,9 @@ public class MovieController {
      * @param page - for pagination page size
      * @param size - for pagination item size
      */
-    @GetMapping
+    @GetMapping("/search")
     public ResponseEntity<Page<MovieDto>> getMovies(
-            @RequestParam(defaultValue = "") String searchCriteria,
+            @RequestParam(name = "title", defaultValue = "") String searchCriteria,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
