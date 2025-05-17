@@ -43,9 +43,10 @@ public class GenreService {
             throw new MethodArgumentNotValidException("Name of the genre can't be null or empty");
         }
 
-        List<MovieEntity> movies = movieRepository.findAllById(genreDto.getMovieIds());
+        List<MovieEntity> movies = movieRepository.findAllById(genreDto.getMovies());
         List<MovieEntity> moviesEntities = new ArrayList<>(movies);
         entity.setMovies(moviesEntities);
+
     }
 
     /**
@@ -60,7 +61,7 @@ public class GenreService {
 //            throw new MethodArgumentNotValidException("Name of the genre can't be null or empty");
 //        }
 
-        log.info("Genre created : {}, movieIds :{}", genreDto.getName(), genreDto.getMovieIds());
+        log.info("Genre created : {}, movieIds :{}", genreDto.getName(), genreDto.getMovies());
         GenreEntity entity = genreRepository.save(genreMapper.toEntity(genreDto));
 
         return genreMapper.toGenreDto(entity);
@@ -109,7 +110,7 @@ public class GenreService {
      * @param - genreId and genre new Name
      * modify genres name with the newname, save to genre repository
      */
-    public void modifyGenresName(Long genreId, CreateGenreDto genreDto) {
+    public void modifyGenre(Long genreId, CreateGenreDto genreDto) {
 
         GenreEntity entity = genreRepository
                 .findById(genreId)

@@ -3,6 +3,7 @@ package com.example.kmdb.mapper;
 import com.example.kmdb.dtos.GenreDto;
 import com.example.kmdb.dtos.create.CreateGenreDto;
 import com.example.kmdb.entities.GenreEntity;
+import com.example.kmdb.entities.MovieEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -17,5 +18,6 @@ public interface GenreMapper {
 
     GenreEntity toEntity(CreateGenreDto createGenreDto);
 
+    List<MovieEntity> toMovieEntityList(List<Long> movieIds)
     List<GenreDto> toDtoList(List<GenreEntity> actor);
 }

@@ -17,5 +17,5 @@ public class CreateGenreDto {
 
     @NotEmpty
     private String name;
-    private List<Long> movieIds = new ArrayList<>();
+    private List<Long> movies = new ArrayList<>();
 }

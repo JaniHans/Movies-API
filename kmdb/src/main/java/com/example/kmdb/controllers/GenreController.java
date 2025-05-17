@@ -74,7 +74,7 @@ public class GenreController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void modifyGenre(@PathVariable Long id, @Valid @RequestBody CreateGenreDto request) {
 
-        genreService.modifyGenresName(id, request);
+        genreService.modifyGenre(id, request);
 
     }
 
