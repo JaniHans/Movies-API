@@ -1,7 +1,6 @@
 package com.example.kmdb.dtos;
 
-import lombok.AccessLevel;
-import lombok.Data;
+
 import lombok.Getter;
 import lombok.Setter;
 

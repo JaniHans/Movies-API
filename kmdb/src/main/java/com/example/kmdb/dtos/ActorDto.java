@@ -22,6 +22,6 @@ public class ActorDto {
 
     private LocalDate birthDate;
 
-    private List<Long> movieIds = new ArrayList<>();
+    private List<MovieDto> movies = new ArrayList<>();
 
 }

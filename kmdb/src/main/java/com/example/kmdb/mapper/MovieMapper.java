@@ -4,11 +4,10 @@ import com.example.kmdb.dtos.MovieDto;
 import com.example.kmdb.dtos.create.CreateMovieDto;
 import com.example.kmdb.entities.MovieEntity;
 import org.mapstruct.Mapper;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {GenreMapper.class, ActorMapper.class})
 public interface MovieMapper {
 
     MovieDto toMovieDto(MovieEntity movieEntity);

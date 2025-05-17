@@ -1,7 +1,7 @@
 package com.example.kmdb.dtos;
 
 
-import lombok.Data;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,6 +17,6 @@ public class GenreDto {
 
     private String name;
 
-    private List<Long> movieIds = new ArrayList<>();
+    private List<MovieDto> movies = new ArrayList<>();
 
 }

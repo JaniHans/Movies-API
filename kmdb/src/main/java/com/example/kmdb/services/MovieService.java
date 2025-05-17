@@ -83,6 +83,20 @@ public class MovieService {
         return movieMapper.toMovieDto(entity);
     }
 
+
+
+    /**
+     * Get all movies, including pagination and search
+     * using mapper interface method to convert entity to dto
+     * @param pageable - default page 0 , size 10, and searchCriteria if present
+     * @return movies
+     */
+    public Page<MovieDto> getAllMovies(Pageable pageable) {
+
+            return movieRepository.findAll(pageable)
+                    .map(movieMapper::toMovieDto);
+        }
+
     /**
      * Get all movies, including pagination and search
      * using mapper interface method to convert entity to dto
@@ -90,7 +104,7 @@ public class MovieService {
      * @param pageable - default page 0 , size 10, and searchCriteria if present
      * @return movies
      */
-    public Page<MovieDto> getAllMovies(String searchCriteria, Pageable pageable) {
+    public Page<MovieDto> getAllMoviesSpecial(String searchCriteria, Pageable pageable) {
 
         if (searchCriteria.isEmpty()) {
             // create regular pageable with page and size

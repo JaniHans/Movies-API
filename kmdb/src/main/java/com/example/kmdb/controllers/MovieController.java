@@ -47,6 +47,27 @@ public class MovieController {
     }
 
     /** retrieve all entities using pagination and search if present
+     * GET /api/movies, default pagination
+     * @param title - for search criteria default empty string
+     * @param page - for pagination page size
+     * @param size - for pagination item size
+     */
+    @GetMapping()
+    public ResponseEntity<Page<MovieDto>> getAllMovies(
+            @RequestParam(defaultValue = "") String title,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable;
+            // create regular pageable with page and size
+            pageable = PageRequest.of(page, size);
+
+        Page<MovieDto> movies = movieService.getAllMovies(pageable);
+
+        return ResponseEntity.ok(movies);
+    }
+
+    /** retrieve all entities using pagination and search if present
      * GET /api/movies
      * GET /api/movies/search?title=matrix
      * @param title - for search criteria default empty string
@@ -54,7 +75,7 @@ public class MovieController {
      * @param size - for pagination item size
      */
     @GetMapping("/search")
-    public ResponseEntity<Page<MovieDto>> getMovies(
+    public ResponseEntity<Page<MovieDto>> getMoviesWithSearchAndPagination(
             @RequestParam(defaultValue = "") String title,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -66,7 +87,7 @@ public class MovieController {
         } else {
             pageable = PageRequest.of(page, size, Sort.by("title").ascending());
         }
-        Page<MovieDto> movies = movieService.getAllMovies(title, pageable);
+        Page<MovieDto> movies = movieService.getAllMoviesSpecial(title, pageable);
 
         return ResponseEntity.ok(movies);
     }
