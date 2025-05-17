@@ -8,6 +8,7 @@ import com.example.kmdb.entities.ActorEntity;
 import com.example.kmdb.entities.GenreEntity;
 import com.example.kmdb.entities.MovieEntity;
 import com.example.kmdb.exceptions.DeleteNotAllowedException;
+import com.example.kmdb.exceptions.MethodArgumentNotValidException;
 import com.example.kmdb.exceptions.ResourceNotFoundException;
 import com.example.kmdb.mapper.ActorMapper;
 import com.example.kmdb.mapper.GenreMapper;
@@ -37,6 +38,11 @@ public class GenreService {
     private final MovieMapper movieMapper;
 
     private void getAndSetMoviesToGenre(GenreEntity entity, CreateGenreDto genreDto) {
+
+        if (genreDto.getName().isBlank()) {
+            throw new MethodArgumentNotValidException("Name of the genre can't be null or empty");
+        }
+
         List<MovieEntity> movies = movieRepository.findAllById(genreDto.getMovieIds());
         List<MovieEntity> moviesEntities = new ArrayList<>(movies);
         entity.setMovies(moviesEntities);
@@ -45,13 +51,17 @@ public class GenreService {
     /**
      * POST /api/{genres}: Create a new entity
      * create genre and save it into the database
-     * @param dto - genreDto for creation
+     * @param genreDto - genreDto for creation
      * @return - returns genreDTo by id
      */
-    public GenreDto createGenre(CreateGenreDto dto) {
+    public GenreDto createGenre(CreateGenreDto genreDto) {
 
-        log.info("Genre created : {}, movieIds :{}", dto.getName(), dto.getMovieIds());
-        GenreEntity entity = genreRepository.save(genreMapper.toEntity(dto));
+//        if (genreDto.getName().isBlank()) {
+//            throw new MethodArgumentNotValidException("Name of the genre can't be null or empty");
+//        }
+
+        log.info("Genre created : {}, movieIds :{}", genreDto.getName(), genreDto.getMovieIds());
+        GenreEntity entity = genreRepository.save(genreMapper.toEntity(genreDto));
 
         return genreMapper.toGenreDto(entity);
 
@@ -118,6 +128,7 @@ public class GenreService {
 
         GenreEntity genre = genreRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + id));
         // if associations exist and force is not true
+
         if (!genre.getMovies().isEmpty() && !force) {
             throw new DeleteNotAllowedException("Cannot delete genre "
                     + genre.getName()
