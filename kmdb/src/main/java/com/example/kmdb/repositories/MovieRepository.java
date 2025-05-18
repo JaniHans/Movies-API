@@ -33,4 +33,5 @@ public interface MovieRepository extends JpaRepository<MovieEntity, Long> {
 
     Page<MovieEntity> findByTitleContainingIgnoreCase(String title, Pageable pageable);
 
+
 }

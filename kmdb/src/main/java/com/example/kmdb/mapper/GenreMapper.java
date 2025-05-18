@@ -10,7 +10,7 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = MovieMapper.class)
 public interface GenreMapper {
 
     @Mapping(target = "movies", ignore = true)

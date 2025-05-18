@@ -15,6 +15,7 @@ import com.example.kmdb.mapper.GenreMapper;
 import com.example.kmdb.mapper.MovieMapper;
 import com.example.kmdb.repositories.GenreRepository;
 import com.example.kmdb.repositories.MovieRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -99,15 +101,34 @@ public class GenreService {
     }
 
     /**
+     * @param movies
+     */
+    private List<MovieDto> convertMovieEntitiesToMovieDto(List<MovieEntity> movies) {
+
+        List<MovieDto> movieDtos = new ArrayList<>();
+
+        if (!movies.isEmpty()) {
+            for (MovieEntity movie : movies) {
+               movieDtos.add(movieMapper.toMovieDto(movie));
+            }
+        }
+        return movieDtos;
+    }
+
+
+    /**
      * POST /api/{genres}: Create a new entity
-     * create genre and save it into the database
+     * create genre and save it into the database repository
      * @param genreDto - genreDto for creation
      * @return - returns genreDTo by id
      */
     public GenreDto createGenre(CreateGenreDto genreDto) {
 
         log.info("Genre created : {}, movieIds :{}", genreDto.getName(), genreDto.getMovies());
-        GenreEntity entity = genreRepository.save(createGenreDtoToGenreEntity(genreDto));
+        //
+        GenreEntity entity = createGenreDtoToGenreEntity(genreDto);
+
+        genreRepository.save(entity);
 
         return genreEntityToGenreDto(entity);
 
@@ -132,8 +153,20 @@ public class GenreService {
      * @return - returns genre by id
      */
     public GenreDto getGenreById(Long id) {
-        return genreMapper.toGenreDto(genreRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + id)));
+
+        try {
+            genreRepository.getReferenceById(id);
+
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException(GENRE_NOT_FOUND + " " + id);
+        }
+
+        GenreDto genre = genreEntityToGenreDto(genreRepository.getReferenceById(id));
+
+        genre.setMovies(convertMovieEntitiesToMovieDto(genreRepository.getReferenceById(id).getMovies()));
+
+        return genre;
+
     }
 
     /**
