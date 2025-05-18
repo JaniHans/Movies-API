@@ -50,6 +50,55 @@ public class GenreService {
     }
 
     /**
+     * modifies genreCreateDto to genreEntity
+     * sets list of movie ids to movie entities within the genre
+     * @param createGenreDto - genre
+     * @return genre entity
+     */
+    private GenreEntity createGenreDtoToGenreEntity(CreateGenreDto createGenreDto) {
+        if (createGenreDto == null || createGenreDto.getName().isBlank()) {
+            throw new MethodArgumentNotValidException("Name of the genre can't be null or empty");
+        }
+
+        GenreEntity entity = new GenreEntity();
+        entity.setName(createGenreDto.getName());
+
+        if (createGenreDto.getMovies().isEmpty()) {
+
+        return entity;
+        }
+
+        entity.setMovies(movieRepository.findAllById(createGenreDto.getMovies()));
+
+        return entity;
+    }
+    /**
+     * convert entity to genreDto
+     * converts list of movie entities to movieDTOs
+     * @param genreEntity - genre
+     * @return genreDTO
+     */
+    private GenreDto genreEntityToGenreDto(GenreEntity genreEntity) {
+
+        if (genreEntity == null || genreEntity.getName().isBlank()) {
+            throw new MethodArgumentNotValidException("Entity can't be null");
+        }
+
+        GenreDto genreDto = new GenreDto();
+        genreDto.setId(genreEntity.getId());
+        genreDto.setName(genreEntity.getName());
+
+        if (genreEntity.getMovies().isEmpty()) {
+            return genreDto;
+        }
+
+        genreDto.setMovies(movieMapper.toMovieDtoList(genreEntity.getMovies()));
+
+        return genreDto;
+
+    }
+
+    /**
      * POST /api/{genres}: Create a new entity
      * create genre and save it into the database
      * @param genreDto - genreDto for creation
@@ -57,14 +106,10 @@ public class GenreService {
      */
     public GenreDto createGenre(CreateGenreDto genreDto) {
 
-//        if (genreDto.getName().isBlank()) {
-//            throw new MethodArgumentNotValidException("Name of the genre can't be null or empty");
-//        }
-
         log.info("Genre created : {}, movieIds :{}", genreDto.getName(), genreDto.getMovies());
-        GenreEntity entity = genreRepository.save(genreMapper.toEntity(genreDto));
+        GenreEntity entity = genreRepository.save(createGenreDtoToGenreEntity(genreDto));
 
-        return genreMapper.toGenreDto(entity);
+        return genreEntityToGenreDto(entity);
 
     }
 

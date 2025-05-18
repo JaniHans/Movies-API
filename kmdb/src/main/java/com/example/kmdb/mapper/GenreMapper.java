@@ -1,6 +1,7 @@
 package com.example.kmdb.mapper;
 
 import com.example.kmdb.dtos.GenreDto;
+import com.example.kmdb.dtos.MovieDto;
 import com.example.kmdb.dtos.create.CreateGenreDto;
 import com.example.kmdb.entities.GenreEntity;
 import com.example.kmdb.entities.MovieEntity;
@@ -16,8 +17,6 @@ public interface GenreMapper {
     // Avoids circular reference
     GenreDto toGenreDto(GenreEntity genreEntity);
 
-    GenreEntity toEntity(CreateGenreDto createGenreDto);
 
-    List<MovieEntity> toMovieEntityList(List<Long> movieIds)
     List<GenreDto> toDtoList(List<GenreEntity> actor);
 }

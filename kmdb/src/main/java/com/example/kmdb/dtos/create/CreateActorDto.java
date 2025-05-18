@@ -20,6 +20,6 @@ public class CreateActorDto {
 
     @NotNull
     private LocalDate birthDate;
-    private  List<Long> movieIds = new ArrayList<>();
+    private List<Long> movieIds = new ArrayList<>();
 
 }
