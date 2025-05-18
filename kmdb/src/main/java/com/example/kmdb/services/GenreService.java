@@ -61,17 +61,13 @@ public class GenreService {
         if (createGenreDto == null || createGenreDto.getName().isBlank()) {
             throw new MethodArgumentNotValidException("Name of the genre can't be null or empty");
         }
-
         GenreEntity entity = new GenreEntity();
         entity.setName(createGenreDto.getName());
-
         if (createGenreDto.getMovies().isEmpty()) {
-
         return entity;
         }
 
         entity.setMovies(movieRepository.findAllById(createGenreDto.getMovies()));
-
         return entity;
     }
     /**
@@ -85,19 +81,12 @@ public class GenreService {
         if (genreEntity == null || genreEntity.getName().isBlank()) {
             throw new MethodArgumentNotValidException("Entity can't be null");
         }
-
         GenreDto genreDto = new GenreDto();
         genreDto.setId(genreEntity.getId());
         genreDto.setName(genreEntity.getName());
 
-        if (genreEntity.getMovies().isEmpty()) {
-            return genreDto;
-        }
-
-        genreDto.setMovies(movieMapper.toMovieDtoList(genreEntity.getMovies()));
-
+        genreDto.setMovies(convertMovieEntitiesToMovieDto(genreEntity.getMovies()));
         return genreDto;
-
     }
 
     /**
@@ -126,11 +115,19 @@ public class GenreService {
 
         log.info("Genre created : {}, movieIds :{}", genreDto.getName(), genreDto.getMovies());
         //
-        GenreEntity entity = createGenreDtoToGenreEntity(genreDto);
+        GenreEntity genre = createGenreDtoToGenreEntity(genreDto);
 
-        genreRepository.save(entity);
+        List<MovieEntity> movies = movieRepository.findAllById(genreDto.getMovies());
 
-        return genreEntityToGenreDto(entity);
+        for (MovieEntity movie : movies) {
+            movie.getGenres().add(genre);
+        }
+
+        genre.setMovies(movies);
+
+        genreRepository.save(genre);
+
+        return genreEntityToGenreDto(genre);
 
     }
 
@@ -154,18 +151,12 @@ public class GenreService {
      */
     public GenreDto getGenreById(Long id) {
 
-        try {
-            genreRepository.getReferenceById(id);
+      GenreEntity entity = genreRepository.findById(id)
+              .orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + " " + id));
 
-        } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(GENRE_NOT_FOUND + " " + id);
-        }
+      List<MovieEntity> movies = entity.getMovies();
 
-        GenreDto genre = genreEntityToGenreDto(genreRepository.getReferenceById(id));
-
-        genre.setMovies(convertMovieEntitiesToMovieDto(genreRepository.getReferenceById(id).getMovies()));
-
-        return genre;
+      return genreEntityToGenreDto(entity);
 
     }
 
