@@ -2,20 +2,16 @@ package com.example.kmdb.services;
 
 import com.example.kmdb.dtos.GenreDto;
 import com.example.kmdb.dtos.MovieDto;
-import com.example.kmdb.dtos.create.CreateActorDto;
 import com.example.kmdb.dtos.create.CreateGenreDto;
-import com.example.kmdb.entities.ActorEntity;
 import com.example.kmdb.entities.GenreEntity;
 import com.example.kmdb.entities.MovieEntity;
 import com.example.kmdb.exceptions.DeleteNotAllowedException;
 import com.example.kmdb.exceptions.MethodArgumentNotValidException;
 import com.example.kmdb.exceptions.ResourceNotFoundException;
-import com.example.kmdb.mapper.ActorMapper;
 import com.example.kmdb.mapper.GenreMapper;
 import com.example.kmdb.mapper.MovieMapper;
 import com.example.kmdb.repositories.GenreRepository;
 import com.example.kmdb.repositories.MovieRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -24,8 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -163,7 +157,7 @@ public class GenreService {
     /**
      * GET /api/movies?genre={genreId}: Retrieve movies filtered by genre
      * @param - genreId
-     * @return filter a list of movies with the genre
+     * @return filter a list of movies with the genre id
      */
    public Page<MovieDto> filterMoviesByGenre(Long genreId, Pageable pageable) {
 
@@ -176,17 +170,27 @@ public class GenreService {
    }
     /**
      * PATCH /api/{genres}/{id}
+     *
      * @param - genreId and genre new Name
-     * modify genres name with the newname, save to genre repository
+     *          modify genres name with the newname, save to genre repository
      */
     public void modifyGenre(Long genreId, CreateGenreDto genreDto) {
 
-        GenreEntity entity = genreRepository
-                .findById(genreId)
-                .orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + genreId));
-        entity.setName(genreDto.getName());
-        getAndSetMoviesToGenre(entity, genreDto);
-        genreRepository.save(entity);
+        GenreEntity genre = genreRepository.findById(genreId).orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + genreId));
+
+        List<MovieEntity> movies = genre.getMovies();
+
+        for (MovieEntity movie : movies) {
+            movie.getGenres().remove(genre);
+        }
+
+        genre.getMovies().clear();
+
+
+        genre.setName(genreDto.getName());
+
+        genreRepository.save(genre);
+
     }
     /**
      * DELETE /api/genres/1
