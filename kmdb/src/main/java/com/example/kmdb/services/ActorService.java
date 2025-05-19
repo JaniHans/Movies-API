@@ -1,10 +1,15 @@
 package com.example.kmdb.services;
 
 import com.example.kmdb.dtos.ActorDto;
+import com.example.kmdb.dtos.GenreDto;
 import com.example.kmdb.dtos.PageDto;
 import com.example.kmdb.dtos.create.CreateActorDto;
+import com.example.kmdb.dtos.create.CreateGenreDto;
+import com.example.kmdb.entities.GenreEntity;
+import com.example.kmdb.exceptions.MethodArgumentNotValidException;
 import com.example.kmdb.mapper.ActorMapper;
 import com.example.kmdb.mapper.MovieMapper;
+import com.example.kmdb.repositories.GenreRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -40,29 +45,87 @@ public class ActorService {
     private final MovieMapper movieMapper;
 
     private static final String ACTOR_NOT_FOUND = "Actor not found by id: ";
+    private final GenreService genreService;
+    private final GenreRepository genreRepository;
+
 
     /**
-     * takes in entity and DTO movieids to find the movies
-     * and sets entity correctly with the movies
-     * @param entity - actor entity
-     * @param actor - createActorDto
+     * creates genreCreateDto to genreEntity
+     * sets list of movie ids to movie entities within the genre
+     * @param createActorDto - actor
+     * @return genre entity
      */
-    private void getAndSetMoviesToActor(ActorEntity entity, CreateActorDto actor) {
-        List<MovieEntity> movies = movieRepository.findAllById(actor.getMovieIds());
-        List<MovieEntity> moviesEntities = new ArrayList<>(movies);
-        entity.setMovies(moviesEntities);
+    private ActorEntity createActorDtoToActorEntity(CreateActorDto createActorDto) {
+        if (createActorDto == null || createActorDto.getName().isBlank()) {
+            throw new MethodArgumentNotValidException("Name of the actor can't be null or empty");
+        }
+        ActorEntity actor = new ActorEntity();
+        actor.setName(createActorDto.getName());
+        actor.setBirthDate(createActorDto.getBirthDate());
+        if (createActorDto.getMovies().isEmpty()) {
+            return actor;
+        }
+
+        actor.setMovies(movieRepository.findAllById(createActorDto.getMovies()));
+        return actor;
     }
+
+    /**
+     * @param movies
+     */
+    private List<MovieDto> convertMovieEntitiesToMovieDto(List<MovieEntity> movies) {
+
+        List<MovieDto> movieDtos = new ArrayList<>();
+
+        if (!movies.isEmpty()) {
+            for (MovieEntity movie : movies) {
+                movieDtos.add(movieMapper.toMovieDto(movie));
+            }
+        }
+        return movieDtos;
+    }
+
+
+    /**
+     * convert entity to genreDto
+     * converts list of movie entities to movieDTOs
+     * @param actorEntity - genre
+     * @return genreDTO
+     */
+    private ActorDto actorEntityToActorDto(ActorEntity actorEntity) {
+
+        if (actorEntity == null || actorEntity.getName().isBlank()) {
+            throw new MethodArgumentNotValidException("Entity can't be null");
+        }
+        ActorDto actorDto = new ActorDto();
+        actorDto.setId(actorEntity.getId());
+        actorDto.setName(actorEntity.getName());
+        actorDto.setBirthDate(actorEntity.getBirthDate());
+
+        actorDto.setMovies(convertMovieEntitiesToMovieDto(actorEntity.getMovies()));
+        return actorDto;
+    }
+
 
     /**
      * POST /api/actor: Create a new actor entity
      */
     public ActorDto createActor(CreateActorDto createDto) {
         log.info("createActor {}, {}", createDto.getName(), createDto.getBirthDate());
-        ActorEntity actorEntity = actorRepository.save(actorMapper.toEntity(createDto));
-        // helper function
-        getAndSetMoviesToActor(actorEntity, createDto);
-        actorRepository.save(actorEntity);
-        return actorMapper.toActorDto(actorEntity);
+
+        ActorEntity actor = createActorDtoToActorEntity(createDto);
+        // find by movie IDS
+        List<MovieEntity> movies = movieRepository.findAllById(createDto.getMovies());
+
+        for (MovieEntity movie : movies) {
+            movie.getActors().add(actor);
+        }
+
+        actor.setMovies(movies);
+
+        actorRepository.save(actor);
+        return actorEntityToActorDto(actor);
+
     }
     /**
      *Implement methods to retrieve all actors, pagination included
@@ -72,16 +135,20 @@ public class ActorService {
     public Page<ActorDto> getActors(Pageable pageable) {
 
        log.info("Retrieving all actors");
-        return actorRepository.findAll(pageable)
-                .map(actorMapper::toActorDto);
+       Page<ActorEntity> actor = actorRepository.findAll(pageable);
+
+       return actor.map(this::actorEntityToActorDto);
+
     }
 
     /**
      * get a specific actor by ID
      */
     public ActorDto getActorById(Long id) {
-       return actorMapper.toActorDto(actorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + id)));
 
+        ActorEntity actor = actorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + id));
+
+        return actorEntityToActorDto(actor);
     }
 
     /**
@@ -114,9 +181,31 @@ public class ActorService {
              .findById(actorId)
              .orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + actorId));
 
-     actor.setName(actor.getName());
-     actor.setBirthDate(actor.getBirthDate());
-     getAndSetMoviesToActor(actor, actorDto);
+
+        if (actorDto.getMovies().isEmpty()) {
+
+            List<MovieEntity> movies = actor.getMovies();
+
+            for (MovieEntity movie : movies) {
+                movie.getActors().remove(actor);
+            }
+
+            actor.getMovies().clear();
+        } else {
+            // empty genres from movies before adding new movies, replace and delete old basically
+            for (MovieEntity movies : actor.getMovies()) {
+                movies.getActors().remove(actor);
+            }
+            actor.setMovies(movieRepository.findAllById(actorDto.getMovies()));
+
+            for (MovieEntity moviesNew : actor.getMovies()) {
+                moviesNew.getActors().add(actor);
+            }
+        }
+
+     actor.setName(actorDto.getName());
+     actor.setBirthDate(actorDto.getBirthDate());
+
      actorRepository.save(actor);
 
     }

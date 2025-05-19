@@ -33,20 +33,9 @@ public class GenreService {
     private final GenreMapper genreMapper;
     private final MovieMapper movieMapper;
 
-    private void getAndSetMoviesToGenre(GenreEntity entity, CreateGenreDto genreDto) {
-
-        if (genreDto.getName().isBlank()) {
-            throw new MethodArgumentNotValidException("Name of the genre can't be null or empty");
-        }
-
-        List<MovieEntity> movies = movieRepository.findAllById(genreDto.getMovies());
-        List<MovieEntity> moviesEntities = new ArrayList<>(movies);
-        entity.setMovies(moviesEntities);
-
-    }
 
     /**
-     * modifies genreCreateDto to genreEntity
+     * creates genreEntity from genreCreateDto
      * sets list of movie ids to movie entities within the genre
      * @param createGenreDto - genre
      * @return genre entity
@@ -110,6 +99,7 @@ public class GenreService {
         //
         GenreEntity genre = createGenreDtoToGenreEntity(genreDto);
 
+        // find by movie IDS
         List<MovieEntity> movies = movieRepository.findAllById(genreDto.getMovies());
 
         for (MovieEntity movie : movies) {
@@ -178,13 +168,27 @@ public class GenreService {
 
         GenreEntity genre = genreRepository.findById(genreId).orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + genreId));
 
-        List<MovieEntity> movies = genre.getMovies();
+        // empty genres from the movies if the new movieID list is empty
+        if (genreDto.getMovies().isEmpty()) {
 
-        for (MovieEntity movie : movies) {
-            movie.getGenres().remove(genre);
+            List<MovieEntity> movies = genre.getMovies();
+
+            for (MovieEntity movie : movies) {
+                movie.getGenres().remove(genre);
+            }
+
+            genre.getMovies().clear();
+        } else {
+            // empty genres from movies before adding new movies, replace and delete old basically
+            for (MovieEntity movies : genre.getMovies()) {
+                movies.getGenres().remove(genre);
+            }
+            genre.setMovies(movieRepository.findAllById(genreDto.getMovies()));
+
+            for (MovieEntity moviesNew : genre.getMovies()) {
+                moviesNew.getGenres().add(genre);
+            }
         }
-
-        genre.getMovies().clear();
 
 
         genre.setName(genreDto.getName());

@@ -86,6 +86,7 @@ public class ActorController {
      * @param id - Path Variable for actor id
      */
     @PatchMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void modifyActor(@PathVariable Long id, @RequestBody CreateActorDto actorDto) {
 
         actorService.modifyActor(id, actorDto);
