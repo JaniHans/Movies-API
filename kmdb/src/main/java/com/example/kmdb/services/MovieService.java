@@ -1,12 +1,14 @@
 package com.example.kmdb.services;
 
 import com.example.kmdb.dtos.ActorDto;
+import com.example.kmdb.dtos.GenreDto;
 import com.example.kmdb.dtos.MovieDto;
 import com.example.kmdb.dtos.create.CreateMovieDto;
 import com.example.kmdb.entities.ActorEntity;
 import com.example.kmdb.entities.GenreEntity;
 import com.example.kmdb.entities.MovieEntity;
 import com.example.kmdb.exceptions.DeleteNotAllowedException;
+import com.example.kmdb.exceptions.MethodArgumentNotValidException;
 import com.example.kmdb.exceptions.ResourceNotFoundException;
 import com.example.kmdb.mapper.ActorMapper;
 import com.example.kmdb.mapper.MovieMapper;
@@ -41,6 +43,43 @@ public class MovieService {
     private static final String MOVIE_NOT_FOUND = "Movie not found by id: ";
     private final ActorMapper actorMapper;
 
+
+    // HELPER METHODS
+    /**
+     * convert entity to genreDto
+     * converts list of movie entities to movieDTOs
+     * @param genreEntity - genre
+     * @return genreDTO
+     */
+    private GenreDto genreEntityToGenreDto(GenreEntity genreEntity) {
+
+        if (genreEntity == null || genreEntity.getName().isBlank()) {
+            throw new MethodArgumentNotValidException("Entity can't be null");
+        }
+        GenreDto genreDto = new GenreDto();
+        genreDto.setId(genreEntity.getId());
+        genreDto.setName(genreEntity.getName());
+
+        genreDto.setMovies(convertMovieEntitiesToMovieDto(genreEntity.getMovies()));
+        return genreDto;
+    }
+
+    /**
+     * @param movies
+     */
+    private List<MovieDto> convertMovieEntitiesToMovieDto(List<MovieEntity> movies) {
+
+        List<MovieDto> movieDtos = new ArrayList<>();
+
+        if (!movies.isEmpty()) {
+            for (MovieEntity movie : movies) {
+                movieDtos.add(movieMapper.toMovieDto(movie));
+            }
+        }
+        return movieDtos;
+    }
+
+
     /**
      * helper method to find and assign genres that are associated with the movies
      */
@@ -60,7 +99,111 @@ public class MovieService {
         entity.setActors(actorEntities);
     }
 
-    // Movie CRUD endpoints
+    /**
+     * helper method
+     * @param createMovieDto
+     * @return
+     */
+    private MovieEntity createMovieDtoToMovieEntity(CreateMovieDto createMovieDto) {
+
+        if (createMovieDto == null || createMovieDto.getTitle().isBlank()) {
+            throw new MethodArgumentNotValidException("Name of the genre can't be null or empty");
+        }
+
+        MovieEntity movie = new MovieEntity();
+        movie.setTitle(createMovieDto.getTitle());
+        movie.setDuration(createMovieDto.getDuration());
+        movie.setReleaseYear(createMovieDto.getReleaseYear());
+
+        if (createMovieDto.getActorsIds().isEmpty() && createMovieDto.getGenresIds().isEmpty()) {
+            return movie;
+        } else {
+            if (!createMovieDto.getActorsIds().isEmpty()) {
+                movie.setActors(actorRepository.findAllById(createMovieDto.getActorsIds()));
+            }
+            if (!createMovieDto.getGenresIds().isEmpty()) {
+                movie.setGenres(genreRepository.findAllById(createMovieDto.getGenresIds()));
+            }
+        }
+        return movie;
+    }
+
+    /**
+     * @param genres
+     */
+    private List<GenreDto> convertGenreEntitiesToGenreDto(List<GenreEntity> genres) {
+
+        List<GenreDto> genreDtos = new ArrayList<>();
+
+        if (!genres.isEmpty()) {
+            for (GenreEntity genre : genres) {
+                genreDtos.add(genreEntityToGenreDto(genre));
+            }
+        }
+        return genreDtos;
+    }
+
+
+    /**
+     * convert entity to genreDto
+     * converts list of movie entities to movieDTOs
+     * @param actorEntity - genre
+     * @return genreDTO
+     */
+    private ActorDto actorEntityToActorDto(ActorEntity actorEntity) {
+
+        if (actorEntity == null || actorEntity.getName().isBlank()) {
+            throw new MethodArgumentNotValidException("Entity can't be null");
+        }
+        ActorDto actorDto = new ActorDto();
+        actorDto.setId(actorEntity.getId());
+        actorDto.setName(actorEntity.getName());
+        actorDto.setBirthDate(actorEntity.getBirthDate());
+
+        actorDto.setMovies(convertMovieEntitiesToMovieDto(actorEntity.getMovies()));
+        return actorDto;
+    }
+
+    /**
+     * @param actors
+     */
+    private List<ActorDto> convertActorEntitiesToActorDto(List<ActorEntity> actors) {
+
+        List<ActorDto> actorDtos = new ArrayList<>();
+
+        if (!actors.isEmpty()) {
+            for (ActorEntity actor : actors) {
+                actorDtos.add(actorEntityToActorDto(actor));
+            }
+        }
+        return actorDtos;
+    }
+    /**
+     *
+     * @param movieEntity
+     * @return
+     */
+    private MovieDto movieEntityToMovieDto(MovieEntity movieEntity) {
+
+        if (movieEntity == null || movieEntity.getTitle().isBlank()) {
+            throw new MethodArgumentNotValidException("Entity can't be null");
+        }
+
+        MovieDto movieDto = new MovieDto();
+
+        movieDto.setId(movieEntity.getId());
+        movieDto.setTitle(movieDto.getTitle());
+        movieDto.setDuration(movieDto.getDuration());
+        movieDto.setReleaseYear(movieEntity.getReleaseYear());
+
+        movieDto.setGenres(convertGenreEntitiesToGenreDto(movieEntity.getGenres()));
+        movieDto.setActors(convertActorEntitiesToActorDto(movieEntity.getActors()));
+
+        return movieDto;
+
+    }
+
+    // MOVIE CRUD ENDPOINTS
 
     /**
      * Method for POST endpoint - create movie
@@ -71,16 +214,33 @@ public class MovieService {
      * @return MovieDto to controller
      */
     public MovieDto createMovie(CreateMovieDto createMovieDto) {
-        MovieEntity entity = movieRepository.save(movieMapper.toEntity(createMovieDto));
 
-        // helper method to retrieve actors and genres
-        assignActorsToMovies(entity, createMovieDto);
-        assignGenresToMovies(entity, createMovieDto);
+        log.info("Movie created : {}", createMovieDto.getTitle());
 
-        // entities
+        MovieEntity movie = createMovieDtoToMovieEntity(createMovieDto);
 
-        movieRepository.save(entity);
-        return movieMapper.toMovieDto(entity);
+        // find by actor ids
+        List<GenreEntity> genres = genreRepository.findAllById(createMovieDto.getGenresIds());
+        List<ActorEntity> actors = actorRepository.findAllById(createMovieDto.getActorsIds());
+        // find by genre ids
+
+        // set ActorGenres
+
+        for (GenreEntity genre : genres) {
+            genre.getMovies().add(movie);
+        }
+        // set GenreEntities
+        for (ActorEntity actor : actors) {
+            actor.getMovies().add(movie);
+        }
+
+        movie.setGenres(genres);
+        movie.setActors(actors);
+
+        movieRepository.save(movie);
+
+        return movieEntityToMovieDto(movie);
+        // return movieDto
     }
 
 

@@ -30,7 +30,7 @@ public class GenreService {
     private final MovieRepository movieRepository;
 
     private static final String GENRE_NOT_FOUND = "Genre not found by id: ";
-    private final GenreMapper genreMapper;
+
     private final MovieMapper movieMapper;
 
 
