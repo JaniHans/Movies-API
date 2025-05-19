@@ -85,7 +85,7 @@ public class MovieService {
      */
     private void assignGenresToMovies(MovieEntity entity, CreateMovieDto dto) {
         // find all genres with the associated movieids
-        List<GenreEntity> genreList = genreRepository.findAllById(dto.getGenresIds());
+        List<GenreEntity> genreList = genreRepository.findAllById(dto.getGenreIds());
         List<GenreEntity> genreEntities = new ArrayList<>(genreList);
         entity.setGenres(genreEntities);
     }
@@ -94,7 +94,7 @@ public class MovieService {
      */
     private void assignActorsToMovies(MovieEntity entity, CreateMovieDto dto) {
         // find all actors with the associated movieids
-        List<ActorEntity> actorList = actorRepository.findAllById(dto.getActorsIds());
+        List<ActorEntity> actorList = actorRepository.findAllById(dto.getActorIds());
         List<ActorEntity> actorEntities = new ArrayList<>(actorList);
         entity.setActors(actorEntities);
     }
@@ -115,14 +115,14 @@ public class MovieService {
         movie.setDuration(createMovieDto.getDuration());
         movie.setReleaseYear(createMovieDto.getReleaseYear());
 
-        if (createMovieDto.getActorsIds().isEmpty() && createMovieDto.getGenresIds().isEmpty()) {
+        if (createMovieDto.getActorIds().isEmpty() && createMovieDto.getGenreIds().isEmpty()) {
             return movie;
         } else {
-            if (!createMovieDto.getActorsIds().isEmpty()) {
-                movie.setActors(actorRepository.findAllById(createMovieDto.getActorsIds()));
+            if (!createMovieDto.getActorIds().isEmpty()) {
+                movie.setActors(actorRepository.findAllById(createMovieDto.getActorIds()));
             }
-            if (!createMovieDto.getGenresIds().isEmpty()) {
-                movie.setGenres(genreRepository.findAllById(createMovieDto.getGenresIds()));
+            if (!createMovieDto.getGenreIds().isEmpty()) {
+                movie.setGenres(genreRepository.findAllById(createMovieDto.getGenreIds()));
             }
         }
         return movie;
@@ -192,7 +192,7 @@ public class MovieService {
         MovieDto movieDto = new MovieDto();
 
         movieDto.setId(movieEntity.getId());
-        movieDto.setTitle(movieDto.getTitle());
+        movieDto.setTitle(movieEntity.getTitle());
         movieDto.setDuration(movieDto.getDuration());
         movieDto.setReleaseYear(movieEntity.getReleaseYear());
 
@@ -220,8 +220,8 @@ public class MovieService {
         MovieEntity movie = createMovieDtoToMovieEntity(createMovieDto);
 
         // find by actor ids
-        List<GenreEntity> genres = genreRepository.findAllById(createMovieDto.getGenresIds());
-        List<ActorEntity> actors = actorRepository.findAllById(createMovieDto.getActorsIds());
+        List<GenreEntity> genres = genreRepository.findAllById(createMovieDto.getGenreIds());
+        List<ActorEntity> actors = actorRepository.findAllById(createMovieDto.getActorIds());
         // find by genre ids
 
         // set ActorGenres
@@ -349,7 +349,7 @@ public class MovieService {
 
 
       return actorRepository.findActorEntitiesByMovieId(movieId, pageable)
-              .map(actorMapper::toActorDto);
+              .map(this::actorEntityToActorDto);
 
     }
     /**

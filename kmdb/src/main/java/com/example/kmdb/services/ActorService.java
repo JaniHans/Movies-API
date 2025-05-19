@@ -256,7 +256,7 @@ public class ActorService {
             throw new IllegalArgumentException("Actor name can't be empty");
         }
         return actorRepository.findActorEntitiesByNameContainingIgnoreCase(name, pageable)
-        .map(actorMapper::toActorDto);
+        .map(this::actorEntityToActorDto);
 
 
     }

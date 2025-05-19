@@ -138,7 +138,6 @@ public class GenreService {
       GenreEntity entity = genreRepository.findById(id)
               .orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + " " + id));
 
-      List<MovieEntity> movies = entity.getMovies();
 
       return genreEntityToGenreDto(entity);
 

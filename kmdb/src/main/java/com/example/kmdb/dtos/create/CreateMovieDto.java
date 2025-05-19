@@ -18,6 +18,6 @@ public class CreateMovieDto {
     private int releaseYear;
     @NotNull
     private int duration;
-    private List<Long> genresIds = new ArrayList<>();
-    private List<Long> actorsIds = new ArrayList<>();
+    private List<Long> genreIds = new ArrayList<>();
+    private List<Long> actorIds = new ArrayList<>();
 }

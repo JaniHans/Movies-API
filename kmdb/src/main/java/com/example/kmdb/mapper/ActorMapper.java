@@ -13,9 +13,6 @@ public interface ActorMapper {
 
     @Mapping(target = "movies", ignore = true)
     ActorDto toActorDto(ActorEntity actorEntity);
-    ActorEntity toEntity(ActorDto actorDto);
-    ActorEntity toEntity(CreateActorDto actorDto);
 
-    List<ActorDto> toActorDtoList(List<ActorEntity> actorEntityList);
 
 }
