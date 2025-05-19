@@ -104,7 +104,6 @@ public class GenreService {
         return movieDtos;
     }
 
-
     /**
      * POST /api/{genres}: Create a new entity
      * create genre and save it into the database repository
@@ -139,8 +138,9 @@ public class GenreService {
      */
     public Page<GenreDto> getAllGenres(Pageable pageable) {
         log.info("Retrieving all genres");
-        return genreRepository.findAll(pageable)
-                .map(genreMapper::toGenreDto);
+      Page<GenreEntity> genrePage = genreRepository.findAll(pageable);
+
+      return genrePage.map(this::genreEntityToGenreDto);
     }
 
     /**

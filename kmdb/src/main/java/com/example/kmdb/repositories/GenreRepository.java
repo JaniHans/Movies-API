@@ -2,6 +2,8 @@ package com.example.kmdb.repositories;
 
 import com.example.kmdb.entities.GenreEntity;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -24,4 +26,8 @@ public interface GenreRepository extends JpaRepository<GenreEntity, Long> {
 
     @EntityGraph(attributePaths = {"movies"})
     Optional<GenreEntity> findById(Long id);
+
+    @Override
+    @EntityGraph(attributePaths = "movies")
+    Page<GenreEntity> findAll(Pageable pageable);
 }
