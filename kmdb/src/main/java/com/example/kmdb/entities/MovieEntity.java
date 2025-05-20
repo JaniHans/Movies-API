@@ -25,7 +25,7 @@ public class MovieEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Setter
+
     private String title;
     @Setter
     private int releaseYear;
@@ -52,5 +52,8 @@ public class MovieEntity {
     @Setter
     private List<ActorEntity> actors = new ArrayList<>();
 
+    public void setTitle(String title) {
+        this.title = title.trim();
+    }
 
 }

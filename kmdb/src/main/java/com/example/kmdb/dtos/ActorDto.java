@@ -12,16 +12,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Setter
 
 public class ActorDto {
-
+    @Setter
     private Long id;
 
     private String name;
-
+    @Setter
     private LocalDate birthDate;
-
+    @Setter
     private List<String> movies = new ArrayList<>();
 
+
+    public void setName(String name) {
+        this.name = name.trim();
+    }
 }

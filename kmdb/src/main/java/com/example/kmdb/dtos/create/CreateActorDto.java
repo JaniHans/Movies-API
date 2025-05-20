@@ -1,8 +1,12 @@
 package com.example.kmdb.dtos.create;
 
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 
@@ -15,11 +19,13 @@ import java.util.List;
 
 public class CreateActorDto {
 
-    @NotNull
+    @NotBlank(message = "Name can't be blank")
+    @Size(min = 2, max = 50, message = "Name must be 2 to 50 characters long")
     private String name;
 
     @NotNull
     private LocalDate birthDate;
     private List<Long> movies = new ArrayList<>();
+
 
 }

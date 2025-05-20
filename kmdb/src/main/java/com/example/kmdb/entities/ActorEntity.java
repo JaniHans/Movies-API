@@ -17,7 +17,7 @@ public class ActorEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Setter
+
     private String name;
 
     @Setter
@@ -27,6 +27,8 @@ public class ActorEntity {
     @Setter
     private List<MovieEntity> movies = new ArrayList<>();
 
-
+    public void setName(String name) {
+        this.name = name.trim();
+    }
 
 }

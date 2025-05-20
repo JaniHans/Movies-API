@@ -1,15 +1,14 @@
 package com.example.kmdb.services;
 
 import com.example.kmdb.dtos.GenreDto;
-import com.example.kmdb.dtos.MovieDto;
+
 import com.example.kmdb.dtos.create.CreateGenreDto;
 import com.example.kmdb.entities.GenreEntity;
 import com.example.kmdb.entities.MovieEntity;
 import com.example.kmdb.exceptions.DeleteNotAllowedException;
 import com.example.kmdb.exceptions.MethodArgumentNotValidException;
 import com.example.kmdb.exceptions.ResourceNotFoundException;
-import com.example.kmdb.mapper.GenreMapper;
-import com.example.kmdb.mapper.MovieMapper;
+
 import com.example.kmdb.repositories.GenreRepository;
 import com.example.kmdb.repositories.MovieRepository;
 import lombok.RequiredArgsConstructor;
@@ -188,7 +187,7 @@ public class GenreService {
         // if associations exist and force is not true
 
         if (!genre.getMovies().isEmpty() && !force) {
-            throw new DeleteNotAllowedException("Cannot delete genre "
+            throw new DeleteNotAllowedException("Cannot delete "
                     + genre.getName()
                     + " because it has "
                     + genre.getMovies().size()

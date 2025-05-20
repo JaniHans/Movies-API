@@ -17,11 +17,10 @@ import java.util.List;
 
 public class GenreEntity {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Setter
+
     private String name;
 
     @ManyToMany(mappedBy = "genres") // inverse side of Movie-Genre
@@ -30,5 +29,8 @@ public class GenreEntity {
     @Setter
     private List<MovieEntity> movies = new ArrayList<>();
 
+    public void setName(String name) {
+        this.name = name.trim();
+    }
 
 }

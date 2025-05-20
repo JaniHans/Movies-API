@@ -20,7 +20,6 @@ public class GlobalExceptionHandler {
 
     }
 
-
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception ex) {
         log.error("Internal server error", ex);
@@ -28,23 +27,15 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(value= HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public ErrorResponse methodArgumentNotValid(MethodArgumentNotValidException ex) {
+        StringBuilder message = new StringBuilder("Validation failed: ");
 
-        String message = ex.getBindingResult()
-                .getFieldError()
-                .getDefaultMessage(); // Gets the first validation error message
+        ex.getBindingResult().getFieldErrors().forEach(error -> {
+            message.append(String.format("[%s: %s] ", error.getField(), error.getDefaultMessage()));
+        });
 
-        return new ErrorResponse(message, 400) ;
-
-    }
-    @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(value= HttpStatus.BAD_REQUEST)
-    @ResponseBody
-    public ErrorResponse methodArgumentNotValid(IllegalArgumentException ex) {
-
-        return new ErrorResponse(ex.getMessage(), 400) ;
-
+        return new ErrorResponse(message.toString().trim(), 400);
     }
 }

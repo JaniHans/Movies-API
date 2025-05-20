@@ -147,7 +147,7 @@ public class MovieService {
 
         movieDto.setId(movieEntity.getId());
         movieDto.setTitle(movieEntity.getTitle());
-        movieDto.setDuration(movieDto.getDuration());
+        movieDto.setDuration(movieEntity.getDuration());
         movieDto.setReleaseYear(movieEntity.getReleaseYear());
 
         // for display set Names of actors and Genres to Movie lists of Genres and Actors

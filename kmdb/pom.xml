@@ -81,6 +81,15 @@
 			<artifactId>spring-boot-starter-logging</artifactId>  <!-- Latest stable version as of 2025 README -->
 		</dependency>
 		<dependency>
+			<groupId>jakarta.validation</groupId>  <!-- not added to readme -->
+			<artifactId>jakarta.validation-api</artifactId>
+			<version>3.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate.validator</groupId> <!-- not added to readme -->
+			<artifactId>hibernate-validator</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
