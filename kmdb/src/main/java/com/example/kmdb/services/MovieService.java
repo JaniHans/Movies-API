@@ -10,7 +10,7 @@ import com.example.kmdb.entities.MovieEntity;
 import com.example.kmdb.exceptions.DeleteNotAllowedException;
 import com.example.kmdb.exceptions.MethodArgumentNotValidException;
 import com.example.kmdb.exceptions.ResourceNotFoundException;
-import com.example.kmdb.mapper.ActorMapper;
+
 import com.example.kmdb.mapper.MovieMapper;
 import com.example.kmdb.repositories.ActorRepository;
 import com.example.kmdb.repositories.GenreRepository;
@@ -41,69 +41,39 @@ public class MovieService {
 
     private static final String GENRE_NOT_FOUND = "Genre not found by id: ";
     private static final String MOVIE_NOT_FOUND = "Movie not found by id: ";
-    private final ActorMapper actorMapper;
+    private static final String ACTOR_NOT_FOUND = "Actor not found by id: ";
 
 
-    // HELPER METHODS
-    /**
-     * convert entity to genreDto
-     * converts list of movie entities to movieDTOs
-     * @param genreEntity - genre
-     * @return genreDTO
-     */
-    private GenreDto genreEntityToGenreDto(GenreEntity genreEntity) {
+//    // HELPER METHODS
+//    /**
+//     * convert entity to genreDto
+//     * converts list of movie entities to movieDTOs
+//     * @param genreEntity - genre
+//     * @return genreDTO
+//     */
+//    private GenreDto genreEntityToGenreDto(GenreEntity genreEntity) {
+//
+//        if (genreEntity == null || genreEntity.getName().isBlank()) {
+//            throw new MethodArgumentNotValidException("Entity can't be null");
+//        }
+//        GenreDto genreDto = new GenreDto();
+//        genreDto.setId(genreEntity.getId());
+//        genreDto.setName(genreEntity.getName());
+//
+//        genreDto.setMovieTitles(convertMovieEntitiesToMovieTitles(genreEntity.getMovies()));
+//        return genreDto;
+//    }
 
-        if (genreEntity == null || genreEntity.getName().isBlank()) {
-            throw new MethodArgumentNotValidException("Entity can't be null");
-        }
-        GenreDto genreDto = new GenreDto();
-        genreDto.setId(genreEntity.getId());
-        genreDto.setName(genreEntity.getName());
-
-        genreDto.setMovies(convertMovieEntitiesToMovieDto(genreEntity.getMovies()));
-        return genreDto;
-    }
 
     /**
      * @param movies
      */
-    private List<MovieDto> convertMovieEntitiesToMovieDto(List<MovieEntity> movies) {
+    private List<String> convertMovieEntitiesToMovieTitles(List<MovieEntity> movies) {
 
-        List<MovieDto> movieDtos = new ArrayList<>();
-
-        if (!movies.isEmpty()) {
-            for (MovieEntity movie : movies) {
-                movieDtos.add(movieMapper.toMovieDto(movie));
-            }
-        }
-        return movieDtos;
+        return movies.stream().map(MovieEntity::getTitle)
+                .toList();
     }
 
-
-    /**
-     * helper method to find and assign genres that are associated with the movies
-     */
-    private void assignGenresToMovies(MovieEntity entity, CreateMovieDto dto) {
-        // find all genres with the associated movieids
-        List<GenreEntity> genreList = genreRepository.findAllById(dto.getGenreIds());
-        List<GenreEntity> genreEntities = new ArrayList<>(genreList);
-        entity.setGenres(genreEntities);
-    }
-    /**
-     * helper method to find and assign actors that are associated with the movies
-     */
-    private void assignActorsToMovies(MovieEntity entity, CreateMovieDto dto) {
-        // find all actors with the associated movieids
-        List<ActorEntity> actorList = actorRepository.findAllById(dto.getActorIds());
-        List<ActorEntity> actorEntities = new ArrayList<>(actorList);
-        entity.setActors(actorEntities);
-    }
-
-    /**
-     * helper method
-     * @param createMovieDto
-     * @return
-     */
     private MovieEntity createMovieDtoToMovieEntity(CreateMovieDto createMovieDto) {
 
         if (createMovieDto == null || createMovieDto.getTitle().isBlank()) {
@@ -131,19 +101,10 @@ public class MovieService {
     /**
      * @param genres
      */
-    private List<GenreDto> convertGenreEntitiesToGenreDto(List<GenreEntity> genres) {
+    private List<String> convertGenreEntitiesToGenreNames(List<GenreEntity> genres) {
 
-        List<GenreDto> genreDtos = new ArrayList<>();
-
-        if (!genres.isEmpty()) {
-            for (GenreEntity genre : genres) {
-                genreDtos.add(genreEntityToGenreDto(genre));
-            }
-        }
-        return genreDtos;
+       return genres.stream().map(GenreEntity::getName).toList();
     }
-
-
     /**
      * convert entity to genreDto
      * converts list of movie entities to movieDTOs
@@ -160,23 +121,16 @@ public class MovieService {
         actorDto.setName(actorEntity.getName());
         actorDto.setBirthDate(actorEntity.getBirthDate());
 
-        actorDto.setMovies(convertMovieEntitiesToMovieDto(actorEntity.getMovies()));
+        actorDto.setMovies(convertMovieEntitiesToMovieTitles(actorEntity.getMovies()));
         return actorDto;
     }
 
     /**
      * @param actors
      */
-    private List<ActorDto> convertActorEntitiesToActorDto(List<ActorEntity> actors) {
+    private List<String> convertActorEntitiesToActorNames(List<ActorEntity> actors) {
 
-        List<ActorDto> actorDtos = new ArrayList<>();
-
-        if (!actors.isEmpty()) {
-            for (ActorEntity actor : actors) {
-                actorDtos.add(actorEntityToActorDto(actor));
-            }
-        }
-        return actorDtos;
+        return actors.stream().map(ActorEntity::getName).toList();
     }
     /**
      *
@@ -196,8 +150,9 @@ public class MovieService {
         movieDto.setDuration(movieDto.getDuration());
         movieDto.setReleaseYear(movieEntity.getReleaseYear());
 
-        movieDto.setGenres(convertGenreEntitiesToGenreDto(movieEntity.getGenres()));
-        movieDto.setActors(convertActorEntitiesToActorDto(movieEntity.getActors()));
+        // for display set Names of actors and Genres to Movie lists of Genres and Actors
+        movieDto.setGenres(convertGenreEntitiesToGenreNames(movieEntity.getGenres()));
+        movieDto.setActors(convertActorEntitiesToActorNames(movieEntity.getActors()));
 
         return movieDto;
 
@@ -224,12 +179,12 @@ public class MovieService {
         List<ActorEntity> actors = actorRepository.findAllById(createMovieDto.getActorIds());
         // find by genre ids
 
-        // set ActorGenres
+        // set Movies to Genre entities for bidirectional relationships
 
         for (GenreEntity genre : genres) {
             genre.getMovies().add(movie);
         }
-        // set GenreEntities
+        // set Movies to Actor entities for bidirectional relationships
         for (ActorEntity actor : actors) {
             actor.getMovies().add(movie);
         }
@@ -243,8 +198,6 @@ public class MovieService {
         // return movieDto
     }
 
-
-
     /**
      * Get all movies, including pagination and search
      * using mapper interface method to convert entity to dto
@@ -253,9 +206,25 @@ public class MovieService {
      */
     public Page<MovieDto> getAllMovies(Pageable pageable) {
 
-            return movieRepository.findAll(pageable)
-                    .map(movieMapper::toMovieDto);
+        log.info("Retrieving all movies");
+        Page<MovieEntity> movies = movieRepository.findAll(pageable);
+        return movies.map(this::movieEntityToMovieDto);
         }
+
+    /**
+     * get movie by id
+     * using mapper interface method to convert entity to dto
+     * retrieving a specific genre by ID
+     * @param movieId - movie id
+     * @return - returns single item of movieDto
+     */
+    public MovieDto getMovieById(Long movieId) {
+
+        MovieEntity movie = movieRepository.findById(movieId).orElseThrow(() -> new ResourceNotFoundException(MOVIE_NOT_FOUND + " " + movieId));
+
+        return movieEntityToMovieDto(movie);
+
+    }
 
     /**
      * Get all movies, including pagination and search
@@ -269,27 +238,15 @@ public class MovieService {
         if (searchCriteria.isEmpty()) {
             // create regular pageable with page and size
             return movieRepository.findAll(pageable)
-                    .map(movieMapper::toMovieDto);
+                    .map(this::movieEntityToMovieDto);
         }
         pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("title").ascending());
 
         return movieRepository.findByTitleContainingIgnoreCase(searchCriteria, pageable)
-                .map(movieMapper::toMovieDto);
+                .map(this::movieEntityToMovieDto);
     }
 
-    /**
-     * get movie by id
-     * using mapper interface method to convert entity to dto
-     * retrieving a specific genre by ID
-     * @param movieId - movie id
-     * @return - returns single item of movieDto
-     */
-    public MovieDto getMovieById(Long movieId) {
-       return movieMapper.toMovieDto(movieRepository
-               .findById(movieId)
-               .orElseThrow(() -> new RuntimeException("Movie not found by that id: " + movieId)));
 
-    }
     /**
      * get and filter movies by genre or release year using pagination.
      * @param genreId - genre id
@@ -299,7 +256,7 @@ public class MovieService {
     public Page<MovieDto> getMoviesByGenre(Long genreId, Pageable pageable) {
 
         return movieRepository.findMovieEntitiesByGenreIds(genreId, pageable)
-                .map(movieMapper::toMovieDto);
+                .map(this::movieEntityToMovieDto);
 
     }
 
@@ -312,7 +269,7 @@ public class MovieService {
     public Page<MovieDto> filterByYear(int releaseYear, Pageable pageable) {
         
         return movieRepository.findByReleaseYear(releaseYear, pageable)
-                .map(movieMapper::toMovieDto);
+                .map(this::movieEntityToMovieDto);
 
     }
     /**
@@ -326,14 +283,32 @@ public class MovieService {
                 .findById(movieId)
                 .orElseThrow(() -> new ResourceNotFoundException(MOVIE_NOT_FOUND + movieId));
 
+        // remove movie from the child owner - bidirectional relationship
+        for (ActorEntity actor : movie.getActors()) {
+            actor.getMovies().remove(movie);
+        }
+        // remove movie one way or another from the child owner - bidirectional relationship
+        for (GenreEntity genre : movie.getGenres()) {
+            genre.getMovies().remove(movie);
+        }
+
+        if (!dto.getActorIds().isEmpty()) {
+        movie.setActors(actorRepository.findAllById(dto.getActorIds()));
+        for (ActorEntity actor : movie.getActors()) {
+            actor.getMovies().add(movie);
+        }
+        }
+
+        if (!dto.getGenreIds().isEmpty()) {
+            movie.setGenres(genreRepository.findAllById(dto.getGenreIds()));
+            for (GenreEntity genre : movie.getGenres()) {
+                genre.getMovies().add(movie);
+            }
+        }
+
         movie.setTitle(dto.getTitle());
         movie.setReleaseYear(dto.getReleaseYear());
         movie.setDuration(dto.getDuration());
-        // helper method to retrieve and save actors
-        assignGenresToMovies(movie, dto);
-        // helper method to retrieve and save genres
-        assignActorsToMovies(movie, dto);
-
         movieRepository.save(movie);
     }
 
@@ -347,11 +322,27 @@ public class MovieService {
       movieRepository.findById(movieId).orElseThrow(() ->
               new ResourceNotFoundException(MOVIE_NOT_FOUND + movieId));
 
-
       return actorRepository.findActorEntitiesByMovieId(movieId, pageable)
               .map(this::actorEntityToActorDto);
 
     }
+
+    /**
+     * fetch all movies an actor has appeared in.
+     * GET /api/movies?actor={Actor.id}
+     * Pagination
+     * @param actorId -actor id
+     * @param pageable - pageable object
+     * @return MovieDto of page type
+     */
+    public Page<MovieDto> getMoviesWhereActorAppeared(Long actorId, Pageable pageable) {
+        actorRepository.findById(actorId).orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + actorId));
+
+        return movieRepository.findByActorsIds(actorId, pageable)
+                .map(this::movieEntityToMovieDto);
+
+    }
+
     /**
      * deletes movie by id if there is no associated genres and actors
      * DELETE /api/{entity}/{id}: Delete an entity

@@ -1,6 +1,6 @@
 package com.example.kmdb.repositories;
 
-import com.example.kmdb.dtos.ActorDto;
+
 import com.example.kmdb.entities.ActorEntity;
 
 import org.springframework.data.domain.Page;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ActorRepository extends JpaRepository<ActorEntity, Long> {
-    Page<ActorEntity> findActorEntitiesByNameContainingIgnoreCase(String name, Pageable pageable);
+    Page<ActorEntity> findActorEntitiesByNameIgnoreCase(String name, Pageable pageable);
 
     // This method will not work automatically, because ActorEntity likely does not have a direct movieId field.
     @Query("SELECT a FROM ActorEntity a JOIN a.movies m WHERE m.id = :movieId")

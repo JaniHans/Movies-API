@@ -1,14 +1,9 @@
 package com.example.kmdb.controllers;
-
 import com.example.kmdb.dtos.ActorDto;
-import com.example.kmdb.dtos.MovieDto;
-
 import com.example.kmdb.dtos.create.CreateActorDto;
 
-import com.example.kmdb.mapper.ActorMapper;
-import com.example.kmdb.repositories.ActorRepository;
 import com.example.kmdb.services.ActorService;
-import com.example.kmdb.services.GenreService;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -28,8 +23,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/actors")
@@ -69,18 +62,7 @@ public class ActorController {
         ActorDto actor = actorService.getActorById(id);
         return ResponseEntity.ok(actor);
     }
-    /** Retrieve movies that the actor with the given id has starred in
-     * GET /api/movies?actor={Actor.id}
-     * @param actorId - actor id
-     * @param pageable - pageable object
-     * @return type of page MovieDtos
-     */
-    @GetMapping(params = "actor")
-    public ResponseEntity<Page<MovieDto>> getMoviesWhereActorAppeared(@RequestParam("actor") Long actorId, Pageable pageable) {
-        Page<MovieDto> movies =  actorService.getMoviesWhereActorAppeared(actorId, pageable);
 
-        return ResponseEntity.ok(movies);
-    }
     /** partial actor update
      * PATCH /api/{entity}/{id}
      * @param id - Path Variable for actor id
@@ -112,8 +94,8 @@ public class ActorController {
      * @param name - request param for string name
      * @param pageable - pageable object
      */
-    @GetMapping("/api/actors")
-    public ResponseEntity<Page<ActorDto>> filterActorsByName(@RequestParam String name,
+    @GetMapping(params = "name")
+    public ResponseEntity<Page<ActorDto>> filterActorsByName(@RequestParam("name") String name,
                                              @PageableDefault(page = 0, size = 10)  Pageable pageable) {
 
         Page<ActorDto> actors =  actorService.filterActorsByName(name, pageable);

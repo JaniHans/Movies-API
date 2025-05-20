@@ -18,8 +18,8 @@ public class MovieDto {
     private int releaseYear;
     private int duration;
 
-    private List<GenreDto> genres = new ArrayList<>();
-    private List<ActorDto> actors = new ArrayList<>();
+    private List<String> genres = new ArrayList<>();
+    private List<String> actors = new ArrayList<>();
 
 
 

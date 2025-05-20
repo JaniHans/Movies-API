@@ -1,15 +1,13 @@
 package com.example.kmdb.services;
 
 import com.example.kmdb.dtos.ActorDto;
-import com.example.kmdb.dtos.GenreDto;
-import com.example.kmdb.dtos.PageDto;
+
 import com.example.kmdb.dtos.create.CreateActorDto;
-import com.example.kmdb.dtos.create.CreateGenreDto;
-import com.example.kmdb.entities.GenreEntity;
+
 import com.example.kmdb.exceptions.MethodArgumentNotValidException;
-import com.example.kmdb.mapper.ActorMapper;
+
 import com.example.kmdb.mapper.MovieMapper;
-import com.example.kmdb.repositories.GenreRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -25,14 +23,11 @@ import com.example.kmdb.exceptions.ResourceNotFoundException;
 import com.example.kmdb.repositories.ActorRepository;
 import com.example.kmdb.repositories.MovieRepository;
 
-import org.springframework.data.web.PageableDefault;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
+
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -41,14 +36,12 @@ public class ActorService {
 
     private final ActorRepository actorRepository;
     private final MovieRepository movieRepository;
-    private final ActorMapper actorMapper;
+
     private final MovieMapper movieMapper;
 
     private static final String ACTOR_NOT_FOUND = "Actor not found by id: ";
-    private final GenreService genreService;
-    private final GenreRepository genreRepository;
 
-
+    // HELPER METHODS
     /**
      * creates genreCreateDto to genreEntity
      * sets list of movie ids to movie entities within the genre
@@ -71,18 +64,13 @@ public class ActorService {
     }
 
     /**
+     * Returns a list of movie titles that belong to the entity
      * @param movies
      */
-    private List<MovieDto> convertMovieEntitiesToMovieDto(List<MovieEntity> movies) {
+    private List<String> convertMovieEntitiesToMovieTitles(List<MovieEntity> movies) {
 
-        List<MovieDto> movieDtos = new ArrayList<>();
-
-        if (!movies.isEmpty()) {
-            for (MovieEntity movie : movies) {
-                movieDtos.add(movieMapper.toMovieDto(movie));
-            }
-        }
-        return movieDtos;
+        return movies.stream().map(MovieEntity::getTitle)
+                .toList();
     }
 
 
@@ -102,10 +90,11 @@ public class ActorService {
         actorDto.setName(actorEntity.getName());
         actorDto.setBirthDate(actorEntity.getBirthDate());
 
-        actorDto.setMovies(convertMovieEntitiesToMovieDto(actorEntity.getMovies()));
+        actorDto.setMovies(convertMovieEntitiesToMovieTitles(actorEntity.getMovies()));
         return actorDto;
     }
 
+    // CRUD METHODS
 
     /**
      * POST /api/actor: Create a new actor entity
@@ -135,9 +124,9 @@ public class ActorService {
     public Page<ActorDto> getActors(Pageable pageable) {
 
        log.info("Retrieving all actors");
-       Page<ActorEntity> actor = actorRepository.findAll(pageable);
+       Page<ActorEntity> actors = actorRepository.findAll(pageable);
 
-       return actor.map(this::actorEntityToActorDto);
+       return actors.map(this::actorEntityToActorDto);
 
     }
 
@@ -149,22 +138,6 @@ public class ActorService {
         ActorEntity actor = actorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + id));
 
         return actorEntityToActorDto(actor);
-    }
-
-    /**
-     * fetch all movies an actor has appeared in.
-     * GET /api/movies?actor={Actor.id}
-     * Pagination
-     * @param actorId -actor id
-     * @param pageable - pageable object
-     * @return MovieDto of page type
-     */
-    public Page<MovieDto> getMoviesWhereActorAppeared(Long actorId, Pageable pageable) {
-        actorRepository.findById(actorId).orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + actorId));
-
-        return movieRepository.findByActorsIds(actorId, pageable)
-                .map(movieMapper::toMovieDto);
-
     }
 
 //    Lastly, ensure you can modify an existing actor's details
@@ -255,7 +228,7 @@ public class ActorService {
         if (name.isEmpty()) {
             throw new IllegalArgumentException("Actor name can't be empty");
         }
-        return actorRepository.findActorEntitiesByNameContainingIgnoreCase(name, pageable)
+        return actorRepository.findActorEntitiesByNameIgnoreCase(name, pageable)
         .map(this::actorEntityToActorDto);
 
 

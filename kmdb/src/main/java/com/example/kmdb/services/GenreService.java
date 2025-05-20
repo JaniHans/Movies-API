@@ -31,9 +31,8 @@ public class GenreService {
 
     private static final String GENRE_NOT_FOUND = "Genre not found by id: ";
 
-    private final MovieMapper movieMapper;
 
-
+    // HELPER METHODS
     /**
      * creates genreEntity from genreCreateDto
      * sets list of movie ids to movie entities within the genre
@@ -68,25 +67,22 @@ public class GenreService {
         genreDto.setId(genreEntity.getId());
         genreDto.setName(genreEntity.getName());
 
-        genreDto.setMovies(convertMovieEntitiesToMovieDto(genreEntity.getMovies()));
+        genreDto.setMovies(convertMovieEntitiesToMovieTitles(genreEntity.getMovies()));
         return genreDto;
     }
 
     /**
+     * Returns a list of movie titles that belong to the entity
      * @param movies
      */
-    private List<MovieDto> convertMovieEntitiesToMovieDto(List<MovieEntity> movies) {
+    private List<String> convertMovieEntitiesToMovieTitles(List<MovieEntity> movies) {
 
-        List<MovieDto> movieDtos = new ArrayList<>();
-
-        if (!movies.isEmpty()) {
-            for (MovieEntity movie : movies) {
-               movieDtos.add(movieMapper.toMovieDto(movie));
-            }
-        }
-        return movieDtos;
+        return movies.stream().map(MovieEntity::getTitle)
+                .toList();
     }
 
+
+     // CRUD METHODS
     /**
      * POST /api/{genres}: Create a new entity
      * create genre and save it into the database repository
@@ -144,24 +140,9 @@ public class GenreService {
     }
 
     /**
-     * GET /api/movies?genre={genreId}: Retrieve movies filtered by genre
-     * @param - genreId
-     * @return filter a list of movies with the genre id
-     */
-   public Page<MovieDto> filterMoviesByGenre(Long genreId, Pageable pageable) {
-
-        genreRepository.findById(genreId).orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + genreId));
-
-       return movieRepository.findByGenresId(genreId, pageable)
-               .map(movieMapper::toMovieDto);
-       // .map(...) on Page<T> Keeps pagination metadata: page number, size, total elements
-
-   }
-    /**
      * PATCH /api/{genres}/{id}
-     *
      * @param - genreId and genre new Name
-     *          modify genres name with the newname, save to genre repository
+     * modify genres name with the newname, save to genre repository
      */
     public void modifyGenre(Long genreId, CreateGenreDto genreDto) {
 

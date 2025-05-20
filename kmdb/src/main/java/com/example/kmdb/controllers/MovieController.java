@@ -137,6 +137,7 @@ public class MovieController {
         Page<MovieDto> movies = movieService.getMoviesByGenre(genreId, pageable);
         return ResponseEntity.ok(movies);
     }
+
     /**
      * GET /api/movies?year={releaseYear}: Retrieve movies filtered by release year
      * Retrieve movies filtered by genre
@@ -162,6 +163,19 @@ public class MovieController {
         Page<ActorDto> actors = movieService.getAllActorsInMovie(id, pageable);
 
         return ResponseEntity.ok(actors);
+    }
+
+    /** Retrieve movies that the actor with the given id has starred in
+     * GET /api/movies?actor={Actor.id}
+     * @param actorId - actor id
+     * @param pageable - pageable object
+     * @return type of page MovieDtos
+     */
+    @GetMapping(params = "actor")
+    public ResponseEntity<Page<MovieDto>> getMoviesWhereActorAppeared(@RequestParam("actor") Long actorId, Pageable pageable) {
+        Page<MovieDto> movies =  movieService.getMoviesWhereActorAppeared(actorId, pageable);
+
+        return ResponseEntity.ok(movies);
     }
 
 }

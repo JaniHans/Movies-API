@@ -78,17 +78,7 @@ public class GenreController {
 
     }
 
-    /**
-     * GET /api/movies?genre={genreId}: Retrieve movies filtered by genre
-     * @param id - genre id
-     * @return movies associated with the genre
-     */
-    @GetMapping(params = "genre")
-    public ResponseEntity<Page<MovieDto>> filterMoviesByGenre(@RequestParam("genre") Long id, Pageable pageable) {
-       Page<MovieDto> movies =  genreService.filterMoviesByGenre(id, pageable);
 
-        return ResponseEntity.ok(movies);
-    }
 
     /**
      * DELETE /api/{genres}/{id}: Delete an entity
