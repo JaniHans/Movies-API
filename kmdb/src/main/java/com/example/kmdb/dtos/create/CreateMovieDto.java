@@ -19,7 +19,7 @@ public class CreateMovieDto {
 
     @NotBlank(message = "Title can't be blank")
     @Size(min = 2, max = 50, message = "Title must be 2 to 50 characters long")
-    @Pattern(regexp = "^[\\p{L} .'-]{2,50}$", message = "Title contains invalid characters")
+
     private String title;
     @NotNull
     @Positive
