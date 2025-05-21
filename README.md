@@ -28,6 +28,8 @@ The API digitizes the society’s movie collection previously managed via spread
 - Lombok
 - Logger
 - Mapstruct
+- Maven
+- Jakarta, Hibernate validator
 
 ---
 
@@ -42,69 +44,83 @@ The API digitizes the society’s movie collection previously managed via spread
 3. **Configure database**  
    In `application.properties`:
    ```properties
+   spring.application.name=kmdb
+
    spring.datasource.url=jdbc:sqlite:movies.db
    spring.datasource.driver-class-name=org.sqlite.JDBC
    spring.jpa.database-platform=org.hibernate.dialect.SQLiteDialect
    spring.jpa.hibernate.ddl-auto=update
+   spring.jpa.show-sql=false
    
 4. ** Add the following dependencies (copy-paste)**
    In `pom.xml`:
     ```dependencies
 
-   	<dependency>
-   		<groupId>org.springframework.boot</groupId>
-   		<artifactId>spring-boot-starter-data-jpa</artifactId> <!--  2025 README -->
-   	</dependency>
-   	<dependency>
-   		<groupId>org.springframework.boot</groupId>
-   		<artifactId>spring-boot-starter-web</artifactId> <!--  2025 README -->
+   	<dependencies>
 
-   	</dependency>
-   	<dependency>
-   		<groupId>org.xerial</groupId>
-   		<artifactId>sqlite-jdbc</artifactId> <!--  2025 README -->
-   		<version>3.41.2.2</version>
-   	</dependency>
-   	<dependency>
-   		<groupId>org.hibernate.orm</groupId>
-   		<artifactId>hibernate-community-dialects</artifactId>
-   		<version>6.4.4.Final</version>
-   	</dependency>
-   	<dependency>
-   		<groupId>org.springframework.boot</groupId>
-   		<artifactId>spring-boot-starter-validation</artifactId> <!-- Latest stable version as of 2025 README -->
-   	</dependency>
-   	<dependency>
-   		<groupId>org.projectlombok</groupId>
-   		<artifactId>lombok</artifactId>
-   		<version>1.18.38</version> <!-- Latest stable version as of 2025 README -->
-   		<scope>provided</scope>
-   	</dependency>
-   	<dependency>
-   		<groupId>org.mapstruct</groupId>
-   		<artifactId>mapstruct</artifactId> <!-- Latest stable version as of 2025 README -->
-   		<version>1.6.0.Beta1</version>
-   	</dependency>
-   	<dependency>
-   		<groupId>org.mapstruct</groupId>
-   		<artifactId>mapstruct-processor</artifactId>
-   		<version>1.6.3</version>
-   	</dependency>
-   	<dependency>
-   		<groupId>com.h2database</groupId>
-   		<artifactId>h2</artifactId>
-   		<scope>runtime</scope>
-   	</dependency>
-   	<dependency>
-   		<groupId>org.springframework.boot</groupId>
-   		<artifactId>spring-boot-starter-logging</artifactId>  <!-- Latest stable version as of 2025 README -->
-   	</dependency>
-   	<dependency>
-   		<groupId>org.springframework.boot</groupId>
-   		<artifactId>spring-boot-starter-test</artifactId>
-   		<scope>test</scope>
-   	</dependency>
-   </dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId> <!--  2025 README -->
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId> <!--  2025 README -->
+
+		</dependency>
+		<dependency>
+			<groupId>org.xerial</groupId>
+			<artifactId>sqlite-jdbc</artifactId> <!--  2025 README -->
+			<version>3.41.2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate.orm</groupId>
+			<artifactId>hibernate-community-dialects</artifactId>
+			<version>6.4.4.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId> <!-- Latest stable version as of 2025 README -->
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.38</version> <!-- Latest stable version as of 2025 README -->
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct</artifactId> <!-- Latest stable version as of 2025 README -->
+			<version>1.6.0.Beta1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct-processor</artifactId>
+			<version>1.6.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-logging</artifactId>  <!-- Latest stable version as of 2025 README -->
+		</dependency>
+		<dependency>
+			<groupId>jakarta.validation</groupId>  <!-- not added to readme -->
+			<artifactId>jakarta.validation-api</artifactId>
+			<version>3.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate.validator</groupId> <!-- not added to readme -->
+			<artifactId>hibernate-validator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 
 🚀 Usage Guide
 Base URL
@@ -188,21 +204,3 @@ Filtering and search endpoints
 Validation and error scenarios
 
 Force deletion logic
-
-🧠 What I Learned
-Building REST APIs with Spring Boot and JPA
-
-Managing many-to-many relationships
-
-Designing extensible services and controllers
-
-Implementing clean error handling strategies
-
-Pagination and custom search query logic
-
-✨ Extra Features
-✅ Pagination support via Pageable in GET requests
-
-✅ Title-based search endpoint for movies (/movies/search)
-
-🧹 Force-delete logic for safe resource management
