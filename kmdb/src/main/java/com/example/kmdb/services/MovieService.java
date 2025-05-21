@@ -39,7 +39,7 @@ public class MovieService {
 
     private final MovieMapper movieMapper;
 
-    private static final String GENRE_NOT_FOUND = "Genre not found by id: ";
+
     private static final String MOVIE_NOT_FOUND = "Movie not found by id: ";
     private static final String ACTOR_NOT_FOUND = "Actor not found by id: ";
 
@@ -80,19 +80,21 @@ public class MovieService {
             throw new MethodArgumentNotValidException("Name of the genre can't be null or empty");
         }
 
+
+
         MovieEntity movie = new MovieEntity();
         movie.setTitle(createMovieDto.getTitle());
         movie.setDuration(createMovieDto.getDuration());
         movie.setReleaseYear(createMovieDto.getReleaseYear());
 
-        if (createMovieDto.getActorIds().isEmpty() && createMovieDto.getGenreIds().isEmpty()) {
+        if (createMovieDto.getActors().isEmpty() && createMovieDto.getGenres().isEmpty()) {
             return movie;
         } else {
-            if (!createMovieDto.getActorIds().isEmpty()) {
-                movie.setActors(actorRepository.findAllById(createMovieDto.getActorIds()));
+            if (!createMovieDto.getActors().isEmpty()) {
+                movie.setActors(actorRepository.findAllById(createMovieDto.getActors()));
             }
-            if (!createMovieDto.getGenreIds().isEmpty()) {
-                movie.setGenres(genreRepository.findAllById(createMovieDto.getGenreIds()));
+            if (!createMovieDto.getGenres().isEmpty()) {
+                movie.setGenres(genreRepository.findAllById(createMovieDto.getGenres()));
             }
         }
         return movie;
@@ -175,8 +177,8 @@ public class MovieService {
         MovieEntity movie = createMovieDtoToMovieEntity(createMovieDto);
 
         // find by actor ids
-        List<GenreEntity> genres = genreRepository.findAllById(createMovieDto.getGenreIds());
-        List<ActorEntity> actors = actorRepository.findAllById(createMovieDto.getActorIds());
+        List<GenreEntity> genres = genreRepository.findAllById(createMovieDto.getGenres());
+        List<ActorEntity> actors = actorRepository.findAllById(createMovieDto.getActors());
         // find by genre ids
 
         // set Movies to Genre entities for bidirectional relationships
@@ -278,7 +280,7 @@ public class MovieService {
      * @param movieId - id of the movie
      * @param dto - DTO object of movie for creating and modifying movies
      */
-    public void modifyMovie(Long movieId, CreateMovieDto dto) {
+    public MovieDto modifyMovie(Long movieId, CreateMovieDto dto) {
         MovieEntity movie = movieRepository
                 .findById(movieId)
                 .orElseThrow(() -> new ResourceNotFoundException(MOVIE_NOT_FOUND + movieId));
@@ -287,20 +289,23 @@ public class MovieService {
         for (ActorEntity actor : movie.getActors()) {
             actor.getMovies().remove(movie);
         }
+        // clear actors from movie entity
+        movie.getActors().clear();
         // remove movie one way or another from the child owner - bidirectional relationship
         for (GenreEntity genre : movie.getGenres()) {
             genre.getMovies().remove(movie);
         }
+        // clear genres from movie entity
+        movie.getGenres().clear();
 
-        if (!dto.getActorIds().isEmpty()) {
-        movie.setActors(actorRepository.findAllById(dto.getActorIds()));
+        if (!dto.getActors().isEmpty()) {
+        movie.setActors(actorRepository.findAllById(dto.getActors()));
         for (ActorEntity actor : movie.getActors()) {
             actor.getMovies().add(movie);
         }
         }
-
-        if (!dto.getGenreIds().isEmpty()) {
-            movie.setGenres(genreRepository.findAllById(dto.getGenreIds()));
+        if (!dto.getGenres().isEmpty()) {
+            movie.setGenres(genreRepository.findAllById(dto.getGenres()));
             for (GenreEntity genre : movie.getGenres()) {
                 genre.getMovies().add(movie);
             }
@@ -310,6 +315,8 @@ public class MovieService {
         movie.setReleaseYear(dto.getReleaseYear());
         movie.setDuration(dto.getDuration());
         movieRepository.save(movie);
+
+        return movieEntityToMovieDto(movie);
     }
 
     /**

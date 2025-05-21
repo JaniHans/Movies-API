@@ -143,7 +143,7 @@ public class GenreService {
      * @param - genreId and genre new Name
      * modify genres name with the newname, save to genre repository
      */
-    public void modifyGenre(Long genreId, CreateGenreDto genreDto) {
+    public GenreDto modifyGenre(Long genreId, CreateGenreDto genreDto) {
 
         GenreEntity genre = genreRepository.findById(genreId).orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + genreId));
 
@@ -173,6 +173,8 @@ public class GenreService {
         genre.setName(genreDto.getName());
 
         genreRepository.save(genre);
+
+        return genreEntityToGenreDto(genre);
 
     }
     /**

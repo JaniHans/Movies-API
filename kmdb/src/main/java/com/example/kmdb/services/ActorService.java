@@ -4,6 +4,7 @@ import com.example.kmdb.dtos.ActorDto;
 
 import com.example.kmdb.dtos.create.CreateActorDto;
 
+import com.example.kmdb.exceptions.InvalidDateFormatException;
 import com.example.kmdb.exceptions.MethodArgumentNotValidException;
 
 import com.example.kmdb.mapper.MovieMapper;
@@ -26,6 +27,8 @@ import com.example.kmdb.repositories.MovieRepository;
 import org.springframework.stereotype.Service;
 
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,9 +55,19 @@ public class ActorService {
         if (createActorDto == null || createActorDto.getName().isBlank()) {
             throw new MethodArgumentNotValidException("Name of the actor can't be null or empty");
         }
+
         ActorEntity actor = new ActorEntity();
         actor.setName(createActorDto.getName());
-        actor.setBirthDate(createActorDto.getBirthDate());
+
+
+        try {
+            LocalDate birthDate = LocalDate.parse(createActorDto.getBirthDate());
+            actor.setBirthDate(birthDate);
+        } catch (DateTimeParseException e) {
+            throw new InvalidDateFormatException("Invalid date format. Expected: yyyy-MM-dd");
+        }
+
+
         if (createActorDto.getMovies().isEmpty()) {
             return actor;
         }
@@ -149,7 +162,7 @@ public class ActorService {
      * @param actorId - actor id
      * @param actorDto - createActorDto
      */
-    public void modifyActor(Long actorId, CreateActorDto actorDto) {
+    public ActorDto modifyActor(Long actorId, CreateActorDto actorDto) {
      ActorEntity actor = actorRepository
              .findById(actorId)
              .orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + actorId));
@@ -177,10 +190,16 @@ public class ActorService {
         }
 
      actor.setName(actorDto.getName());
-     actor.setBirthDate(actorDto.getBirthDate());
+
+        try {
+            LocalDate birthDate = LocalDate.parse(actorDto.getBirthDate());
+            actor.setBirthDate(birthDate);
+        } catch (DateTimeParseException e) {
+            throw new InvalidDateFormatException("Invalid date format. Expected: yyyy-MM-dd");
+        }
 
      actorRepository.save(actor);
-
+       return actorEntityToActorDto(actor);
     }
 
     /**

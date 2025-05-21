@@ -107,9 +107,11 @@ public class MovieController {
      * @param request - movie details comes in as request body
      */
     @PatchMapping("/{id}")
-    public void modifyMovie(@PathVariable Long id, @RequestBody CreateMovieDto request) {
+    public ResponseEntity<MovieDto> modifyMovie(@PathVariable Long id, @RequestBody CreateMovieDto request) {
 
-        movieService.modifyMovie(id, request);
+        MovieDto movie = movieService.modifyMovie(id, request);
+
+        return ResponseEntity.ok(movie);
     }
     /**
      * DELETE /api/{movies}/{id}: Delete movie

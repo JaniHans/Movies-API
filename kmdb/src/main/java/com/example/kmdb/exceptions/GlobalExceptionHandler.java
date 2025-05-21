@@ -38,4 +38,13 @@ public class GlobalExceptionHandler {
 
         return new ErrorResponse(message.toString().trim(), 400);
     }
+
+
+    @ExceptionHandler(InvalidDateFormatException.class)
+    public ResponseEntity<ErrorResponse>
+    handleInvalidDateFormat(InvalidDateFormatException ex) {
+        ErrorResponse error = new ErrorResponse(
+                ex.getMessage(), HttpStatus.BAD_REQUEST.value());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
 }

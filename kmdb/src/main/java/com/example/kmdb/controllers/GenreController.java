@@ -72,10 +72,11 @@ public class GenreController {
      */
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void modifyGenre(@PathVariable Long id, @Valid @RequestBody CreateGenreDto request) {
+    public ResponseEntity<GenreDto> modifyGenre(@PathVariable Long id, @Valid @RequestBody CreateGenreDto request) {
 
-        genreService.modifyGenre(id, request);
+        GenreDto genre = genreService.modifyGenre(id, request);
 
+        return ResponseEntity.ok(genre);
     }
 
 

@@ -1,6 +1,7 @@
 package com.example.kmdb.dtos.create;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 
 import jakarta.validation.constraints.NotNull;
@@ -8,6 +9,7 @@ import jakarta.validation.constraints.NotNull;
 
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 
 import java.time.LocalDate;
@@ -23,8 +25,8 @@ public class CreateActorDto {
     @Size(min = 2, max = 50, message = "Name must be 2 to 50 characters long")
     private String name;
 
-    @NotNull
-    private LocalDate birthDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private String birthDate;
     private List<Long> movies = new ArrayList<>();
 
 

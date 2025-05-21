@@ -69,9 +69,11 @@ public class ActorController {
      */
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void modifyActor(@PathVariable Long id, @RequestBody CreateActorDto actorDto) {
+    public ResponseEntity<ActorDto> modifyActor(@PathVariable Long id, @RequestBody CreateActorDto actorDto) {
 
-        actorService.modifyActor(id, actorDto);
+        ActorDto actor = actorService.modifyActor(id, actorDto);
+
+        return ResponseEntity.ok(actor);
     }
 
     /**
