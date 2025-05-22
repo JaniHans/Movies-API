@@ -188,7 +188,7 @@ Actors: 15+ with varying associations
 🛡️ Error Handling
 Validation: Bean Validation annotations (@NotNull, @Size, etc.)
 
-Custom Exception: ResourceNotFoundException
+Custom Exception: ResourceNotFoundException, DeleteNotAllowedException, MethodArgumentNotValidException, InvalidDateFormatException
 
 Global Exception Handling: Via @ControllerAdvice
 
