@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -265,12 +266,20 @@ public class MovieService {
 
 
     /**
-     * get and filter movies by genre or release year using pagination.
+     * get and filter movies by genre id using pagination
+     * GET /api/movies?genre={genreId}
      * @param genreId - genre id
      * @param pageable - pageable object with size and page
      * @return page type of MovieDTOs filtered by genre
      */
     public Page<MovieDto> getMoviesByGenre(Long genreId, Pageable pageable) {
+
+        GenreEntity genre = genreRepository.findById(genreId).orElseThrow(() ->
+           new ResourceNotFoundException("Genre with id: " + genreId + " not found"));
+
+        if (genre.getMovies().isEmpty()) {
+            throw new ResourceNotFoundException(genre.getName() + " has no associated movies");
+        }
 
         return movieRepository.findMovieEntitiesByGenreIds(genreId, pageable)
                 .map(this::movieEntityToMovieDto);
