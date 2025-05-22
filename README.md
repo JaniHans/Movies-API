@@ -130,47 +130,47 @@ Endpoints Overview
 Genres
 POST /genres
 
-GET /genres
+GET api/genres
 
-GET /genres/{id}
+GET api/genres/{id}
 
-PATCH /genres/{id}
+PATCH api/genres/{id}
 
-DELETE /genres/{id}?force={true|false}
+DELETE api/genres/{id}?force={true|false}
 
-GET /genres/{id}/movies
+GET api/genres/{id}/movies
 
 Movies
-POST /movies
+POST api/movies
 
-GET /movies
+GET api/movies
 
-GET /movies/{id}
+GET api/movies/{id}
 
-PATCH /movies/{id}
+PATCH api/movies/{id}
 
-DELETE /movies/{id}?force={true|false}
+DELETE api/movies/{id}?force={true|false}
 
-GET /movies?genre={id}
+GET api/movies?genre={id}
 
-GET /movies?year={YYYY}
+GET api/movies?year={YYYY}
 
-GET /movies?actor={actorId}
+GET api/movies?actor={actorId}
 
-GET /movies/{id}/actors
+GET api/movies/{id}/actors
 
-GET /movies/search?title={query} ← partial, case-insensitive
+GET api/movies/search?title={query} ← partial, case-insensitive
 
-GET /movies?page=0&size=10 ← pagination
+GET api/movies?page=0&size=10 ← pagination
 
 Actors
-POST /actors
+POST api/actors
 
-GET /actors
+GET api/actors
 
-GET /actors/{id}
+GET api/actors/{id}
 
-PATCH /actors/{id}
+PATCH api/actors/{id}
 
 DELETE /actors/{id}?force={true|false}
 
