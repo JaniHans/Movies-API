@@ -97,10 +97,11 @@ public class ActorController {
      * @param pageable - pageable object
      */
     @GetMapping(params = "name")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Page<ActorDto>> filterActorsByName(@RequestParam("name") String name,
                                              @PageableDefault(page = 0, size = 10)  Pageable pageable) {
-
         Page<ActorDto> actors =  actorService.filterActorsByName(name, pageable);
-        return ResponseEntity.ok(actors);
+            return ResponseEntity.ok(actors);
+
     }
 }

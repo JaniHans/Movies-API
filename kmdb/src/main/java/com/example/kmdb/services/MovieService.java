@@ -139,7 +139,7 @@ public class MovieService {
      * @param movieEntity
      * @return
      */
-    private MovieDto movieEntityToMovieDto(MovieEntity movieEntity) {
+    public MovieDto movieEntityToMovieDto(MovieEntity movieEntity) {
 
         if (movieEntity == null || movieEntity.getTitle().isBlank()) {
             throw new MethodArgumentNotValidException("Entity can't be null");
@@ -331,22 +331,6 @@ public class MovieService {
 
       return actorRepository.findActorEntitiesByMovieId(movieId, pageable)
               .map(this::actorEntityToActorDto);
-
-    }
-
-    /**
-     * fetch all movies an actor has appeared in.
-     * GET /api/movies?actor={Actor.id}
-     * Pagination
-     * @param actorId -actor id
-     * @param pageable - pageable object
-     * @return MovieDto of page type
-     */
-    public Page<MovieDto> getMoviesWhereActorAppeared(Long actorId, Pageable pageable) {
-        actorRepository.findById(actorId).orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + actorId));
-
-        return movieRepository.findByActorsIds(actorId, pageable)
-                .map(this::movieEntityToMovieDto);
 
     }
 

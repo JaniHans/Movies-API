@@ -4,6 +4,7 @@ import com.example.kmdb.dtos.ActorDto;
 import com.example.kmdb.dtos.MovieDto;
 import com.example.kmdb.dtos.create.CreateMovieDto;
 
+import com.example.kmdb.services.ActorService;
 import com.example.kmdb.services.MovieService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MovieController {
 
     private final MovieService movieService;
+    private final ActorService actorService;
 
     /** create new movie
      * POST /api/{movies}
@@ -46,24 +48,32 @@ public class MovieController {
 
     }
 
-    /** retrieve all entities using pagination and search if present
+    /**
+     * @param actorId - if actor is present filter by actor
+     * GET /api/movies?actor={id}
+     * if not retrieve all movies
      * GET /api/movies, default pagination
-     * @param title - for search criteria default empty string
      * @param page - for pagination page size
      * @param size - for pagination item size
      */
     @GetMapping()
     public ResponseEntity<Page<MovieDto>> getAllMovies(
-            @RequestParam(defaultValue = "") String title,
+            @RequestParam(value = "actor", required = false) Long actorId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
+        Page<MovieDto> movies;
+
         Pageable pageable;
             // create regular pageable with page and size
-            pageable = PageRequest.of(page, size);
+        pageable = PageRequest.of(page, size);
 
-        Page<MovieDto> movies = movieService.getAllMovies(pageable);
+        if (actorId != null) {
+           movies = actorService.getMoviesWhereActorAppeared(actorId, pageable);
+        } else {
+           movies = movieService.getAllMovies(pageable);
 
+        }
         return ResponseEntity.ok(movies);
     }
 
@@ -145,9 +155,9 @@ public class MovieController {
      * Retrieve movies filtered by genre
      * RequestParam - Binds from the URL query string
      */
-    @GetMapping(params = "releaseYear")
+    @GetMapping(params = "year")
     public ResponseEntity<Page<MovieDto>> filterByYear(
-            @RequestParam int releaseYear,
+            @RequestParam("year") int releaseYear,
             @PageableDefault(page = 0, size = 10)  Pageable pageable) {
 
         Page<MovieDto> moviesByYear = movieService.filterByYear(releaseYear, pageable);
@@ -155,7 +165,8 @@ public class MovieController {
     }
 
     /**
-     * GET /api/movies?genre={genreId}: Retrieve movies filtered by genre
+     * get all actors in a specific movie
+     * GET /api/movies/{movieId}/actors
      * returns all actors that belong to a specific movie
      */
     @GetMapping("/{id}/actors") // This is a nested resource.
@@ -165,19 +176,6 @@ public class MovieController {
         Page<ActorDto> actors = movieService.getAllActorsInMovie(id, pageable);
 
         return ResponseEntity.ok(actors);
-    }
-
-    /** Retrieve movies that the actor with the given id has starred in
-     * GET /api/movies?actor={Actor.id}
-     * @param actorId - actor id
-     * @param pageable - pageable object
-     * @return type of page MovieDtos
-     */
-    @GetMapping(params = "actor")
-    public ResponseEntity<Page<MovieDto>> getMoviesWhereActorAppeared(@RequestParam("actor") Long actorId, Pageable pageable) {
-        Page<MovieDto> movies =  movieService.getMoviesWhereActorAppeared(actorId, pageable);
-
-        return ResponseEntity.ok(movies);
     }
 
 }

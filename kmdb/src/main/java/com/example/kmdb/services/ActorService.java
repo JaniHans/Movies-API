@@ -31,6 +31,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -40,9 +41,10 @@ public class ActorService {
     private final ActorRepository actorRepository;
     private final MovieRepository movieRepository;
 
-    private final MovieMapper movieMapper;
+    private final MovieService mov;
 
     private static final String ACTOR_NOT_FOUND = "Actor not found by id: ";
+    private final MovieService movieService;
 
     // HELPER METHODS
     /**
@@ -247,9 +249,28 @@ public class ActorService {
         if (name.isEmpty()) {
             throw new IllegalArgumentException("Actor name can't be empty");
         }
-        return actorRepository.findActorEntitiesByNameIgnoreCase(name, pageable)
-        .map(this::actorEntityToActorDto);
 
+           Optional<ActorEntity> actor = actorRepository.findActorEntityByNameEqualsIgnoreCase(name);
+           if (actor.isEmpty()) {
+               throw new ResourceNotFoundException("Actor not found");
+           }
+           return actorRepository.findActorEntitiesByNameContainingIgnoreCase(name, pageable)
+                   .map(this::actorEntityToActorDto);
+
+    }
+    /**
+     * fetch all movies an actor has appeared in.
+     * GET /api/movies?actor={Actor.id} request method
+     * Pagination
+     * @param actorId -actor id
+     * @param pageable - pageable object
+     * @return MovieDto of page type
+     */
+    public Page<MovieDto> getMoviesWhereActorAppeared(Long actorId, Pageable pageable) {
+        actorRepository.findById(actorId).orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + actorId));
+
+        return movieRepository.findByActorsIds(actorId, pageable)
+                .map(movieService::movieEntityToMovieDto);
 
     }
 
