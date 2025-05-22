@@ -59,8 +59,8 @@ public class MovieController {
     @GetMapping()
     public ResponseEntity<Page<MovieDto>> getAllMovies(
             @RequestParam(value = "actor", required = false) Long actorId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+             @RequestParam(defaultValue = "0") int page,
+             @RequestParam(defaultValue = "10") int size) {
 
         Page<MovieDto> movies;
 

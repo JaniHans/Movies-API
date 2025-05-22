@@ -19,11 +19,18 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(ex.getMessage(), 404) ;
 
     }
+    @ExceptionHandler(DeleteNotAllowedException.class)
+    @ResponseStatus(value= HttpStatus.CONFLICT)
+    @ResponseBody
+    public ErrorResponse deleteNotAllowed(DeleteNotAllowedException ex) {
+        return new ErrorResponse(ex.getMessage(), 400) ;
+
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception ex) {
         log.error("Internal server error", ex);
-        return new ResponseEntity<>(new ErrorResponse("Something has just exploded in the backend. " + ex.getMessage(), 500), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new ErrorResponse("Something has just exploded in the backend. " + ex.getMessage(), 400), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

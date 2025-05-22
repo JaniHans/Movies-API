@@ -208,6 +208,13 @@ public class MovieService {
      */
     public Page<MovieDto> getAllMovies(Pageable pageable) {
 
+        if (pageable.getPageNumber() < 0) {
+            throw new MethodArgumentNotValidException("Page number can't be negative");
+        }
+        if (pageable.getPageSize() < 0) {
+            throw new MethodArgumentNotValidException("Page size can't be negative");
+        }
+
         log.info("Retrieving all movies");
         Page<MovieEntity> movies = movieRepository.findAll(pageable);
         return movies.map(this::movieEntityToMovieDto);
@@ -242,6 +249,14 @@ public class MovieService {
             return movieRepository.findAll(pageable)
                     .map(this::movieEntityToMovieDto);
         }
+
+        if (pageable.getPageNumber() < 0) {
+            throw new MethodArgumentNotValidException("Page number can't be negative");
+        }
+        if (pageable.getPageSize() < 0) {
+            throw new MethodArgumentNotValidException("Page size can't be negative");
+        }
+
         pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("title").ascending());
 
         return movieRepository.findByTitleContainingIgnoreCase(searchCriteria, pageable)
