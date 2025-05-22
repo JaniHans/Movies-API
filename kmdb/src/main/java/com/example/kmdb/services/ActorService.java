@@ -7,8 +7,6 @@ import com.example.kmdb.dtos.create.CreateActorDto;
 import com.example.kmdb.exceptions.InvalidDateFormatException;
 import com.example.kmdb.exceptions.MethodArgumentNotValidException;
 
-import com.example.kmdb.mapper.MovieMapper;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,7 +24,6 @@ import com.example.kmdb.repositories.MovieRepository;
 
 import org.springframework.stereotype.Service;
 
-
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -40,8 +37,6 @@ public class ActorService {
 
     private final ActorRepository actorRepository;
     private final MovieRepository movieRepository;
-
-    private final MovieService mov;
 
     private static final String ACTOR_NOT_FOUND = "Actor not found by id: ";
     private final MovieService movieService;
@@ -275,5 +270,3 @@ public class ActorService {
     }
 
 }
-
-

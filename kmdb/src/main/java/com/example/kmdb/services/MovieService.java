@@ -1,7 +1,7 @@
 package com.example.kmdb.services;
 
 import com.example.kmdb.dtos.ActorDto;
-import com.example.kmdb.dtos.GenreDto;
+
 import com.example.kmdb.dtos.MovieDto;
 import com.example.kmdb.dtos.create.CreateMovieDto;
 import com.example.kmdb.entities.ActorEntity;
@@ -11,7 +11,6 @@ import com.example.kmdb.exceptions.DeleteNotAllowedException;
 import com.example.kmdb.exceptions.MethodArgumentNotValidException;
 import com.example.kmdb.exceptions.ResourceNotFoundException;
 
-import com.example.kmdb.mapper.MovieMapper;
 import com.example.kmdb.repositories.ActorRepository;
 import com.example.kmdb.repositories.GenreRepository;
 import com.example.kmdb.repositories.MovieRepository;
@@ -24,10 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -38,33 +34,7 @@ public class MovieService {
     private final MovieRepository movieRepository;
     private final ActorRepository actorRepository;
 
-    private final MovieMapper movieMapper;
-
-
     private static final String MOVIE_NOT_FOUND = "Movie not found by id: ";
-    private static final String ACTOR_NOT_FOUND = "Actor not found by id: ";
-
-
-//    // HELPER METHODS
-//    /**
-//     * convert entity to genreDto
-//     * converts list of movie entities to movieDTOs
-//     * @param genreEntity - genre
-//     * @return genreDTO
-//     */
-//    private GenreDto genreEntityToGenreDto(GenreEntity genreEntity) {
-//
-//        if (genreEntity == null || genreEntity.getName().isBlank()) {
-//            throw new MethodArgumentNotValidException("Entity can't be null");
-//        }
-//        GenreDto genreDto = new GenreDto();
-//        genreDto.setId(genreEntity.getId());
-//        genreDto.setName(genreEntity.getName());
-//
-//        genreDto.setMovieTitles(convertMovieEntitiesToMovieTitles(genreEntity.getMovies()));
-//        return genreDto;
-//    }
-
 
     /**
      * @param movies
@@ -80,8 +50,6 @@ public class MovieService {
         if (createMovieDto == null || createMovieDto.getTitle().isBlank()) {
             throw new MethodArgumentNotValidException("Name of the genre can't be null or empty");
         }
-
-
 
         MovieEntity movie = new MovieEntity();
         movie.setTitle(createMovieDto.getTitle());
