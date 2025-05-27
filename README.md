@@ -54,7 +54,7 @@ A RESTful API built with Spring Boot and JPA to manage a movie database for a lo
 4. ** Add the following dependencies (copy-paste if for some reason git clone does not include the dependencies)**
    In `pom.xml`:
     ```dependencies
-
+<details>
    	<dependencies>
 
 		<dependency>
@@ -120,6 +120,7 @@ A RESTful API built with Spring Boot and JPA to manage a movie database for a lo
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+</details>
 
 🚀 POSTMAN Usage Guide
 Base URL
@@ -129,7 +130,7 @@ Endpoints Overview
 ## Genre
 POST /genres
 
-# required JSON body
+### required JSON body
 
       "name" : "Comedy",
       "movies" : [movieIds] ---> [1 , 2 , 3] 
@@ -140,7 +141,7 @@ GET api/genres/{id}
 
 PATCH api/genres/{id}
 
-## required JSON body
+### required JSON body
 
       "name" : "Comedy",
       "movies" : [movieIds] ---> [1 , 2 , 3] 
@@ -149,10 +150,10 @@ DELETE api/genres/{id}?force={true}
 
 GET api/genres/{id}/movies
 
-## Movies
+# Movies
 POST api/movies
 
-# required JSON Body
+### required JSON Body
 
       "title" : "Matrix",
       "releaseYear" : 2003,
