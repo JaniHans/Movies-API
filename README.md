@@ -6,14 +6,13 @@ A RESTful API built with Spring Boot and JPA to manage a movie database for a lo
 
 ## 📖 Project Overview
 
-The API digitizes the society’s movie collection previously managed via spreadsheets. It supports:
-
 - Full CRUD for movies, genres, and actors
 - Filtering movies by genre, year, or actor
 - Searching movies by title (case-insensitive, partial match)
 - Pagination support for large result sets
 - Input validation and custom error handling
 - Safe deletion with optional force-delete mechanism
+- Data Transfer Object (DTO) - security and design enhancement (more at the end of the file)
 
 ---
 
@@ -238,3 +237,17 @@ Filtering and search endpoints
 Validation and error scenarios
 
 Force deletion logic
+
+## Extra Security Enhancement
+
+Any kind of client side entity data manipulation is dealt with a layer of abstraction called the Data Transfer Object design. Fundamental part of API structure but not specifically required in this project.
+
+I added CreateDto(createMovieDto, createActorDto, createGenreDto) and ResponseDto(ActorDto, GenreDto, MovieDto) to improve both security and structure.
+
+CreateDto used in POST and PATCH methods - their entity lists accepts only IDs of the entities (like actorId, genreId, movieId), so clients can’t send unwanted data or mess with entity fields.
+
+ResponseDto gives clean output — just names or titles, not full entities — and includes only safe, needed info.
+
+This helps avoid exposing internal details and keeps the API safer and easier to use.
+
+
