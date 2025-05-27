@@ -52,7 +52,7 @@ The API digitizes the society’s movie collection previously managed via spread
    spring.jpa.hibernate.ddl-auto=update
    spring.jpa.show-sql=false
    
-4. ** Add the following dependencies (copy-paste)**
+4. ** Add the following dependencies (copy-paste if for some reason git clone does not include the dependencies)**
    In `pom.xml`:
     ```dependencies
 
@@ -60,16 +60,16 @@ The API digitizes the society’s movie collection previously managed via spread
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId> <!--  2025 README -->
+			<artifactId>spring-boot-starter-data-jpa</artifactId> 
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId> <!--  2025 README -->
+			<artifactId>spring-boot-starter-web</artifactId> 
 
 		</dependency>
 		<dependency>
 			<groupId>org.xerial</groupId>
-			<artifactId>sqlite-jdbc</artifactId> <!--  2025 README -->
+			<artifactId>sqlite-jdbc</artifactId> 
 			<version>3.41.2.2</version>
 		</dependency>
 		<dependency>
@@ -79,17 +79,17 @@ The API digitizes the society’s movie collection previously managed via spread
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-validation</artifactId> <!-- Latest stable version as of 2025 README -->
+			<artifactId>spring-boot-starter-validation</artifactId> 
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.38</version> <!-- Latest stable version as of 2025 README -->
+			<version>1.18.38</version> 
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mapstruct</groupId>
-			<artifactId>mapstruct</artifactId> <!-- Latest stable version as of 2025 README -->
+			<artifactId>mapstruct</artifactId> 
 			<version>1.6.0.Beta1</version>
 		</dependency>
 		<dependency>
@@ -104,15 +104,15 @@ The API digitizes the society’s movie collection previously managed via spread
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-logging</artifactId>  <!-- Latest stable version as of 2025 README -->
+			<artifactId>spring-boot-starter-logging</artifactId> 
 		</dependency>
 		<dependency>
-			<groupId>jakarta.validation</groupId>  <!-- not added to readme -->
+			<groupId>jakarta.validation</groupId>  
 			<artifactId>jakarta.validation-api</artifactId>
 			<version>3.0.2</version>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate.validator</groupId> <!-- not added to readme -->
+			<groupId>org.hibernate.validator</groupId> 
 			<artifactId>hibernate-validator</artifactId>
 		</dependency>
 		<dependency>
@@ -122,13 +122,18 @@ The API digitizes the society’s movie collection previously managed via spread
 		</dependency>
 	</dependencies>
 
-🚀 Usage Guide
+🚀 POSTMAN Usage Guide
 Base URL
 http://localhost:8080/api
 
 Endpoints Overview
-Genres
+## Genre
 POST /genres
+
+# required JSON body
+
+      "name" : "Comedy",
+      "movies" : [movieIds] ---> [1 , 2 , 3] 
 
 GET api/genres
 
@@ -136,12 +141,25 @@ GET api/genres/{id}
 
 PATCH api/genres/{id}
 
-DELETE api/genres/{id}?force={true|false}
+## required JSON body
+
+      "name" : "Comedy",
+      "movies" : [movieIds] ---> [1 , 2 , 3] 
+
+DELETE api/genres/{id}?force={true}
 
 GET api/genres/{id}/movies
 
-Movies
+## Movies
 POST api/movies
+
+# required JSON Body
+
+      "title" : "Matrix",
+      "releaseYear" : 2003,
+      "duration" : 150,
+      "genres" : [genreIds] ---> [1 , 2 , 3]
+      "actors" : [movieIds] ---> [1 , 2 , 3]
 
 GET api/movies
 
@@ -149,7 +167,15 @@ GET api/movies/{id}
 
 PATCH api/movies/{id}
 
-DELETE api/movies/{id}?force={true|false}
+# required JSON Body
+
+      "title" : "Matrix",
+      "releaseYear" : 2003,
+      "duration" : 150,
+      "genres" : [genreIds] ---> [1 , 2 , 3]
+      "actors" : [movieIds] ---> [1 , 2 , 3]
+
+DELETE api/movies/{id}?force={true}
 
 GET api/movies?genre={id}
 
@@ -163,14 +189,22 @@ GET api/movies/search?title={query} ← partial, case-insensitive
 
 GET api/movies?page=0&size=10 ← pagination
 
-Actors
+## Actors
 POST api/actors
+
+      "name": "John",
+      "birthDate": "1990-04-12",
+      "movies": [movieIds] --->  [1 , 2 , 3]
 
 GET api/actors
 
 GET api/actors/{id}
 
 PATCH api/actors/{id}
+
+      "name": "John",
+      "birthDate": "1990-04-12",
+      "movies": [movieIds] --->  [1 , 2 , 3]
 
 DELETE /actors/{id}?force={true|false}
 
