@@ -26,6 +26,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URI;
+
 
 @RestController
 @RequestMapping("/api/movies")
@@ -42,9 +44,12 @@ public class MovieController {
      */
     @PostMapping
     public ResponseEntity<MovieDto> createMovie(@Valid @RequestBody CreateMovieDto request) {
-    MovieDto dto = movieService.createMovie(request);
 
-    return ResponseEntity.ok(dto);
+        MovieDto created = movieService.createMovie(request);
+
+        URI location = URI.create("/api/movies/" + created.getId());
+
+    return ResponseEntity.created(location).body(created);
 
     }
 

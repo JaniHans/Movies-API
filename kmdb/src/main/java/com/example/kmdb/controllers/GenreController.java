@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URI;
+
 @RestController
 @RequestMapping("/api/genres")
 @RequiredArgsConstructor // fields that have final create constructor
@@ -34,9 +36,14 @@ public class GenreController {
      * POST /api/{genres}
      */
     @PostMapping
+
     public ResponseEntity<GenreDto> createGenre(@Valid @RequestBody CreateGenreDto request) {
 
-        return ResponseEntity.ok(genreService.createGenre(request));
+        GenreDto created = genreService.createGenre(request);
+
+        URI location = URI.create("/api/genres/" + created.getId());
+
+        return ResponseEntity.created(location).body(created);
 
     }
 

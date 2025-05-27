@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URI;
+
 
 @RestController
 @RequestMapping("/api/actors")
@@ -38,7 +40,11 @@ public class ActorController {
     @PostMapping
     public ResponseEntity<ActorDto> createActor(@Valid @RequestBody CreateActorDto createActorDto) {
 
-        return ResponseEntity.ok(actorService.createActor(createActorDto));
+        ActorDto created = actorService.createActor(createActorDto);
+
+        URI location = URI.create("/api/actors/" + created.getId());
+
+        return ResponseEntity.created(location).body(created);
 }
     /** retrieve all actors
      * GET/api/{entity}
