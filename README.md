@@ -53,8 +53,9 @@ A RESTful API built with Spring Boot and JPA to manage a movie database for a lo
    
 4. ** Add the following dependencies (copy-paste if for some reason git clone does not include the dependencies)**
    In `pom.xml`:
-    ```dependencies
 <details>
+    ```dependencies
+
    	<dependencies>
 
 		<dependency>
