@@ -125,7 +125,7 @@ A RESTful API built with Spring Boot and JPA to manage a movie database for a lo
 
 🚀 POSTMAN Usage Guide
 Base URL
-http://localhost:8080/api
+## http://localhost:8080/api
 
 Endpoints Overview
 ## Genre
@@ -136,23 +136,23 @@ POST /genres
       "name" : "Comedy",
       "movies" : [movieIds] ---> [1 , 2 , 3] 
 
-GET api/genres
+GET /genres
 
-GET api/genres/{id}
+GET /genres/{id}
 
-PATCH api/genres/{id}
+PATCH /genres/{id}
 
 ### required JSON body
 
       "name" : "Comedy",
       "movies" : [movieIds] ---> [1 , 2 , 3] 
 
-DELETE api/genres/{id}?force={true}
+DELETE /genres/{id}?force={true}
 
-GET api/genres/{id}/movies
+GET /genres/{id}/movies
 
 # Movies
-POST api/movies
+POST /movies
 
 ### required JSON Body
 
@@ -162,11 +162,11 @@ POST api/movies
       "genres" : [genreIds] ---> [1 , 2 , 3]
       "actors" : [movieIds] ---> [1 , 2 , 3]
 
-GET api/movies
+GET /movies
 
-GET api/movies/{id}
+GET /movies/{id}
 
-PATCH api/movies/{id}
+PATCH /movies/{id}
 
 # required JSON Body
 
@@ -176,32 +176,32 @@ PATCH api/movies/{id}
       "genres" : [genreIds] ---> [1 , 2 , 3]
       "actors" : [movieIds] ---> [1 , 2 , 3]
 
-DELETE api/movies/{id}?force={true}
+DELETE /movies/{id}?force={true}
 
-GET api/movies?genre={id}
+GET /movies?genre={id}
 
-GET api/movies?year={YYYY}
+GET /movies?year={YYYY}
 
-GET api/movies?actor={actorId}
+GET /movies?actor={actorId}
 
-GET api/movies/{id}/actors
+GET /movies/{id}/actors
 
-GET api/movies/search?title={query} ← partial, case-insensitive
+GET /movies/search?title={query} ← partial, case-insensitive
 
-GET api/movies?page=0&size=10 ← pagination
+GET /movies?page=0&size=10 ← pagination
 
 ## Actors
-POST api/actors
+POST /actors
 
       "name": "John",
       "birthDate": "1990-04-12",
       "movies": [movieIds] --->  [1 , 2 , 3]
 
-GET api/actors
+GET /actors
 
-GET api/actors/{id}
+GET /actors/{id}
 
-PATCH api/actors/{id}
+PATCH /actors/{id}
 
       "name": "John",
       "birthDate": "1990-04-12",
