@@ -13,6 +13,10 @@ A RESTful API built with Spring Boot and JPA to manage a movie database for a lo
 - Input validation and custom error handling
 - Safe deletion with optional force-delete mechanism
 - Data Transfer Object (DTO) - security and design enhancement (more at the end of the file)
+- Control the retrieval of all entities with pagination query parameters
+- for ALL movies at once -> http://localhost:8080/api/movies?page&size=1000
+- for ALL actors at once -> http://localhost:8080/api/actors?page&size=1000
+- for ALL genres at once -> http://localhost:8080/api/genres?page&size=1000
 
 ---
 

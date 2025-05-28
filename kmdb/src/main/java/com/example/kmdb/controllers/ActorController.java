@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
+import java.util.List;
 
 
 @RestController
@@ -46,6 +47,7 @@ public class ActorController {
 
         return ResponseEntity.created(location).body(created);
 }
+
     /** retrieve all actors
      * GET/api/{entity}
      * pagination default 0, size 10

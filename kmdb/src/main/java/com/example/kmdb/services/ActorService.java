@@ -126,6 +126,8 @@ public class ActorService {
         return actorEntityToActorDto(actor);
 
     }
+
+
     /**
      *Implement methods to retrieve all actors, pagination included
      * GET /api/actors?page=0&size=10
