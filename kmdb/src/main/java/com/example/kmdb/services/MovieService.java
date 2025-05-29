@@ -11,6 +11,7 @@ import com.example.kmdb.exceptions.DeleteNotAllowedException;
 import com.example.kmdb.exceptions.MethodArgumentNotValidException;
 import com.example.kmdb.exceptions.ResourceNotFoundException;
 
+import com.example.kmdb.mapper.MovieMapper;
 import com.example.kmdb.repositories.ActorRepository;
 import com.example.kmdb.repositories.GenreRepository;
 import com.example.kmdb.repositories.MovieRepository;
@@ -33,101 +34,9 @@ public class MovieService {
     private final GenreRepository genreRepository;
     private final MovieRepository movieRepository;
     private final ActorRepository actorRepository;
+    private final MovieMapper movieMapper;
 
     private static final String MOVIE_NOT_FOUND = "Movie not found by id: ";
-
-    /**
-     * @param movies
-     */
-    private List<String> convertMovieEntitiesToMovieTitles(List<MovieEntity> movies) {
-
-        return movies.stream().map(MovieEntity::getTitle)
-                .toList();
-    }
-
-    private MovieEntity createMovieDtoToMovieEntity(CreateMovieDto createMovieDto) {
-
-        if (createMovieDto == null || createMovieDto.getTitle().isBlank()) {
-            throw new MethodArgumentNotValidException("Name of the genre can't be null or empty");
-        }
-
-        MovieEntity movie = new MovieEntity();
-        movie.setTitle(createMovieDto.getTitle());
-        movie.setDuration(createMovieDto.getDuration());
-        movie.setReleaseYear(createMovieDto.getReleaseYear());
-
-        if (createMovieDto.getActors().isEmpty() && createMovieDto.getGenres().isEmpty()) {
-            return movie;
-        } else {
-            if (!createMovieDto.getActors().isEmpty()) {
-                movie.setActors(actorRepository.findAllById(createMovieDto.getActors()));
-            }
-            if (!createMovieDto.getGenres().isEmpty()) {
-                movie.setGenres(genreRepository.findAllById(createMovieDto.getGenres()));
-            }
-        }
-        return movie;
-    }
-
-    /**
-     * @param genres
-     */
-    private List<String> convertGenreEntitiesToGenreNames(List<GenreEntity> genres) {
-
-       return genres.stream().map(GenreEntity::getName).toList();
-    }
-    /**
-     * convert entity to genreDto
-     * converts list of movie entities to movieDTOs
-     * @param actorEntity - genre
-     * @return genreDTO
-     */
-    private ActorDto actorEntityToActorDto(ActorEntity actorEntity) {
-
-        if (actorEntity == null || actorEntity.getName().isBlank()) {
-            throw new MethodArgumentNotValidException("Entity can't be null");
-        }
-        ActorDto actorDto = new ActorDto();
-        actorDto.setId(actorEntity.getId());
-        actorDto.setName(actorEntity.getName());
-        actorDto.setBirthDate(actorEntity.getBirthDate());
-
-        actorDto.setMovies(convertMovieEntitiesToMovieTitles(actorEntity.getMovies()));
-        return actorDto;
-    }
-
-    /**
-     * @param actors
-     */
-    private List<String> convertActorEntitiesToActorNames(List<ActorEntity> actors) {
-
-        return actors.stream().map(ActorEntity::getName).toList();
-    }
-    /**
-     *
-     * @param movieEntity
-     * @return
-     */
-    public MovieDto movieEntityToMovieDto(MovieEntity movieEntity) {
-
-        if (movieEntity == null || movieEntity.getTitle().isBlank()) {
-            throw new MethodArgumentNotValidException("Entity can't be null");
-        }
-
-        MovieDto movieDto = new MovieDto();
-
-        movieDto.setId(movieEntity.getId());
-        movieDto.setTitle(movieEntity.getTitle());
-        movieDto.setDuration(movieEntity.getDuration());
-        movieDto.setReleaseYear(movieEntity.getReleaseYear());
-
-        // for display set Names of actors and Genres to Movie lists of Genres and Actors
-        movieDto.setGenres(convertGenreEntitiesToGenreNames(movieEntity.getGenres()));
-        movieDto.setActors(convertActorEntitiesToActorNames(movieEntity.getActors()));
-
-        return movieDto;
-
-    }
 
     // MOVIE CRUD ENDPOINTS
 
@@ -143,7 +52,7 @@ public class MovieService {
 
         log.info("Movie created : {}", createMovieDto.getTitle());
 
-        MovieEntity movie = createMovieDtoToMovieEntity(createMovieDto);
+        MovieEntity movie = movieMapper.createMovieDtoToMovieEntity(createMovieDto);
 
         // find by actor ids
         List<GenreEntity> genres = genreRepository.findAllById(createMovieDto.getGenres());
@@ -165,7 +74,7 @@ public class MovieService {
 
         movieRepository.save(movie);
 
-        return movieEntityToMovieDto(movie);
+        return movieMapper.movieEntityToMovieDto(movie);
         // return movieDto
     }
 
@@ -186,7 +95,7 @@ public class MovieService {
 
         log.info("Retrieving all movies");
         Page<MovieEntity> movies = movieRepository.findAll(pageable);
-        return movies.map(this::movieEntityToMovieDto);
+        return movies.map(movieMapper::movieEntityToMovieDto);
         }
 
     /**
@@ -200,7 +109,7 @@ public class MovieService {
 
         MovieEntity movie = movieRepository.findById(movieId).orElseThrow(() -> new ResourceNotFoundException(MOVIE_NOT_FOUND + " " + movieId));
 
-        return movieEntityToMovieDto(movie);
+        return movieMapper.movieEntityToMovieDto(movie);
 
     }
 
@@ -216,7 +125,7 @@ public class MovieService {
         if (searchCriteria.isEmpty()) {
             // create regular pageable with page and size
             return movieRepository.findAll(pageable)
-                    .map(this::movieEntityToMovieDto);
+                    .map(movieMapper::movieEntityToMovieDto);
         }
 
         if (pageable.getPageNumber() < 0) {
@@ -229,7 +138,7 @@ public class MovieService {
         pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("title").ascending());
 
         return movieRepository.findByTitleContainingIgnoreCase(searchCriteria, pageable)
-                .map(this::movieEntityToMovieDto);
+                .map(movieMapper::movieEntityToMovieDto);
     }
 
 
@@ -250,7 +159,7 @@ public class MovieService {
         }
 
         return movieRepository.findMovieEntitiesByGenreIds(genreId, pageable)
-                .map(this::movieEntityToMovieDto);
+                .map(movieMapper::movieEntityToMovieDto);
 
     }
 
@@ -263,7 +172,7 @@ public class MovieService {
     public Page<MovieDto> filterByYear(int releaseYear, Pageable pageable) {
         
         return movieRepository.findByReleaseYear(releaseYear, pageable)
-                .map(this::movieEntityToMovieDto);
+                .map(movieMapper::movieEntityToMovieDto);
 
     }
     /**
@@ -308,7 +217,7 @@ public class MovieService {
         movie.setDuration(dto.getDuration());
         movieRepository.save(movie);
 
-        return movieEntityToMovieDto(movie);
+        return movieMapper.movieEntityToMovieDto(movie);
     }
 
     /**
@@ -322,7 +231,7 @@ public class MovieService {
               new ResourceNotFoundException(MOVIE_NOT_FOUND + movieId));
 
       return actorRepository.findActorEntitiesByMovieId(movieId, pageable)
-              .map(this::actorEntityToActorDto);
+              .map(movieMapper::actorEntityToActorDto);
 
     }
 
@@ -340,7 +249,6 @@ public class MovieService {
                 .orElseThrow(() -> new ResourceNotFoundException(MOVIE_NOT_FOUND + movieId));
 
         // boolean flags for correct error message
-
         boolean hasActors = !movie.getActors().isEmpty();
         boolean hasGenres = !movie.getGenres().isEmpty();
 
@@ -370,5 +278,3 @@ public class MovieService {
         log.info("Movie deleted");
     }
     }
-
-

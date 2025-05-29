@@ -122,7 +122,8 @@ public class MovieController {
      * @param request - movie details comes in as request body
      */
     @PatchMapping("/{id}")
-    public ResponseEntity<MovieDto> modifyMovie(@PathVariable Long id, @RequestBody CreateMovieDto request) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ResponseEntity<MovieDto> modifyMovie(@PathVariable Long id, @Valid @RequestBody CreateMovieDto request) {
 
         MovieDto movie = movieService.modifyMovie(id, request);
 

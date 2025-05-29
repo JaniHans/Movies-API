@@ -1,7 +1,7 @@
 package com.example.kmdb.controllers;
 
 import com.example.kmdb.dtos.GenreDto;
-import com.example.kmdb.dtos.MovieDto;
+
 import com.example.kmdb.dtos.create.CreateGenreDto;
 
 import com.example.kmdb.services.GenreService;

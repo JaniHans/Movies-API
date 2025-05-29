@@ -9,6 +9,7 @@ import com.example.kmdb.exceptions.DeleteNotAllowedException;
 import com.example.kmdb.exceptions.MethodArgumentNotValidException;
 import com.example.kmdb.exceptions.ResourceNotFoundException;
 
+import com.example.kmdb.mapper.GenreMapper;
 import com.example.kmdb.repositories.GenreRepository;
 import com.example.kmdb.repositories.MovieRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,59 +28,9 @@ public class GenreService {
 
     private final GenreRepository genreRepository;
     private final MovieRepository movieRepository;
+    private final GenreMapper genreMapper;
 
     private static final String GENRE_NOT_FOUND = "Genre not found by id: ";
-
-
-    // HELPER METHODS
-    /**
-     * creates genreEntity from genreCreateDto
-     * sets list of movie ids to movie entities within the genre
-     * @param createGenreDto - genre
-     * @return genre entity
-     */
-    private GenreEntity createGenreDtoToGenreEntity(CreateGenreDto createGenreDto) {
-        if (createGenreDto == null || createGenreDto.getName().isBlank()) {
-            throw new MethodArgumentNotValidException("Name of the genre can't be null or empty");
-        }
-        GenreEntity entity = new GenreEntity();
-        entity.setName(createGenreDto.getName());
-        if (createGenreDto.getMovies().isEmpty()) {
-        return entity;
-        }
-
-        entity.setMovies(movieRepository.findAllById(createGenreDto.getMovies()));
-        return entity;
-    }
-    /**
-     * convert entity to genreDto
-     * converts list of movie entities to movieDTOs
-     * @param genreEntity - genre
-     * @return genreDTO
-     */
-    private GenreDto genreEntityToGenreDto(GenreEntity genreEntity) {
-
-        if (genreEntity == null || genreEntity.getName().isBlank()) {
-            throw new MethodArgumentNotValidException("Entity can't be null");
-        }
-        GenreDto genreDto = new GenreDto();
-        genreDto.setId(genreEntity.getId());
-        genreDto.setName(genreEntity.getName());
-
-        genreDto.setMovies(convertMovieEntitiesToMovieTitles(genreEntity.getMovies()));
-        return genreDto;
-    }
-
-    /**
-     * Returns a list of movie titles that belong to the entity
-     * @param movies
-     */
-    private List<String> convertMovieEntitiesToMovieTitles(List<MovieEntity> movies) {
-
-        return movies.stream().map(MovieEntity::getTitle)
-                .toList();
-    }
-
 
      // CRUD METHODS
     /**
@@ -92,7 +43,7 @@ public class GenreService {
 
         log.info("Genre created : {}, movieIds :{}", genreDto.getName(), genreDto.getMovies());
         //
-        GenreEntity genre = createGenreDtoToGenreEntity(genreDto);
+        GenreEntity genre = genreMapper.createGenreDtoToGenreEntity(genreDto);
 
         // find by movie IDS
         List<MovieEntity> movies = movieRepository.findAllById(genreDto.getMovies());
@@ -105,7 +56,7 @@ public class GenreService {
 
         genreRepository.save(genre);
 
-        return genreEntityToGenreDto(genre);
+        return genreMapper.genreEntityToGenreDto(genre);
 
     }
 
@@ -119,7 +70,7 @@ public class GenreService {
         log.info("Retrieving all genres");
       Page<GenreEntity> genrePage = genreRepository.findAll(pageable);
 
-      return genrePage.map(this::genreEntityToGenreDto);
+      return genrePage.map(genreMapper::genreEntityToGenreDto);
     }
 
     /**
@@ -134,7 +85,7 @@ public class GenreService {
               .orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + " " + id));
 
 
-      return genreEntityToGenreDto(entity);
+      return genreMapper.genreEntityToGenreDto(entity);
 
     }
 
@@ -174,7 +125,7 @@ public class GenreService {
 
         genreRepository.save(genre);
 
-        return genreEntityToGenreDto(genre);
+        return genreMapper.genreEntityToGenreDto(genre);
 
     }
     /**
