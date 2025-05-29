@@ -9,8 +9,6 @@ import com.example.kmdb.exceptions.MethodArgumentNotValidException;
 import com.example.kmdb.repositories.MovieRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;

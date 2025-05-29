@@ -1,14 +1,11 @@
 package com.example.kmdb.services;
 
 import com.example.kmdb.dtos.GenreDto;
-
 import com.example.kmdb.dtos.create.CreateGenreDto;
 import com.example.kmdb.entities.GenreEntity;
 import com.example.kmdb.entities.MovieEntity;
 import com.example.kmdb.exceptions.DeleteNotAllowedException;
-import com.example.kmdb.exceptions.MethodArgumentNotValidException;
 import com.example.kmdb.exceptions.ResourceNotFoundException;
-
 import com.example.kmdb.mapper.GenreMapper;
 import com.example.kmdb.repositories.GenreRepository;
 import com.example.kmdb.repositories.MovieRepository;
@@ -17,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,7 +55,6 @@ public class GenreService {
         return genreMapper.genreEntityToGenreDto(genre);
 
     }
-
     /**
      * GET /api/{genres}
      * PAGINATION
@@ -83,12 +78,8 @@ public class GenreService {
 
       GenreEntity entity = genreRepository.findById(id)
               .orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + " " + id));
-
-
       return genreMapper.genreEntityToGenreDto(entity);
-
     }
-
     /**
      * PATCH /api/{genres}/{id}
      * @param - genreId and genre new Name
@@ -119,14 +110,11 @@ public class GenreService {
                 moviesNew.getGenres().add(genre);
             }
         }
-
-
         genre.setName(genreDto.getName());
 
         genreRepository.save(genre);
 
         return genreMapper.genreEntityToGenreDto(genre);
-
     }
     /**
      * DELETE /api/genres/1
@@ -150,9 +138,7 @@ public class GenreService {
         if (genre.getMovies().isEmpty()) {
             genreRepository.deleteById(id);
         }
-
         // force break associations
-
         if (force) {
 
             // reference to movie entity objects
@@ -162,11 +148,8 @@ public class GenreService {
                 // modify the real MovieEntity objects through Hibernate persistence context
                 movies.getGenres().remove(genre);
             }
-
             genreRepository.deleteById(id);
             log.info("Genre deleted");
         }
-
     }
-
 }

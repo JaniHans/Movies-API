@@ -1,12 +1,9 @@
 package com.example.kmdb.controllers;
 import com.example.kmdb.dtos.ActorDto;
 import com.example.kmdb.dtos.create.CreateActorDto;
-
 import com.example.kmdb.services.ActorService;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -22,10 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.net.URI;
-import java.util.List;
-
 
 @RestController
 @RequestMapping("/api/actors")
@@ -42,9 +36,7 @@ public class ActorController {
     public ResponseEntity<ActorDto> createActor(@Valid @RequestBody CreateActorDto createActorDto) {
 
         ActorDto created = actorService.createActor(createActorDto);
-
         URI location = URI.create("/api/actors/" + created.getId());
-
         return ResponseEntity.created(location).body(created);
 }
 
@@ -56,8 +48,8 @@ public class ActorController {
     @GetMapping
     public ResponseEntity<Page<ActorDto>> getAllActors(
             @PageableDefault(page = 0, size = 10)  Pageable pageable) {
-        Page<ActorDto> actors = actorService.getActors(pageable);
 
+        Page<ActorDto> actors = actorService.getActors(pageable);
         return ResponseEntity.ok(actors);
     }
     /**
@@ -70,7 +62,6 @@ public class ActorController {
         ActorDto actor = actorService.getActorById(id);
         return ResponseEntity.ok(actor);
     }
-
     /** partial actor update
      * PATCH /api/{entity}/{id}
      * @param id - Path Variable for actor id
@@ -80,7 +71,6 @@ public class ActorController {
     public ResponseEntity<ActorDto> modifyActor(@PathVariable Long id, @RequestBody CreateActorDto actorDto) {
 
         ActorDto actor = actorService.modifyActor(id, actorDto);
-
         return ResponseEntity.ok(actor);
     }
 
@@ -94,11 +84,8 @@ public class ActorController {
                             @RequestParam(defaultValue = "false") boolean force) {
 
         actorService.removeActor(id, force);
-
         return ResponseEntity.noContent().build();
-
     }
-
     /**
      * GET /api/actors?name={name}: Retrieve actors filtered by name
      * @param name - request param for string name

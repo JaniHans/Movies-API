@@ -1,9 +1,7 @@
 package com.example.kmdb.controllers;
 
 import com.example.kmdb.dtos.GenreDto;
-
 import com.example.kmdb.dtos.create.CreateGenreDto;
-
 import com.example.kmdb.services.GenreService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.net.URI;
 
 @RestController
@@ -30,7 +27,6 @@ import java.net.URI;
 @RequiredArgsConstructor // fields that have final create constructor
 public class GenreController {
     private final GenreService genreService;
-
 
     /** create a new entity
      * POST /api/{genres}
@@ -40,13 +36,9 @@ public class GenreController {
     public ResponseEntity<GenreDto> createGenre(@Valid @RequestBody CreateGenreDto request) {
 
         GenreDto created = genreService.createGenre(request);
-
         URI location = URI.create("/api/genres/" + created.getId());
-
         return ResponseEntity.created(location).body(created);
-
     }
-
     /** retrieve all genres
      * GET /api/{genres}:
      * @param pageable -pageable object containing all genres
@@ -57,7 +49,6 @@ public class GenreController {
         Page<GenreDto> genres = genreService.getAllGenres(pageable);
         return ResponseEntity.ok(genres);
     }
-
     /**
      * retrieve a specific genre by id
      * GET /api/{genres}/{id}
@@ -67,11 +58,8 @@ public class GenreController {
     public ResponseEntity<GenreDto> getGenreId(@PathVariable Long id) {
 
         GenreDto genre = genreService.getGenreById(id);
-
         return ResponseEntity.ok(genre);
-
     }
-
     /**
      * modify existing genre details
      * PATCH /api/{genres}/{id}
@@ -85,9 +73,6 @@ public class GenreController {
 
         return ResponseEntity.ok(genre);
     }
-
-
-
     /**
      * DELETE /api/{genres}/{id}: Delete an entity
      * DELETE /api/genres/1?force=true
@@ -103,5 +88,4 @@ public class GenreController {
         return ResponseEntity.noContent().build(); // ssa
 
     }
-
 }

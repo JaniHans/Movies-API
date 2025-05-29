@@ -1,7 +1,6 @@
 package com.example.kmdb.services;
 
 import com.example.kmdb.dtos.ActorDto;
-
 import com.example.kmdb.dtos.MovieDto;
 import com.example.kmdb.dtos.create.CreateMovieDto;
 import com.example.kmdb.entities.ActorEntity;
@@ -10,13 +9,11 @@ import com.example.kmdb.entities.MovieEntity;
 import com.example.kmdb.exceptions.DeleteNotAllowedException;
 import com.example.kmdb.exceptions.MethodArgumentNotValidException;
 import com.example.kmdb.exceptions.ResourceNotFoundException;
-
 import com.example.kmdb.mapper.MovieMapper;
 import com.example.kmdb.repositories.ActorRepository;
 import com.example.kmdb.repositories.GenreRepository;
 import com.example.kmdb.repositories.MovieRepository;
 import lombok.RequiredArgsConstructor;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -39,7 +36,6 @@ public class MovieService {
     private static final String MOVIE_NOT_FOUND = "Movie not found by id: ";
 
     // MOVIE CRUD ENDPOINTS
-
     /**
      * Method for POST endpoint - create movie
      * creates new movie with their title, release year, duration, associated genres, and actors.
@@ -112,7 +108,6 @@ public class MovieService {
         return movieMapper.movieEntityToMovieDto(movie);
 
     }
-
     /**
      * Get all movies, including pagination and search
      * using mapper interface method to convert entity to dto
@@ -141,7 +136,6 @@ public class MovieService {
                 .map(movieMapper::movieEntityToMovieDto);
     }
 
-
     /**
      * get and filter movies by genre id using pagination
      * GET /api/movies?genre={genreId}
@@ -157,10 +151,8 @@ public class MovieService {
         if (genre.getMovies().isEmpty()) {
             throw new ResourceNotFoundException(genre.getName() + " has no associated movies");
         }
-
         return movieRepository.findMovieEntitiesByGenreIds(genreId, pageable)
                 .map(movieMapper::movieEntityToMovieDto);
-
     }
 
     /**
@@ -173,7 +165,6 @@ public class MovieService {
         
         return movieRepository.findByReleaseYear(releaseYear, pageable)
                 .map(movieMapper::movieEntityToMovieDto);
-
     }
     /**
      * PATCH
@@ -219,7 +210,6 @@ public class MovieService {
 
         return movieMapper.movieEntityToMovieDto(movie);
     }
-
     /**
      * GET /api/movies/{movieId}/actors: Retrieves all actors starring in a movie
      * @param movieId - id of the movie
@@ -234,7 +224,6 @@ public class MovieService {
               .map(movieMapper::actorEntityToActorDto);
 
     }
-
     /**
      * deletes movie by id if there is no associated genres and actors
      * DELETE /api/{entity}/{id}: Delete an entity

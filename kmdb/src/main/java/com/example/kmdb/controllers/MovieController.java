@@ -3,7 +3,6 @@ package com.example.kmdb.controllers;
 import com.example.kmdb.dtos.ActorDto;
 import com.example.kmdb.dtos.MovieDto;
 import com.example.kmdb.dtos.create.CreateMovieDto;
-
 import com.example.kmdb.services.ActorService;
 import com.example.kmdb.services.MovieService;
 import jakarta.validation.Valid;
@@ -25,9 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.net.URI;
-
 
 @RestController
 @RequestMapping("/api/movies")
@@ -46,13 +43,10 @@ public class MovieController {
     public ResponseEntity<MovieDto> createMovie(@Valid @RequestBody CreateMovieDto request) {
 
         MovieDto created = movieService.createMovie(request);
-
         URI location = URI.create("/api/movies/" + created.getId());
-
     return ResponseEntity.created(location).body(created);
 
     }
-
     /**
      * @param actorId - if actor is present filter by actor
      * GET /api/movies?actor={id}
@@ -106,7 +100,6 @@ public class MovieController {
 
         return ResponseEntity.ok(movies);
     }
-
     /**
      * GET /api/{movies}/{id}
      * retrieve a specific movie by ID
@@ -179,9 +172,8 @@ public class MovieController {
     public ResponseEntity<Page<ActorDto>> getActorsInMovie(
             @PathVariable Long id,
             @PageableDefault(page = 0, size = 10) Pageable pageable) {
-        Page<ActorDto> actors = movieService.getAllActorsInMovie(id, pageable);
 
+        Page<ActorDto> actors = movieService.getAllActorsInMovie(id, pageable);
         return ResponseEntity.ok(actors);
     }
-
 }

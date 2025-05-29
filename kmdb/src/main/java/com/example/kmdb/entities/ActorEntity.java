@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDate;
 import java.util.ArrayList;
-
 import java.util.List;
 
 @Entity
@@ -17,9 +16,7 @@ public class ActorEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     private String name;
-
     @Setter
     private LocalDate birthDate; // ISO 8601 (1980-07-16)
 

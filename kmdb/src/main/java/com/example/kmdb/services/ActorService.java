@@ -1,31 +1,22 @@
 package com.example.kmdb.services;
 
 import com.example.kmdb.dtos.ActorDto;
-
 import com.example.kmdb.dtos.create.CreateActorDto;
-
 import com.example.kmdb.exceptions.InvalidDateFormatException;
-import com.example.kmdb.exceptions.MethodArgumentNotValidException;
-
 import com.example.kmdb.mapper.ActorMapper;
 import com.example.kmdb.mapper.MovieMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-
 import org.springframework.data.domain.Pageable;
-
 import com.example.kmdb.dtos.MovieDto;
 import com.example.kmdb.entities.ActorEntity;
-
 import com.example.kmdb.entities.MovieEntity;
 import com.example.kmdb.exceptions.DeleteNotAllowedException;
 import com.example.kmdb.exceptions.ResourceNotFoundException;
 import com.example.kmdb.repositories.ActorRepository;
 import com.example.kmdb.repositories.MovieRepository;
-
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -44,7 +35,6 @@ public class ActorService {
 
     private static final String ACTOR_NOT_FOUND = "Actor not found by id: ";
     private final MovieService movieService;
-
 
     /**
      * POST /api/actor: Create a new actor entity
@@ -66,7 +56,6 @@ public class ActorService {
         return  actorMapper.actorEntityToActorDto(actor);
 
     }
-
     /**
      *Implement methods to retrieve all actors, pagination included
      * GET /api/actors?page=0&size=10
@@ -89,8 +78,6 @@ public class ActorService {
 
         return actorMapper.actorEntityToActorDto(actor);
     }
-
-//    Lastly, ensure you can modify an existing actor's details
     /**
      * PATCH /api/{actor}/{id}
      * Partially update an existing entity
@@ -138,7 +125,6 @@ public class ActorService {
      actorRepository.save(actor);
        return actorMapper.actorEntityToActorDto(actor);
     }
-
     /**
      * Remove actor from the database
      * Force delete if actor has associated movies
@@ -174,7 +160,6 @@ public class ActorService {
             actorRepository.deleteById(actorId);
             log.info("Actor deleted");
         }
-
     /**
      * GET /api/actors?name={name}: Retrieve actors filtered by name
      * @param name - actor name
@@ -184,14 +169,12 @@ public class ActorService {
         if (name.isEmpty()) {
             throw new IllegalArgumentException("Actor name can't be empty");
         }
-
            Optional<ActorEntity> actor = actorRepository.findActorEntityByNameEqualsIgnoreCase(name);
            if (actor.isEmpty()) {
                throw new ResourceNotFoundException("Actor not found");
            }
            return actorRepository.findActorEntitiesByNameContainingIgnoreCase(name, pageable)
                    .map(actorMapper::actorEntityToActorDto);
-
     }
     /**
      * fetch all movies an actor has appeared in.
@@ -208,5 +191,4 @@ public class ActorService {
                 .map(movieMapper::movieEntityToMovieDto);
 
     }
-
 }

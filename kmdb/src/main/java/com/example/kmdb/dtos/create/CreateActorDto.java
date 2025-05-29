@@ -1,20 +1,10 @@
 package com.example.kmdb.dtos.create;
 
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
-
-import jakarta.validation.constraints.NotNull;
-
-
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
-
-
-import java.time.LocalDate;
 import java.util.ArrayList;
-
 import java.util.List;
 
 @Data
@@ -28,6 +18,4 @@ public class CreateActorDto {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private String birthDate;
     private List<Long> movies = new ArrayList<>();
-
-
 }
