@@ -10,7 +10,6 @@ import java.util.List;
 public class ActorDto {
     @Setter
     private Long id;
-
     private String name;
     @Setter
     private LocalDate birthDate;

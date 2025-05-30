@@ -27,7 +27,6 @@ import java.net.URI;
 public class ActorController {
 
     private final ActorService actorService;
-
     /** create a new actor
      * POST/api/actor
      * returns response entity actorDto
@@ -39,7 +38,6 @@ public class ActorController {
         URI location = URI.create("/api/actors/" + created.getId());
         return ResponseEntity.created(location).body(created);
 }
-
     /** retrieve all actors
      * GET/api/{entity}
      * pagination default 0, size 10
@@ -63,7 +61,6 @@ public class ActorController {
         return actorService.getActorById(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
-
     }
     /** partial actor update
      * PATCH /api/{entity}/{id}
@@ -76,7 +73,6 @@ public class ActorController {
         ActorDto actor = actorService.modifyActor(id, actorDto);
         return ResponseEntity.ok(actor);
     }
-
     /**
      * DELETE /api/{actors}/{id}: Delete an actor
      * @param id - Path Variable for actor id

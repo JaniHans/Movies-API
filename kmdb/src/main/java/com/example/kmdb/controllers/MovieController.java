@@ -62,16 +62,13 @@ public class MovieController {
              @RequestParam(defaultValue = "10") int size) {
 
         Page<MovieDto> movies;
-
         Pageable pageable;
             // create regular pageable with page and size
         pageable = PageRequest.of(page, size);
-
         if (actorId != null) {
            movies = actorService.getMoviesWhereActorAppeared(actorId, pageable);
         } else {
            movies = movieService.getAllMovies(pageable);
-
         }
         return ResponseEntity.ok(movies);
     }
@@ -97,7 +94,6 @@ public class MovieController {
             pageable = PageRequest.of(page, size, Sort.by("title").ascending());
         }
         Page<MovieDto> movies = movieService.getAllMoviesSpecial(title, pageable);
-
         return ResponseEntity.ok(movies);
     }
     /**
@@ -108,7 +104,6 @@ public class MovieController {
     public ResponseEntity<MovieDto> getMovieId(@PathVariable Long id) {
         return movieService.getMovieById(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
-
     /**
      * PATCH /api/movies/{movieId}: Partially update an existing entity
      * @param id - path variable in the http request movie id
@@ -119,7 +114,6 @@ public class MovieController {
     public ResponseEntity<MovieDto> modifyMovie(@PathVariable Long id, @Valid @RequestBody CreateMovieDto request) {
 
         MovieDto movie = movieService.modifyMovie(id, request);
-
         return ResponseEntity.ok(movie);
     }
     /**
@@ -136,7 +130,6 @@ public class MovieController {
         movieService.removeMovie(id, force);
 
     }
-
     /**
      * GET /api/movies?genre={genreId}:
      * Retrieve movies filtered by genre
@@ -148,7 +141,6 @@ public class MovieController {
         Page<MovieDto> movies = movieService.getMoviesByGenre(genreId, pageable);
         return ResponseEntity.ok(movies);
     }
-
     /**
      * GET /api/movies?year={releaseYear}: Retrieve movies filtered by release year
      * Retrieve movies filtered by genre
@@ -162,7 +154,6 @@ public class MovieController {
         Page<MovieDto> moviesByYear = movieService.filterByYear(releaseYear, pageable);
         return ResponseEntity.ok(moviesByYear);
     }
-
     /**
      * get all actors in a specific movie
      * GET /api/movies/{movieId}/actors

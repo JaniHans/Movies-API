@@ -11,17 +11,14 @@ import lombok.Getter;
 import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
-
 @Entity
 @Getter
 
-public class MovieEntity {
+public class Movie {
 
     @Id // Marks 'id' as the primary key
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-
     private String title;
     @Setter
     private int releaseYear;
@@ -36,7 +33,7 @@ public class MovieEntity {
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
     @Setter
-    private List<GenreEntity> genres = new ArrayList<>();
+    private List<Genre> genres = new ArrayList<>();
 
     // Movie ↔ Actor
     @ManyToMany
@@ -46,7 +43,7 @@ public class MovieEntity {
             inverseJoinColumns = @JoinColumn(name = "actor_id")
     )
     @Setter
-    private List<ActorEntity> actors = new ArrayList<>();
+    private List<Actor> actors = new ArrayList<>();
 
     public void setTitle(String title) {
         this.title = title.trim();

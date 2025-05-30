@@ -46,7 +46,6 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(message.toString().trim(), 400);
     }
 
-
     @ExceptionHandler(InvalidDateFormatException.class)
     public ResponseEntity<ErrorResponse>
     handleInvalidDateFormat(InvalidDateFormatException ex) {

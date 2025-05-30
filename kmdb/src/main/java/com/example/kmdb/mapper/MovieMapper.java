@@ -3,15 +3,14 @@ package com.example.kmdb.mapper;
 import com.example.kmdb.dtos.ActorDto;
 import com.example.kmdb.dtos.MovieDto;
 import com.example.kmdb.dtos.create.CreateMovieDto;
-import com.example.kmdb.entities.ActorEntity;
-import com.example.kmdb.entities.GenreEntity;
-import com.example.kmdb.entities.MovieEntity;
+import com.example.kmdb.entities.Actor;
+import com.example.kmdb.entities.Genre;
+import com.example.kmdb.entities.Movie;
 import com.example.kmdb.exceptions.MethodArgumentNotValidException;
 import com.example.kmdb.repositories.ActorRepository;
 import com.example.kmdb.repositories.GenreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
 import java.util.List;
 @Component
 @RequiredArgsConstructor
@@ -23,23 +22,20 @@ public class MovieMapper {
     /**
      * @param movies
      */
-    public List<String> convertMovieEntitiesToMovieTitles(List<MovieEntity> movies) {
+    public List<String> convertMovieEntitiesToMovieTitles(List<Movie> movies) {
 
-        return movies.stream().map(MovieEntity::getTitle)
+        return movies.stream().map(Movie::getTitle)
                 .toList();
     }
-
-    public MovieEntity createMovieDtoToMovieEntity(CreateMovieDto createMovieDto) {
+    public Movie createMovieDtoToMovieEntity(CreateMovieDto createMovieDto) {
 
         if (createMovieDto == null || createMovieDto.getTitle().isBlank()) {
             throw new MethodArgumentNotValidException("Name of the genre can't be null or empty");
         }
-
-        MovieEntity movie = new MovieEntity();
+        Movie movie = new Movie();
         movie.setTitle(createMovieDto.getTitle());
         movie.setDuration(createMovieDto.getDuration());
         movie.setReleaseYear(createMovieDto.getReleaseYear());
-
         if (createMovieDto.getActors().isEmpty() && createMovieDto.getGenres().isEmpty()) {
             return movie;
         } else {
@@ -52,64 +48,56 @@ public class MovieMapper {
         }
         return movie;
     }
-
     /**
      * @param genres
      */
-    public List<String> convertGenreEntitiesToGenreNames(List<GenreEntity> genres) {
+    public List<String> convertGenreEntitiesToGenreNames(List<Genre> genres) {
 
-        return genres.stream().map(GenreEntity::getName).toList();
+        return genres.stream().map(Genre::getName).toList();
     }
     /**
      * convert entity to genreDto
      * converts list of movie entities to movieDTOs
-     * @param actorEntity - genre
+     * @param actor - genre
      * @return genreDTO
      */
-    public ActorDto actorEntityToActorDto(ActorEntity actorEntity) {
+    public ActorDto actorEntityToActorDto(Actor actor) {
 
-        if (actorEntity == null || actorEntity.getName().isBlank()) {
+        if (actor == null || actor.getName().isBlank()) {
             throw new MethodArgumentNotValidException("Entity can't be null");
         }
         ActorDto actorDto = new ActorDto();
-        actorDto.setId(actorEntity.getId());
-        actorDto.setName(actorEntity.getName());
-        actorDto.setBirthDate(actorEntity.getBirthDate());
-
-        actorDto.setMovies(convertMovieEntitiesToMovieTitles(actorEntity.getMovies()));
+        actorDto.setId(actor.getId());
+        actorDto.setName(actor.getName());
+        actorDto.setBirthDate(actor.getBirthDate());
+        actorDto.setMovies(convertMovieEntitiesToMovieTitles(actor.getMovies()));
         return actorDto;
     }
-
     /**
      * @param actors
      */
-    public List<String> convertActorEntitiesToActorNames(List<ActorEntity> actors) {
+    public List<String> convertActorEntitiesToActorNames(List<Actor> actors) {
 
-        return actors.stream().map(ActorEntity::getName).toList();
+        return actors.stream().map(Actor::getName).toList();
     }
     /**
      *
-     * @param movieEntity
+     * @param movie
      * @return
      */
-    public MovieDto movieEntityToMovieDto(MovieEntity movieEntity) {
+    public MovieDto movieEntityToMovieDto(Movie movie) {
 
-        if (movieEntity == null || movieEntity.getTitle().isBlank()) {
+        if (movie == null || movie.getTitle().isBlank()) {
             throw new MethodArgumentNotValidException("Entity can't be null");
         }
-
         MovieDto movieDto = new MovieDto();
-
-        movieDto.setId(movieEntity.getId());
-        movieDto.setTitle(movieEntity.getTitle());
-        movieDto.setDuration(movieEntity.getDuration());
-        movieDto.setReleaseYear(movieEntity.getReleaseYear());
-
+        movieDto.setId(movie.getId());
+        movieDto.setTitle(movie.getTitle());
+        movieDto.setDuration(movie.getDuration());
+        movieDto.setReleaseYear(movie.getReleaseYear());
         // for display set Names of actors and Genres to Movie lists of Genres and Actors
-        movieDto.setGenres(convertGenreEntitiesToGenreNames(movieEntity.getGenres()));
-        movieDto.setActors(convertActorEntitiesToActorNames(movieEntity.getActors()));
-
+        movieDto.setGenres(convertGenreEntitiesToGenreNames(movie.getGenres()));
+        movieDto.setActors(convertActorEntitiesToActorNames(movie.getActors()));
         return movieDto;
-
     }
 }

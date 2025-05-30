@@ -3,9 +3,9 @@ package com.example.kmdb.services;
 import com.example.kmdb.dtos.ActorDto;
 import com.example.kmdb.dtos.MovieDto;
 import com.example.kmdb.dtos.create.CreateMovieDto;
-import com.example.kmdb.entities.ActorEntity;
-import com.example.kmdb.entities.GenreEntity;
-import com.example.kmdb.entities.MovieEntity;
+import com.example.kmdb.entities.Actor;
+import com.example.kmdb.entities.Genre;
+import com.example.kmdb.entities.Movie;
 import com.example.kmdb.exceptions.DeleteNotAllowedException;
 import com.example.kmdb.exceptions.MethodArgumentNotValidException;
 import com.example.kmdb.exceptions.ResourceNotFoundException;
@@ -20,7 +20,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -48,29 +47,22 @@ public class MovieService {
     public MovieDto createMovie(CreateMovieDto createMovieDto) {
 
         log.info("Movie created : {}", createMovieDto.getTitle());
-
-        MovieEntity movie = movieMapper.createMovieDtoToMovieEntity(createMovieDto);
-
+        Movie movie = movieMapper.createMovieDtoToMovieEntity(createMovieDto);
         // find by actor ids
-        List<GenreEntity> genres = genreRepository.findAllById(createMovieDto.getGenres());
-        List<ActorEntity> actors = actorRepository.findAllById(createMovieDto.getActors());
+        List<Genre> genres = genreRepository.findAllById(createMovieDto.getGenres());
         // find by genre ids
-
+        List<Actor> actors = actorRepository.findAllById(createMovieDto.getActors());
         // set Movies to Genre entities for bidirectional relationships
-
-        for (GenreEntity genre : genres) {
+        for (Genre genre : genres) {
             genre.getMovies().add(movie);
         }
         // set Movies to Actor entities for bidirectional relationships
-        for (ActorEntity actor : actors) {
+        for (Actor actor : actors) {
             actor.getMovies().add(movie);
         }
-
         movie.setGenres(genres);
         movie.setActors(actors);
-
         movieRepository.save(movie);
-
         return movieMapper.movieEntityToMovieDto(movie);
         // return movieDto
     }
@@ -89,12 +81,10 @@ public class MovieService {
         if (pageable.getPageSize() < 0) {
             throw new MethodArgumentNotValidException("Page size can't be negative");
         }
-
         log.info("Retrieving all movies");
-        Page<MovieEntity> movies = movieRepository.findAll(pageable);
+        Page<Movie> movies = movieRepository.findAll(pageable);
         return movies.map(movieMapper::movieEntityToMovieDto);
         }
-
     /**
      * get movie by id
      * using mapper interface method to convert entity to dto
@@ -121,16 +111,13 @@ public class MovieService {
             return movieRepository.findAll(pageable)
                     .map(movieMapper::movieEntityToMovieDto);
         }
-
         if (pageable.getPageNumber() < 0) {
             throw new MethodArgumentNotValidException("Page number can't be negative");
         }
         if (pageable.getPageSize() < 0) {
             throw new MethodArgumentNotValidException("Page size can't be negative");
         }
-
         pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("title").ascending());
-
         return movieRepository.findByTitleContainingIgnoreCase(searchCriteria, pageable)
                 .map(movieMapper::movieEntityToMovieDto);
     }
@@ -144,16 +131,14 @@ public class MovieService {
      */
     public Page<MovieDto> getMoviesByGenre(Long genreId, Pageable pageable) {
 
-        GenreEntity genre = genreRepository.findById(genreId).orElseThrow(() ->
+        Genre genre = genreRepository.findById(genreId).orElseThrow(() ->
            new ResourceNotFoundException("Genre with id: " + genreId + " not found"));
-
         if (genre.getMovies().isEmpty()) {
             throw new ResourceNotFoundException(genre.getName() + " has no associated movies");
         }
         return movieRepository.findMovieEntitiesByGenreIds(genreId, pageable)
                 .map(movieMapper::movieEntityToMovieDto);
     }
-
     /**
      * GET /api/movies?year={releaseYear}: Retrieve movies filtered by release year
      * @param releaseYear - movie release year
@@ -172,18 +157,18 @@ public class MovieService {
      * @param dto - DTO object of movie for creating and modifying movies
      */
     public MovieDto modifyMovie(Long movieId, CreateMovieDto dto) {
-        MovieEntity movie = movieRepository
+        Movie movie = movieRepository
                 .findById(movieId)
                 .orElseThrow(() -> new ResourceNotFoundException(MOVIE_NOT_FOUND + movieId));
 
         // remove movie from the child owner - bidirectional relationship
-        for (ActorEntity actor : movie.getActors()) {
+        for (Actor actor : movie.getActors()) {
             actor.getMovies().remove(movie);
         }
         // clear actors from movie entity
         movie.getActors().clear();
         // remove movie one way or another from the child owner - bidirectional relationship
-        for (GenreEntity genre : movie.getGenres()) {
+        for (Genre genre : movie.getGenres()) {
             genre.getMovies().remove(movie);
         }
         // clear genres from movie entity
@@ -191,22 +176,20 @@ public class MovieService {
 
         if (!dto.getActors().isEmpty()) {
         movie.setActors(actorRepository.findAllById(dto.getActors()));
-        for (ActorEntity actor : movie.getActors()) {
+        for (Actor actor : movie.getActors()) {
             actor.getMovies().add(movie);
         }
         }
         if (!dto.getGenres().isEmpty()) {
             movie.setGenres(genreRepository.findAllById(dto.getGenres()));
-            for (GenreEntity genre : movie.getGenres()) {
+            for (Genre genre : movie.getGenres()) {
                 genre.getMovies().add(movie);
             }
         }
-
         movie.setTitle(dto.getTitle());
         movie.setReleaseYear(dto.getReleaseYear());
         movie.setDuration(dto.getDuration());
         movieRepository.save(movie);
-
         return movieMapper.movieEntityToMovieDto(movie);
     }
     /**
@@ -221,7 +204,6 @@ public class MovieService {
 
       return actorRepository.findActorEntitiesByMovieId(movieId, pageable)
               .map(movieMapper::actorEntityToActorDto);
-
     }
     /**
      * deletes movie by id if there is no associated genres and actors
@@ -233,13 +215,12 @@ public class MovieService {
      */
     public void removeMovie(Long movieId, boolean force) {
 
-        MovieEntity movie = movieRepository.findById(movieId)
+        Movie movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new ResourceNotFoundException(MOVIE_NOT_FOUND + movieId));
 
         // boolean flags for correct error message
         boolean hasActors = !movie.getActors().isEmpty();
         boolean hasGenres = !movie.getGenres().isEmpty();
-
         if ((hasActors || hasGenres && !force)) {
 
             StringBuilder message = new StringBuilder("Cannot delete movie ");
@@ -250,17 +231,14 @@ public class MovieService {
                 message.append(movie.getActors().size())
                         .append(" associated actors");
             }
-
             if (hasActors && hasGenres) {
                 message.append(" and ");
             }
-
             if (hasGenres) {
                 message.append(movie.getGenres().size())
                         .append(" associated genre(s).");
             }
             throw new DeleteNotAllowedException(message.toString());
-
         }
         movieRepository.deleteById(movieId);
         log.info("Movie deleted");

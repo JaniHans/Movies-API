@@ -2,8 +2,8 @@ package com.example.kmdb.services;
 
 import com.example.kmdb.dtos.GenreDto;
 import com.example.kmdb.dtos.create.CreateGenreDto;
-import com.example.kmdb.entities.GenreEntity;
-import com.example.kmdb.entities.MovieEntity;
+import com.example.kmdb.entities.Genre;
+import com.example.kmdb.entities.Movie;
 import com.example.kmdb.exceptions.DeleteNotAllowedException;
 import com.example.kmdb.exceptions.ResourceNotFoundException;
 import com.example.kmdb.mapper.GenreMapper;
@@ -40,19 +40,14 @@ public class GenreService {
 
         log.info("Genre created : {}, movieIds :{}", genreDto.getName(), genreDto.getMovies());
         //
-        GenreEntity genre = genreMapper.createGenreDtoToGenreEntity(genreDto);
-
+        Genre genre = genreMapper.createGenreDtoToGenreEntity(genreDto);
         // find by movie IDS
-        List<MovieEntity> movies = movieRepository.findAllById(genreDto.getMovies());
-
-        for (MovieEntity movie : movies) {
+        List<Movie> movies = movieRepository.findAllById(genreDto.getMovies());
+        for (Movie movie : movies) {
             movie.getGenres().add(genre);
         }
-
         genre.setMovies(movies);
-
         genreRepository.save(genre);
-
         return genreMapper.genreEntityToGenreDto(genre);
 
     }
@@ -64,8 +59,7 @@ public class GenreService {
      */
     public Page<GenreDto> getAllGenres(Pageable pageable) {
         log.info("Retrieving all genres");
-      Page<GenreEntity> genrePage = genreRepository.findAll(pageable);
-
+      Page<Genre> genrePage = genreRepository.findAll(pageable);
       return genrePage.map(genreMapper::genreEntityToGenreDto);
     }
 
@@ -86,33 +80,29 @@ public class GenreService {
      */
     public GenreDto modifyGenre(Long genreId, CreateGenreDto genreDto) {
 
-        GenreEntity genre = genreRepository.findById(genreId).orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + genreId));
+        Genre genre = genreRepository.findById(genreId).orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + genreId));
 
         // empty genres from the movies if the new movieID list is empty
         if (genreDto.getMovies().isEmpty()) {
 
-            List<MovieEntity> movies = genre.getMovies();
+            List<Movie> movies = genre.getMovies();
 
-            for (MovieEntity movie : movies) {
+            for (Movie movie : movies) {
                 movie.getGenres().remove(genre);
             }
-
             genre.getMovies().clear();
         } else {
             // empty genres from movies before adding new movies, replace and delete old basically
-            for (MovieEntity movies : genre.getMovies()) {
+            for (Movie movies : genre.getMovies()) {
                 movies.getGenres().remove(genre);
             }
             genre.setMovies(movieRepository.findAllById(genreDto.getMovies()));
-
-            for (MovieEntity moviesNew : genre.getMovies()) {
+            for (Movie moviesNew : genre.getMovies()) {
                 moviesNew.getGenres().add(genre);
             }
         }
         genre.setName(genreDto.getName());
-
         genreRepository.save(genre);
-
         return genreMapper.genreEntityToGenreDto(genre);
     }
     /**
@@ -123,7 +113,7 @@ public class GenreService {
      */
     public void removeGenre(Long id, boolean force) {
 
-        GenreEntity genre = genreRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + id));
+        Genre genre = genreRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + id));
         // if associations exist and force is not true
 
         if (!genre.getMovies().isEmpty() && !force) {
@@ -133,17 +123,14 @@ public class GenreService {
                     + genre.getMovies().size()
                     + " associated movies.");
         }
-
         if (genre.getMovies().isEmpty()) {
             genreRepository.deleteById(id);
         }
         // force break associations
         if (force) {
-
             // reference to movie entity objects
-            List<MovieEntity> temporaryMovies = new ArrayList<>(genre.getMovies());
-
-            for (MovieEntity movies : temporaryMovies) {
+            List<Movie> temporaryMovies = new ArrayList<>(genre.getMovies());
+            for (Movie movies : temporaryMovies) {
                 // modify the real MovieEntity objects through Hibernate persistence context
                 movies.getGenres().remove(genre);
             }

@@ -16,10 +16,8 @@ import java.util.List;
 @Data
 public class CreateMovieDto {
 
-
     @NotBlank(message = "Title can't be blank")
     @Size(min = 2, max = 50, message = "Title must be 2 to 50 characters long")
-
     private String title;
     @NotNull
     @Positive

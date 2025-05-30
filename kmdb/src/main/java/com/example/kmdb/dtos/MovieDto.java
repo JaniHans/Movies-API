@@ -19,7 +19,6 @@ public class MovieDto {
     @Setter
     private List<String> actors = new ArrayList<>();
 
-
     public void setTitle(String title) {
         this.title = title.trim();
     }

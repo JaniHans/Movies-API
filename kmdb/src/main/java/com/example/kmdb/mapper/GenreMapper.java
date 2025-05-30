@@ -2,13 +2,12 @@ package com.example.kmdb.mapper;
 
 import com.example.kmdb.dtos.GenreDto;
 import com.example.kmdb.dtos.create.CreateGenreDto;
-import com.example.kmdb.entities.GenreEntity;
-import com.example.kmdb.entities.MovieEntity;
+import com.example.kmdb.entities.Genre;
+import com.example.kmdb.entities.Movie;
 import com.example.kmdb.exceptions.MethodArgumentNotValidException;
 import com.example.kmdb.repositories.MovieRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
 import java.util.List;
 
 @Component
@@ -24,45 +23,43 @@ public class GenreMapper {
      * @param createGenreDto - genre
      * @return genre entity
      */
-    public GenreEntity createGenreDtoToGenreEntity(CreateGenreDto createGenreDto) {
+    public Genre createGenreDtoToGenreEntity(CreateGenreDto createGenreDto) {
         if (createGenreDto == null || createGenreDto.getName().isBlank()) {
             throw new MethodArgumentNotValidException("Name of the genre can't be null or empty");
         }
-        GenreEntity entity = new GenreEntity();
+        Genre entity = new Genre();
         entity.setName(createGenreDto.getName());
         if (createGenreDto.getMovies().isEmpty()) {
             return entity;
         }
-
         entity.setMovies(movieRepository.findAllById(createGenreDto.getMovies()));
         return entity;
     }
     /**
      * convert entity to genreDto
      * converts list of movie entities to movieDTOs
-     * @param genreEntity - genre
+     * @param genre - genre
      * @return genreDTO
      */
-    public GenreDto genreEntityToGenreDto(GenreEntity genreEntity) {
+    public GenreDto genreEntityToGenreDto(Genre genre) {
 
-        if (genreEntity == null || genreEntity.getName().isBlank()) {
+        if (genre == null || genre.getName().isBlank()) {
             throw new MethodArgumentNotValidException("Entity can't be null");
         }
         GenreDto genreDto = new GenreDto();
-        genreDto.setId(genreEntity.getId());
-        genreDto.setName(genreEntity.getName());
+        genreDto.setId(genre.getId());
+        genreDto.setName(genre.getName());
 
-        genreDto.setMovies(convertMovieEntitiesToMovieTitles(genreEntity.getMovies()));
+        genreDto.setMovies(convertMovieEntitiesToMovieTitles(genre.getMovies()));
         return genreDto;
     }
-
     /**
      * Returns a list of movie titles that belong to the entity
      * @param movies
      */
-    public List<String> convertMovieEntitiesToMovieTitles(List<MovieEntity> movies) {
+    public List<String> convertMovieEntitiesToMovieTitles(List<Movie> movies) {
 
-        return movies.stream().map(MovieEntity::getTitle)
+        return movies.stream().map(Movie::getTitle)
                 .toList();
     }
 }

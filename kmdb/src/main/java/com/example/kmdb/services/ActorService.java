@@ -10,8 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import com.example.kmdb.dtos.MovieDto;
-import com.example.kmdb.entities.ActorEntity;
-import com.example.kmdb.entities.MovieEntity;
+import com.example.kmdb.entities.Actor;
+import com.example.kmdb.entities.Movie;
 import com.example.kmdb.exceptions.DeleteNotAllowedException;
 import com.example.kmdb.exceptions.ResourceNotFoundException;
 import com.example.kmdb.repositories.ActorRepository;
@@ -34,27 +34,22 @@ public class ActorService {
     private final MovieMapper movieMapper;
 
     private static final String ACTOR_NOT_FOUND = "Actor not found by id: ";
-    private final MovieService movieService;
-
     /**
      * POST /api/actor: Create a new actor entity
      */
     public ActorDto createActor(CreateActorDto createDto) {
         log.info("createActor {}, {}", createDto.getName(), createDto.getBirthDate());
 
-        ActorEntity actor = actorMapper.createActorDtoToActorEntity(createDto);
+        Actor actor = actorMapper.createActorDtoToActorEntity(createDto);
         // find by movie IDS
-        List<MovieEntity> movies = movieRepository.findAllById(createDto.getMovies());
+        List<Movie> movies = movieRepository.findAllById(createDto.getMovies());
 
-        for (MovieEntity movie : movies) {
+        for (Movie movie : movies) {
             movie.getActors().add(actor);
         }
-
         actor.setMovies(movies);
-
         actorRepository.save(actor);
         return actorMapper.actorEntityToActorDto(actor);
-
     }
     /**
      *Implement methods to retrieve all actors, pagination included
@@ -64,8 +59,7 @@ public class ActorService {
     public Page<ActorDto> getActors(Pageable pageable) {
 
        log.info("Retrieving all actors");
-       Page<ActorEntity> actors = actorRepository.findAll(pageable);
-
+       Page<Actor> actors = actorRepository.findAll(pageable);
        return actors.map(actorMapper::actorEntityToActorDto);
 
     }
@@ -85,41 +79,34 @@ public class ActorService {
      * @param actorDto - createActorDto
      */
     public ActorDto modifyActor(Long actorId, CreateActorDto actorDto) {
-     ActorEntity actor = actorRepository
+     Actor actor = actorRepository
              .findById(actorId)
              .orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + actorId));
 
-
         if (actorDto.getMovies().isEmpty()) {
-
-            List<MovieEntity> movies = actor.getMovies();
-
-            for (MovieEntity movie : movies) {
+            List<Movie> movies = actor.getMovies();
+            for (Movie movie : movies) {
                 movie.getActors().remove(actor);
             }
-
             actor.getMovies().clear();
         } else {
             // empty genres from movies before adding new movies, replace and delete old basically
-            for (MovieEntity movies : actor.getMovies()) {
+            for (Movie movies : actor.getMovies()) {
                 movies.getActors().remove(actor);
             }
             actor.setMovies(movieRepository.findAllById(actorDto.getMovies()));
 
-            for (MovieEntity moviesNew : actor.getMovies()) {
+            for (Movie moviesNew : actor.getMovies()) {
                 moviesNew.getActors().add(actor);
             }
         }
-
      actor.setName(actorDto.getName());
-
         try {
             LocalDate birthDate = LocalDate.parse(actorDto.getBirthDate());
             actor.setBirthDate(birthDate);
         } catch (DateTimeParseException e) {
             throw new InvalidDateFormatException("Invalid date format. Expected: yyyy-MM-dd");
         }
-
      actorRepository.save(actor);
        return actorMapper.actorEntityToActorDto(actor);
     }
@@ -133,7 +120,7 @@ public class ActorService {
      * and remove an actor from the database.
      */
     public void removeActor(Long actorId, boolean force) {
-      ActorEntity actor = actorRepository.findById(actorId).orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + actorId));
+      Actor actor = actorRepository.findById(actorId).orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + actorId));
 
         // if associations exist and force is not true
       if (!actor.getMovies().isEmpty() && !force) {
@@ -150,9 +137,9 @@ public class ActorService {
         if (force) {
             // reference to movie entity objects
         }
-        List<MovieEntity> temporaryMovies = new ArrayList<>(actor.getMovies());
+        List<Movie> temporaryMovies = new ArrayList<>(actor.getMovies());
 
-            for (MovieEntity movie : temporaryMovies) {
+            for (Movie movie : temporaryMovies) {
                 movie.getActors().remove(actor);
             }
             actorRepository.deleteById(actorId);
@@ -167,7 +154,7 @@ public class ActorService {
         if (name.isEmpty()) {
             throw new IllegalArgumentException("Actor name can't be empty");
         }
-           Optional<ActorEntity> actor = actorRepository.findActorEntityByNameEqualsIgnoreCase(name);
+           Optional<Actor> actor = actorRepository.findActorEntityByNameEqualsIgnoreCase(name);
            if (actor.isEmpty()) {
                throw new ResourceNotFoundException("Actor not found");
            }
