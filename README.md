@@ -244,6 +244,22 @@ Validation and error scenarios
 
 Force deletion logic
 
+📫 Importing the Postman Collection
+To test the API using Postman:
+
+Open Postman.
+
+Click "Import" in the top left corner.
+
+Choose "File".
+
+Navigate to the following path from repository root in your project:
+
+kmdb/src/main/resources/postman/Movie Database API.postman_collection.json
+Click "Open" to import the collection.
+
+You can now use the predefined requests to interact with the API.
+
 ## Extra Security Enhancement
 
 Any kind of client side entity data manipulation is dealt with a layer of abstraction called the Data Transfer Object design. Fundamental part of API structure but not specifically required in this project.
