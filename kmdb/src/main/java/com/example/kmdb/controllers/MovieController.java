@@ -105,8 +105,8 @@ public class MovieController {
      * retrieve a specific movie by ID
      */
     @GetMapping("/{id}")
-    public MovieDto getMovieId(@PathVariable Long id) {
-        return movieService.getMovieById(id);
+    public ResponseEntity<MovieDto> getMovieId(@PathVariable Long id) {
+        return movieService.getMovieById(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     /**

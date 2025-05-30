@@ -53,7 +53,7 @@ public class ActorService {
         actor.setMovies(movies);
 
         actorRepository.save(actor);
-        return  actorMapper.actorEntityToActorDto(actor);
+        return actorMapper.actorEntityToActorDto(actor);
 
     }
     /**
@@ -72,11 +72,9 @@ public class ActorService {
     /**
      * get a specific actor by ID
      */
-    public ActorDto getActorById(Long id) {
+    public Optional<ActorDto> getActorById(Long id) {
 
-        ActorEntity actor = actorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ACTOR_NOT_FOUND + id));
-
-        return actorMapper.actorEntityToActorDto(actor);
+     return actorRepository.findById(id).map(actorMapper::actorEntityToActorDto);
     }
     /**
      * PATCH /api/{actor}/{id}

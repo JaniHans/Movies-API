@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -74,11 +75,9 @@ public class GenreService {
      * @param - genre id
      * @return - returns genre by id
      */
-    public GenreDto getGenreById(Long id) {
+    public Optional<GenreDto> getGenreById(Long id) {
 
-      GenreEntity entity = genreRepository.findById(id)
-              .orElseThrow(() -> new ResourceNotFoundException(GENRE_NOT_FOUND + " " + id));
-      return genreMapper.genreEntityToGenreDto(entity);
+      return genreRepository.findById(id).map(genreMapper::genreEntityToGenreDto);
     }
     /**
      * PATCH /api/{genres}/{id}

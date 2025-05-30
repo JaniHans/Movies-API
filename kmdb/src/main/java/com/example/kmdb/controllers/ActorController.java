@@ -59,8 +59,11 @@ public class ActorController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<ActorDto> getActorById(@PathVariable Long id) {
-        ActorDto actor = actorService.getActorById(id);
-        return ResponseEntity.ok(actor);
+
+        return actorService.getActorById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+
     }
     /** partial actor update
      * PATCH /api/{entity}/{id}

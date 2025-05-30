@@ -22,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -101,11 +102,9 @@ public class MovieService {
      * @param movieId - movie id
      * @return - returns single item of movieDto
      */
-    public MovieDto getMovieById(Long movieId) {
+    public Optional<MovieDto> getMovieById(Long movieId) {
 
-        MovieEntity movie = movieRepository.findById(movieId).orElseThrow(() -> new ResourceNotFoundException(MOVIE_NOT_FOUND + " " + movieId));
-
-        return movieMapper.movieEntityToMovieDto(movie);
+       return movieRepository.findById(movieId).map(movieMapper::movieEntityToMovieDto);
 
     }
     /**
