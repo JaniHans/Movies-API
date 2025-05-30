@@ -15,7 +15,6 @@ import java.util.List;
 public class GenreMapper {
 
     private final MovieRepository movieRepository;
-
     // HELPER METHODS
     /**
      * creates genreEntity from genreCreateDto

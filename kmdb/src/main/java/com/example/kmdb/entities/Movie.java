@@ -24,7 +24,6 @@ public class Movie {
     private int releaseYear;
     @Setter
     private int duration;
-
     // Movie ↔ Genre
     @ManyToMany
     @JoinTable(
@@ -34,7 +33,6 @@ public class Movie {
     )
     @Setter
     private List<Genre> genres = new ArrayList<>();
-
     // Movie ↔ Actor
     @ManyToMany
     @JoinTable(

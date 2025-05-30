@@ -66,7 +66,6 @@ public class MovieService {
         return movieMapper.movieEntityToMovieDto(movie);
         // return movieDto
     }
-
     /**
      * Get all movies, including pagination and search
      * using mapper interface method to convert entity to dto
@@ -121,7 +120,6 @@ public class MovieService {
         return movieRepository.findByTitleContainingIgnoreCase(searchCriteria, pageable)
                 .map(movieMapper::movieEntityToMovieDto);
     }
-
     /**
      * get and filter movies by genre id using pagination
      * GET /api/movies?genre={genreId}
@@ -173,7 +171,6 @@ public class MovieService {
         }
         // clear genres from movie entity
         movie.getGenres().clear();
-
         if (!dto.getActors().isEmpty()) {
         movie.setActors(actorRepository.findAllById(dto.getActors()));
         for (Actor actor : movie.getActors()) {
@@ -217,7 +214,6 @@ public class MovieService {
 
         Movie movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new ResourceNotFoundException(MOVIE_NOT_FOUND + movieId));
-
         // boolean flags for correct error message
         boolean hasActors = !movie.getActors().isEmpty();
         boolean hasGenres = !movie.getGenres().isEmpty();
