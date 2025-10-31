@@ -1,5 +1,8 @@
 package com.example.kmdb.exceptions;
 
+import lombok.Getter;
+
+@Getter
 public class ErrorResponse {
 
     private final String error;
@@ -10,11 +13,4 @@ public class ErrorResponse {
         this.status = status;
     }
 
-    public String getError() {
-        return error;
-    }
-
-    public int getStatus() {
-        return status;
-    }
 }

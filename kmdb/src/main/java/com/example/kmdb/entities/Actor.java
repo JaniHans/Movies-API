@@ -19,7 +19,6 @@ public class Actor {
     @ManyToMany(mappedBy = "actors")
     @Setter
     private List<Movie> movies = new ArrayList<>();
-
     public void setName(String name) {
         this.name = name.trim();
     }

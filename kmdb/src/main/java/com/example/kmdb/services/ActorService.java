@@ -1,27 +1,30 @@
 package com.example.kmdb.services;
 
-import com.example.kmdb.dtos.ActorDto;
-import com.example.kmdb.dtos.create.CreateActorDto;
-import com.example.kmdb.exceptions.InvalidDateFormatException;
-import com.example.kmdb.mapper.ActorMapper;
-import com.example.kmdb.mapper.MovieMapper;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import com.example.kmdb.dtos.MovieDto;
-import com.example.kmdb.entities.Actor;
-import com.example.kmdb.entities.Movie;
-import com.example.kmdb.exceptions.DeleteNotAllowedException;
-import com.example.kmdb.exceptions.ResourceNotFoundException;
-import com.example.kmdb.repositories.ActorRepository;
-import com.example.kmdb.repositories.MovieRepository;
-import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import com.example.kmdb.dtos.ActorDto;
+import com.example.kmdb.dtos.MovieDto;
+import com.example.kmdb.dtos.create.CreateActorDto;
+import com.example.kmdb.entities.Actor;
+import com.example.kmdb.entities.Movie;
+import com.example.kmdb.exceptions.DeleteNotAllowedException;
+import com.example.kmdb.exceptions.InvalidDateFormatException;
+import com.example.kmdb.exceptions.ResourceNotFoundException;
+import com.example.kmdb.mapper.ActorMapper;
+import com.example.kmdb.mapper.MovieMapper;
+import com.example.kmdb.repositories.ActorRepository;
+import com.example.kmdb.repositories.MovieRepository;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -74,8 +77,7 @@ public class ActorService {
      * PATCH /api/{actor}/{id}
      * Partially update an existing entity
      * Modify actor's name, date of birth, and associated movies.
-     * Saves the changes to the actor repository.
-     * @param actorId - actor id
+     * Saves the changes to the actor repository.    * @param actorId - actor id
      * @param actorDto - createActorDto
      */
     public ActorDto modifyActor(Long actorId, CreateActorDto actorDto) {
